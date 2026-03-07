@@ -500,18 +500,21 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          sort_order: number
         }
         Insert: {
           code: string
           created_at?: string
           id?: string
           name: string
+          sort_order?: number
         }
         Update: {
           code?: string
           created_at?: string
           id?: string
           name?: string
+          sort_order?: number
         }
         Relationships: []
       }
