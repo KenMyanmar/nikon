@@ -185,6 +185,7 @@ const ProductDetail = () => {
               {related.map((p) => (
                 <div key={p.id} className="min-w-[220px] md:min-w-[260px] flex-shrink-0">
                   <ProductCard
+                    id={p.id || ""}
                     image={p.thumbnail_url || "/placeholder.svg"}
                     title={p.description || ""}
                     brand={p.brand_name || ""}

@@ -24,6 +24,7 @@ const ProductGrid = ({ products }: ProductGridProps) => {
       {products.map((p) => (
         <ProductCard
           key={p.id}
+          id={p.id}
           image={p.thumbnail_url || "/placeholder.svg"}
           title={p.description}
           brand={p.brand_name || ""}
