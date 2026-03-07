@@ -19,6 +19,13 @@ const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [qty, setQty] = useState(1);
   const { addToCart, isAdding } = useAddToCart();
+  const { user, openAuthModal } = useAuthContext();
+  const navigate = useNavigate();
+
+  const handleRequestQuote = () => {
+    if (!user) { openAuthModal(); return; }
+    if (product?.id) navigate(`/request-quote?product=${product.id}`);
+  };
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", slug],
