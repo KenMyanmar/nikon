@@ -15,6 +15,8 @@ import CartPage from "./pages/CartPage";
 import AccountPage from "./pages/AccountPage";
 import ResetPassword from "./pages/ResetPassword";
 import RequestQuotePage from "./pages/RequestQuotePage";
+import AllCategoriesPage from "./pages/AllCategoriesPage";
+import AllBrandsPage from "./pages/AllBrandsPage";
 
 const queryClient = new QueryClient();
 
