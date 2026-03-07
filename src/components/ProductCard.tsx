@@ -1,6 +1,7 @@
 import { Heart, ShoppingCart, Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAddToCart } from "@/hooks/useCart";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 interface ProductCardProps {
   id?: string;
