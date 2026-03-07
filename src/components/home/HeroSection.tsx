@@ -1,4 +1,4 @@
-import { ChefHat, Hotel, UtensilsCrossed, SprayCan, Wine, Refrigerator, BedDouble, Coffee } from "lucide-react";
+import { ChefHat, Hotel, UtensilsCrossed, SprayCan, Wine, Refrigerator, BedDouble, Coffee, ShieldCheck, Building, Award, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-kitchen.jpg";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
@@ -12,6 +12,13 @@ const categoryShortcuts = [
   { name: "Refrigeration", icon: Refrigerator, slug: "refrigeration" },
   { name: "Linen", icon: BedDouble, slug: "linen" },
   { name: "F&B", icon: Coffee, slug: "food-beverage" },
+];
+
+const trustBadges = [
+  { icon: ShieldCheck, value: "23+", label: "Years" },
+  { icon: Building, value: "300+", label: "Kitchens" },
+  { icon: Award, value: "160+", label: "Brands" },
+  { icon: Package, value: "4,000+", label: "Products" },
 ];
 
 const HeroSection = () => {
@@ -38,7 +45,7 @@ const HeroSection = () => {
           showButton={true}
         />
 
-        <div className="flex justify-center gap-4 md:gap-8 flex-wrap">
+        <div className="flex justify-center gap-4 md:gap-8 flex-wrap mb-10">
           {categoryShortcuts.map((cat) => (
             <Link
               key={cat.slug}
@@ -50,6 +57,17 @@ const HeroSection = () => {
               </div>
               <span className="text-sm font-medium">{cat.name}</span>
             </Link>
+          ))}
+        </div>
+
+        {/* Trust Badges */}
+        <div className="flex justify-center gap-6 md:gap-12 flex-wrap">
+          {trustBadges.map((badge) => (
+            <div key={badge.label} className="flex items-center gap-2 text-primary-foreground/80">
+              <badge.icon className="w-5 h-5 text-accent" />
+              <span className="font-bold text-primary-foreground">{badge.value}</span>
+              <span className="text-sm text-primary-foreground/60">{badge.label}</span>
+            </div>
           ))}
         </div>
       </div>

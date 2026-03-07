@@ -26,7 +26,7 @@ const BestSellers = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-h2 text-foreground">Best Selling Products</h2>
-          <Link to="/search?q=" className="text-sm font-semibold text-primary hover:text-accent transition flex items-center gap-1">
+          <Link to="/search?q=" className="text-sm font-semibold text-accent hover:text-accent/80 transition flex items-center gap-1">
             View All <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
