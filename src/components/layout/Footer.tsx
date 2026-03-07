@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Facebook } from "lucide-react";
+import ikonLogo from "@/assets/ikon-logo.png";
 
 const Footer = () => {
   return (
