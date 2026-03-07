@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import MainLayout from "@/components/layout/MainLayout";
 import ProductCard from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Minus, Plus, ShoppingCart, FileText } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2 } from "lucide-react";
+import { useAddToCart } from "@/hooks/useCart";
 
 const stockConfig = {
   in_stock: { label: "In Stock", dotClass: "bg-emerald-500", textClass: "text-emerald-700", bgClass: "bg-emerald-50" },
