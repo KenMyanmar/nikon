@@ -141,6 +141,13 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       categories: {
@@ -343,6 +350,13 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       orders: {
@@ -469,6 +483,13 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pricing_tiers_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_public"
             referencedColumns: ["id"]
           },
         ]
@@ -733,6 +754,13 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "saved_list_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       saved_lists: {
@@ -766,9 +794,98 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      products_public: {
+        Row: {
+          brand_id: string | null
+          brand_logo: string | null
+          brand_name: string | null
+          brand_slug: string | null
+          category_id: string | null
+          category_name: string | null
+          category_slug: string | null
+          created_at: string | null
+          currency: string | null
+          datasheet_url: string | null
+          description: string | null
+          group_code: string | null
+          group_id: string | null
+          group_name: string | null
+          id: string | null
+          images: Json | null
+          is_active: boolean | null
+          is_featured: boolean | null
+          item_type: string | null
+          main_vendor: string | null
+          max_qty: number | null
+          min_qty: number | null
+          moq: number | null
+          onhand_qty: number | null
+          other_code: string | null
+          packing: string | null
+          reorder_qty: number | null
+          search_vector: unknown
+          selling_price: number | null
+          short_description: string | null
+          slug: string | null
+          specifications: Json | null
+          stock_code: string | null
+          stock_status: string | null
+          thumbnail_url: string | null
+          unit_of_measure: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "product_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      get_customer_id_for_user: { Args: { _user_id: string }; Returns: string }
+      search_products: {
+        Args: { result_limit?: number; search_term: string }
+        Returns: {
+          brand_logo: string
+          brand_name: string
+          brand_slug: string
+          category_name: string
+          category_slug: string
+          currency: string
+          description: string
+          group_name: string
+          id: string
+          is_featured: boolean
+          moq: number
+          onhand_qty: number
+          other_code: string
+          rank: number
+          selling_price: number
+          short_description: string
+          slug: string
+          stock_code: string
+          stock_status: string
+          thumbnail_url: string
+        }[]
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
