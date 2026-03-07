@@ -43,10 +43,7 @@ const Header = () => {
         </button>
 
         <Link to="/" className="shrink-0 flex items-center gap-2">
-          <div className="bg-primary rounded-lg px-3 py-1.5">
-            <span className="text-primary-foreground font-bold text-xl tracking-tight">IKON</span>
-          </div>
-          <span className="hidden sm:block text-sm font-medium text-muted-foreground">Mart</span>
+          <img src="/favicon.png" alt="IKON Mart" className="h-10 w-auto object-contain" />
         </Link>
 
         {/* Desktop Search */}
