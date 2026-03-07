@@ -10,6 +10,7 @@ import { Minus, Plus, Trash2, ShoppingCart, LogIn } from "lucide-react";
 const CartPage = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: customerId } = useQuery({
     queryKey: ["customer-id", user?.id],
