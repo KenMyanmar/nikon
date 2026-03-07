@@ -140,8 +140,12 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex gap-3 pt-2">
-              <button className="flex-1 bg-accent hover:bg-ikon-red-dark text-accent-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2">
-                <ShoppingCart className="w-5 h-5" /> Add to Cart
+              <button
+                onClick={() => product.id && addToCart(product.id, qty, product.description || "")}
+                disabled={isAdding}
+                className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2 disabled:opacity-60"
+              >
+                {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />} Add to Cart
               </button>
               <button className="flex-1 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2">
                 <FileText className="w-5 h-5" /> Request Quote
