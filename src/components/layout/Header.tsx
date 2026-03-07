@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { User, ShoppingCart, Phone, Menu, X, ChevronDown } from "lucide-react";
+import { User, ShoppingCart, Phone, Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
-import MegaMenu from "./MegaMenu";
+import { DesktopMegaNav, MobileMegaNav } from "./MegaMenu";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-card shadow-nav">
@@ -68,40 +67,13 @@ const Header = () => {
         />
       </div>
 
-      {/* Desktop Navigation Bar */}
-      <nav className="hidden lg:block bg-primary">
-        <div className="container mx-auto px-4 flex items-center">
-          <button
-            className="flex items-center gap-1 px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition"
-            onMouseEnter={() => setMegaMenuOpen(true)}
-            onMouseLeave={() => setMegaMenuOpen(false)}
-          >
-            Products <ChevronDown className="w-4 h-4" />
-          </button>
-          <Link to="/industries" className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition">Industries</Link>
-          <Link to="/brands" className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition">Brands</Link>
-          <Link to="/bulk-orders" className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition">Bulk Orders</Link>
-          <Link to="/deals" className="px-4 py-3 text-accent-foreground text-sm font-bold bg-accent hover:bg-ikon-red-dark transition">🔥 Deals</Link>
-          <Link to="/support" className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition">Support</Link>
-        </div>
-      </nav>
+      {/* Desktop Navigation - Data-driven Mega Menu */}
+      <DesktopMegaNav />
 
-      {megaMenuOpen && (
-        <div onMouseEnter={() => setMegaMenuOpen(true)} onMouseLeave={() => setMegaMenuOpen(false)}>
-          <MegaMenu />
-        </div>
-      )}
-
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-card border-t border-ikon-border">
-          <div className="px-4 py-3 space-y-1">
-            <Link to="/categories" className="block py-2.5 px-3 text-sm font-medium text-foreground hover:bg-ikon-navy-50 rounded-md" onClick={() => setMobileMenuOpen(false)}>Products</Link>
-            <Link to="/industries" className="block py-2.5 px-3 text-sm font-medium text-foreground hover:bg-ikon-navy-50 rounded-md" onClick={() => setMobileMenuOpen(false)}>Industries</Link>
-            <Link to="/brands" className="block py-2.5 px-3 text-sm font-medium text-foreground hover:bg-ikon-navy-50 rounded-md" onClick={() => setMobileMenuOpen(false)}>Brands</Link>
-            <Link to="/bulk-orders" className="block py-2.5 px-3 text-sm font-medium text-foreground hover:bg-ikon-navy-50 rounded-md" onClick={() => setMobileMenuOpen(false)}>Bulk Orders</Link>
-            <Link to="/deals" className="block py-2.5 px-3 text-sm font-bold text-accent hover:bg-ikon-red-light rounded-md" onClick={() => setMobileMenuOpen(false)}>🔥 Deals</Link>
-            <Link to="/support" className="block py-2.5 px-3 text-sm font-medium text-foreground hover:bg-ikon-navy-50 rounded-md" onClick={() => setMobileMenuOpen(false)}>Support</Link>
-          </div>
+        <div className="lg:hidden bg-card border-t border-ikon-border max-h-[70vh] overflow-y-auto">
+          <MobileMegaNav onClose={() => setMobileMenuOpen(false)} />
         </div>
       )}
     </header>

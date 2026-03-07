@@ -1,9 +1,10 @@
 import { useState } from "react";
 
 interface FilterSidebarProps {
-  brands: string[];
-  selectedBrands: string[];
-  onBrandsChange: (brands: string[]) => void;
+  filterLabel?: string;
+  filterItems: string[];
+  selectedItems: string[];
+  onItemsChange: (items: string[]) => void;
   stockFilters: string[];
   onStockChange: (filters: string[]) => void;
   priceRange: [number, number];
@@ -18,23 +19,24 @@ const stockOptions = [
 ];
 
 const FilterSidebar = ({
-  brands,
-  selectedBrands,
-  onBrandsChange,
+  filterLabel = "Brand",
+  filterItems,
+  selectedItems,
+  onItemsChange,
   stockFilters,
   onStockChange,
   priceRange,
   onPriceChange,
   maxPrice,
 }: FilterSidebarProps) => {
-  const [showAllBrands, setShowAllBrands] = useState(false);
-  const displayBrands = showAllBrands ? brands : brands.slice(0, 8);
+  const [showAll, setShowAll] = useState(false);
+  const displayItems = showAll ? filterItems : filterItems.slice(0, 8);
 
-  const toggleBrand = (brand: string) => {
-    onBrandsChange(
-      selectedBrands.includes(brand)
-        ? selectedBrands.filter((b) => b !== brand)
-        : [...selectedBrands, brand]
+  const toggleItem = (item: string) => {
+    onItemsChange(
+      selectedItems.includes(item)
+        ? selectedItems.filter((i) => i !== item)
+        : [...selectedItems, item]
     );
   };
 
@@ -48,35 +50,33 @@ const FilterSidebar = ({
 
   return (
     <aside className="space-y-6">
-      {/* Brands */}
-      {brands.length > 0 && (
+      {filterItems.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-foreground mb-3">Brand</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-3">{filterLabel}</h3>
           <div className="space-y-2">
-            {displayBrands.map((brand) => (
-              <label key={brand} className="flex items-center gap-2 cursor-pointer text-sm">
+            {displayItems.map((item) => (
+              <label key={item} className="flex items-center gap-2 cursor-pointer text-sm">
                 <input
                   type="checkbox"
-                  checked={selectedBrands.includes(brand)}
-                  onChange={() => toggleBrand(brand)}
+                  checked={selectedItems.includes(item)}
+                  onChange={() => toggleItem(item)}
                   className="rounded border-ikon-border text-primary focus:ring-primary"
                 />
-                <span className="text-ikon-text-secondary">{brand}</span>
+                <span className="text-ikon-text-secondary">{item}</span>
               </label>
             ))}
-            {brands.length > 8 && (
+            {filterItems.length > 8 && (
               <button
-                onClick={() => setShowAllBrands(!showAllBrands)}
+                onClick={() => setShowAll(!showAll)}
                 className="text-xs font-semibold text-primary mt-1"
               >
-                {showAllBrands ? "Show less" : `Show all (${brands.length})`}
+                {showAll ? "Show less" : `Show all (${filterItems.length})`}
               </button>
             )}
           </div>
         </div>
       )}
 
-      {/* Stock Status */}
       <div>
         <h3 className="text-sm font-semibold text-foreground mb-3">Availability</h3>
         <div className="space-y-2">
@@ -94,7 +94,6 @@ const FilterSidebar = ({
         </div>
       </div>
 
-      {/* Price Range */}
       {maxPrice > 0 && (
         <div>
           <h3 className="text-sm font-semibold text-foreground mb-3">Price Range (MMK)</h3>

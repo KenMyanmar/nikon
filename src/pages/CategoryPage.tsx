@@ -81,9 +81,9 @@ const CategoryPage = () => {
         <div className="flex gap-8">
           <div className="hidden md:block w-60 flex-shrink-0">
             <FilterSidebar
-              brands={brands}
-              selectedBrands={selectedBrands}
-              onBrandsChange={setSelectedBrands}
+              filterItems={brands}
+              selectedItems={selectedBrands}
+              onItemsChange={setSelectedBrands}
               stockFilters={stockFilters}
               onStockChange={setStockFilters}
               priceRange={priceRange}

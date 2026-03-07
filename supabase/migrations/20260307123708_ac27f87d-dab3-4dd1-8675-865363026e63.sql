@@ -1,0 +1,1 @@
+UPDATE public.product_groups SET sort_order = sub.rn FROM (SELECT id, ROW_NUMBER() OVER (ORDER BY code) as rn FROM public.product_groups) sub WHERE product_groups.id = sub.id;

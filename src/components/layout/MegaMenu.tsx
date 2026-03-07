@@ -1,63 +1,107 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-const MegaMenu = () => {
+interface ProductGroup {
+  id: string;
+  name: string;
+  code: string;
+  sort_order: number;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  group_id: string | null;
+  product_count: number;
+}
+
+// Shared hook for nav data
+export const useNavData = () => {
+  const { data: groups = [] } = useQuery({
+    queryKey: ["product-groups-nav"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_groups")
+        .select("id, name, code, sort_order")
+        .order("sort_order");
+      if (error) throw error;
+      return data as ProductGroup[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories-nav"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("id, name, slug, group_id, product_count")
+        .eq("is_active", true)
+        .order("sort_order");
+      if (error) throw error;
+      return data as Category[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return { groups, categories };
+};
+
+// Desktop mega dropdown content
+const MegaMenuDropdown = ({
+  group,
+  categories,
+}: {
+  group: ProductGroup;
+  categories: Category[];
+}) => {
+  const groupCategories = categories.filter((c) => c.group_id === group.id);
+
   return (
     <div className="absolute left-0 w-full bg-card shadow-xl border-t-2 border-primary z-50">
-      <div className="container mx-auto px-4 py-8 grid grid-cols-4 gap-8">
-        <div>
-          <h3 className="font-bold text-primary mb-3 text-xs uppercase tracking-wider">Kitchen Services</h3>
-          <ul className="space-y-2 text-sm">
-            <li><Link to="/category/cooking-equipment" className="text-ikon-text-secondary hover:text-accent transition">Cooking Equipment</Link></li>
-            <li><Link to="/category/ovens" className="text-ikon-text-secondary hover:text-accent transition">Ovens</Link></li>
-            <li><Link to="/category/refrigeration" className="text-ikon-text-secondary hover:text-accent transition">Refrigeration</Link></li>
-            <li><Link to="/category/dishwashing" className="text-ikon-text-secondary hover:text-accent transition">Dishwashing</Link></li>
-            <li><Link to="/category/food-preparation" className="text-ikon-text-secondary hover:text-accent transition">Food Preparation</Link></li>
-            <li><Link to="/category/ventilation" className="text-ikon-text-secondary hover:text-accent transition">Ventilation</Link></li>
-            <li><Link to="/category/cold-room" className="text-ikon-text-secondary hover:text-accent transition">Cold Room</Link></li>
-            <li><Link to="/category/ss-fabrication" className="text-ikon-text-secondary hover:text-accent transition">SS Fabrication</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-bold text-primary mb-3 text-xs uppercase tracking-wider">Tableware & Display</h3>
-          <ul className="space-y-2 text-sm">
-            <li><Link to="/category/chinaware" className="text-ikon-text-secondary hover:text-accent transition">Chinaware</Link></li>
-            <li><Link to="/category/glassware" className="text-ikon-text-secondary hover:text-accent transition">Glassware</Link></li>
-            <li><Link to="/category/cutlery" className="text-ikon-text-secondary hover:text-accent transition">Cutlery</Link></li>
-            <li><Link to="/category/buffet-ware" className="text-ikon-text-secondary hover:text-accent transition">Buffet Ware</Link></li>
-            <li><Link to="/category/wine-glass" className="text-ikon-text-secondary hover:text-accent transition">Wine Glass</Link></li>
-            <li><Link to="/category/serving-tools" className="text-ikon-text-secondary hover:text-accent transition">Serving Tools</Link></li>
-          </ul>
-          <h3 className="font-bold text-primary mb-3 mt-5 text-xs uppercase tracking-wider">Kitchen Utensils</h3>
-          <ul className="space-y-2 text-sm">
-            <li><Link to="/category/kitchen-tools" className="text-ikon-text-secondary hover:text-accent transition">Kitchen Tools</Link></li>
-            <li><Link to="/category/knives" className="text-ikon-text-secondary hover:text-accent transition">Professional Knives</Link></li>
-            <li><Link to="/category/pots-and-pans" className="text-ikon-text-secondary hover:text-accent transition">Pots & Pans</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-bold text-primary mb-3 text-xs uppercase tracking-wider">Housekeeping</h3>
-          <ul className="space-y-2 text-sm">
-            <li><Link to="/category/hk-equipment" className="text-ikon-text-secondary hover:text-accent transition">HK Equipment</Link></li>
-            <li><Link to="/category/cleaning-chemicals" className="text-ikon-text-secondary hover:text-accent transition">Cleaning Chemicals</Link></li>
-            <li><Link to="/category/waste-disposal" className="text-ikon-text-secondary hover:text-accent transition">Waste Disposal</Link></li>
-          </ul>
-          <h3 className="font-bold text-primary mb-3 mt-5 text-xs uppercase tracking-wider">Linen & Amenities</h3>
-          <ul className="space-y-2 text-sm">
-            <li><Link to="/category/bedroom-amenities" className="text-ikon-text-secondary hover:text-accent transition">Bedroom Amenities</Link></li>
-            <li><Link to="/category/bathroom-amenities" className="text-ikon-text-secondary hover:text-accent transition">Bathroom Amenities</Link></li>
-            <li><Link to="/category/linen" className="text-ikon-text-secondary hover:text-accent transition">Linen</Link></li>
-            <li><Link to="/category/laundry-equipment" className="text-ikon-text-secondary hover:text-accent transition">Laundry Equipment</Link></li>
-          </ul>
-        </div>
-        <div className="bg-ikon-navy-50 rounded-lg p-6">
-          <h3 className="font-bold text-primary mb-2">New Arrivals</h3>
-          <p className="text-sm text-ikon-text-secondary mb-4">Check out the latest additions to our catalog</p>
-          <Link to="/new-arrivals" className="text-sm font-semibold text-accent hover:underline">
-            Shop New Arrivals →
-          </Link>
-          <div className="mt-6">
-            <h3 className="font-bold text-primary mb-2">Need Help?</h3>
-            <p className="text-sm text-ikon-text-secondary">Call us at <strong>01-534216</strong></p>
+      <div className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-3 gap-8">
+          {/* Categories */}
+          <div className="col-span-2">
+            <h3 className="text-xs uppercase tracking-wider font-bold text-primary mb-4">
+              {group.name}
+            </h3>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+              {groupCategories.map((cat) => (
+                <Link
+                  key={cat.id}
+                  to={`/category/${cat.slug}`}
+                  className="flex items-center justify-between py-1.5 text-sm text-ikon-text-secondary hover:text-accent transition group/item"
+                >
+                  <span className="group-hover/item:translate-x-1 transition-transform">{cat.name}</span>
+                  <span className="text-xs text-muted-foreground">{cat.product_count}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Promo */}
+          <div className="bg-ikon-navy-50 rounded-card p-6">
+            <h3 className="font-bold text-primary mb-2">Browse {group.name}</h3>
+            <p className="text-sm text-ikon-text-secondary mb-4">
+              {groupCategories.length} categories available
+            </p>
+            <Link
+              to="/categories"
+              className="text-sm font-semibold text-accent hover:underline"
+            >
+              View All Categories →
+            </Link>
           </div>
         </div>
       </div>
@@ -65,4 +109,109 @@ const MegaMenu = () => {
   );
 };
 
+// Desktop nav bar
+export const DesktopMegaNav = () => {
+  const { groups, categories } = useNavData();
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
+
+  return (
+    <nav className="hidden lg:block bg-primary relative">
+      <div className="container mx-auto px-4 flex items-center">
+        {groups.map((group) => (
+          <div
+            key={group.id}
+            className="relative"
+            onMouseEnter={() => setActiveGroup(group.id)}
+            onMouseLeave={() => setActiveGroup(null)}
+          >
+            <button className="flex items-center gap-1 px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition whitespace-nowrap">
+              {group.name}
+              <ChevronDown className="w-3 h-3 opacity-60" />
+            </button>
+            {activeGroup === group.id && (
+              <MegaMenuDropdown group={group} categories={categories} />
+            )}
+          </div>
+        ))}
+        <Link
+          to="/categories"
+          className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition whitespace-nowrap"
+        >
+          All Categories
+        </Link>
+        <Link
+          to="/brands"
+          className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition whitespace-nowrap"
+        >
+          Brands
+        </Link>
+        <Link
+          to="/deals"
+          className="px-4 py-3 text-accent-foreground text-sm font-bold bg-accent hover:bg-ikon-red-dark transition whitespace-nowrap"
+        >
+          🔥 Deals
+        </Link>
+      </div>
+    </nav>
+  );
+};
+
+// Mobile accordion nav
+export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
+  const { groups, categories } = useNavData();
+
+  return (
+    <div className="px-4 py-3">
+      <Accordion type="multiple" className="space-y-1">
+        {groups.map((group) => {
+          const groupCats = categories.filter((c) => c.group_id === group.id);
+          return (
+            <AccordionItem key={group.id} value={group.id} className="border-none">
+              <AccordionTrigger className="py-2.5 px-3 text-sm font-medium text-foreground hover:bg-ikon-navy-50 rounded-md hover:no-underline">
+                {group.name}
+              </AccordionTrigger>
+              <AccordionContent className="pl-6 pb-1">
+                {groupCats.map((cat) => (
+                  <Link
+                    key={cat.id}
+                    to={`/category/${cat.slug}`}
+                    className="flex items-center justify-between py-2 text-sm text-ikon-text-secondary hover:text-accent transition"
+                    onClick={onClose}
+                  >
+                    <span>{cat.name}</span>
+                    <span className="text-xs text-muted-foreground">{cat.product_count}</span>
+                  </Link>
+                ))}
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
+      <Link
+        to="/categories"
+        className="block py-2.5 px-3 text-sm font-medium text-primary hover:bg-ikon-navy-50 rounded-md mt-1"
+        onClick={onClose}
+      >
+        All Categories →
+      </Link>
+      <Link
+        to="/brands"
+        className="block py-2.5 px-3 text-sm font-medium text-foreground hover:bg-ikon-navy-50 rounded-md"
+        onClick={onClose}
+      >
+        Brands
+      </Link>
+      <Link
+        to="/deals"
+        className="block py-2.5 px-3 text-sm font-bold text-accent hover:bg-ikon-red-light rounded-md"
+        onClick={onClose}
+      >
+        🔥 Deals
+      </Link>
+    </div>
+  );
+};
+
+// Default export for backward compat
+const MegaMenu = () => null;
 export default MegaMenu;
