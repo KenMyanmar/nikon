@@ -1,4 +1,5 @@
 import { Heart } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface ProductCardProps {
   image: string;
@@ -10,6 +11,7 @@ interface ProductCardProps {
   moq?: number;
   stockStatus: "in_stock" | "low_stock" | "out_of_stock";
   sku: string;
+  slug: string;
 }
 
 const stockConfig = {
@@ -18,20 +20,23 @@ const stockConfig = {
   out_of_stock: { label: "Out of Stock", dotClass: "bg-red-500", textClass: "text-red-700", bgClass: "bg-red-50" },
 };
 
-const ProductCard = ({ image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku }: ProductCardProps) => {
-  const stock = stockConfig[stockStatus];
+const ProductCard = ({ image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug }: ProductCardProps) => {
+  const stock = stockConfig[stockStatus] || stockConfig.in_stock;
 
   return (
-    <div className="bg-card rounded-card shadow-card hover:shadow-card-hover transition-all duration-250 overflow-hidden group cursor-pointer">
+    <Link to={`/product/${slug}`} className="bg-card rounded-card shadow-card hover:shadow-card-hover transition-all duration-250 overflow-hidden group cursor-pointer block">
       {/* Image */}
       <div className="relative aspect-square bg-card overflow-hidden">
         <img
-          src={image}
+          src={image || "/placeholder.svg"}
           alt={title}
           className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
           loading="lazy"
         />
-        <button className="absolute top-3 right-3 p-2 rounded-full bg-card/80 hover:bg-card text-ikon-text-tertiary hover:text-accent transition opacity-0 group-hover:opacity-100">
+        <button
+          className="absolute top-3 right-3 p-2 rounded-full bg-card/80 hover:bg-card text-ikon-text-tertiary hover:text-accent transition opacity-0 group-hover:opacity-100"
+          onClick={(e) => e.preventDefault()}
+        >
           <Heart className="w-4 h-4" />
         </button>
       </div>
@@ -48,7 +53,7 @@ const ProductCard = ({ image, title, brand, specs, price, currency = "MMK", moq,
         </span>
 
         <div>
-          {price !== null ? (
+          {price !== null && price !== undefined ? (
             <span className="text-lg font-bold text-accent">{currency} {price.toLocaleString()}</span>
           ) : (
             <span className="text-sm font-semibold text-primary">Request Quote</span>
@@ -59,11 +64,14 @@ const ProductCard = ({ image, title, brand, specs, price, currency = "MMK", moq,
           <p className="text-xs text-ikon-text-tertiary uppercase tracking-wide">MOQ: {moq} units</p>
         )}
 
-        <button className="w-full mt-2 bg-accent hover:bg-ikon-red-dark text-accent-foreground font-semibold py-2.5 rounded-button transition-all text-sm active:scale-[0.98]">
+        <button
+          className="w-full mt-2 bg-accent hover:bg-ikon-red-dark text-accent-foreground font-semibold py-2.5 rounded-button transition-all text-sm active:scale-[0.98]"
+          onClick={(e) => e.preventDefault()}
+        >
           Add to Cart
         </button>
       </div>
-    </div>
+    </Link>
   );
 };
 

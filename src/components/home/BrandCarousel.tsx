@@ -1,11 +1,25 @@
-const brands = [
-  "ELECTROLUX", "CAMBRO", "HOBART", "SCOTSMAN", "HOSHIZAKI",
-  "ALTO-SHAAM", "CONVOTHERM", "ROBOT COUPE", "ARCOS", "LACOR",
-  "DE BUYER", "HAMILTON BEACH", "RIEDEL", "NACHTMANN", "KARCHER",
-  "RUBBERMAID", "NESPRESSO", "SCHAERER", "SIMONELLI", "DIVERSEY",
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 
 const BrandCarousel = () => {
+  const { data: brands } = useQuery({
+    queryKey: ["featured-brands"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("brands")
+        .select("name, slug, logo_url")
+        .eq("is_active", true)
+        .eq("is_featured", true)
+        .order("name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const displayBrands = brands || [];
+  if (displayBrands.length === 0) return null;
+
   return (
     <section className="py-12 md:py-16 bg-card">
       <div className="container mx-auto px-4 text-center mb-8">
@@ -14,13 +28,18 @@ const BrandCarousel = () => {
       </div>
       <div className="overflow-hidden">
         <div className="flex animate-scroll-x">
-          {[...brands, ...brands].map((brand, i) => (
-            <div
-              key={`${brand}-${i}`}
-              className="flex-shrink-0 px-8 py-4 mx-2 bg-ikon-bg-secondary rounded-lg flex items-center justify-center min-w-[180px]"
+          {[...displayBrands, ...displayBrands].map((brand, i) => (
+            <Link
+              key={`${brand.slug}-${i}`}
+              to={`/brand/${brand.slug}`}
+              className="flex-shrink-0 px-8 py-4 mx-2 bg-ikon-bg-secondary rounded-lg flex items-center justify-center min-w-[180px] hover:shadow-card transition"
             >
-              <span className="text-sm font-bold text-primary tracking-wide whitespace-nowrap">{brand}</span>
-            </div>
+              {brand.logo_url ? (
+                <img src={brand.logo_url} alt={brand.name} className="h-8 object-contain" />
+              ) : (
+                <span className="text-sm font-bold text-primary tracking-wide whitespace-nowrap">{brand.name}</span>
+              )}
+            </Link>
           ))}
         </div>
       </div>
