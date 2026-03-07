@@ -1,7 +1,9 @@
-import { Heart, ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAddToCart } from "@/hooks/useCart";
 
 interface ProductCardProps {
+  id?: string;
   image: string;
   title: string;
   brand: string;
@@ -34,9 +36,18 @@ const getBrandColor = (brand: string) => {
   return brandInitialColors[index];
 };
 
-const ProductCard = ({ image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug }: ProductCardProps) => {
+const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug }: ProductCardProps) => {
   const stock = stockConfig[stockStatus] || stockConfig.in_stock;
   const isPlaceholder = !image || image === "/placeholder.svg";
+  const { addToCart, isAdding } = useAddToCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (id) {
+      addToCart(id, moq || 1, title);
+    }
+  };
 
   return (
     <Link to={`/product/${slug}`} className="bg-card rounded-card shadow-card hover:shadow-card-hover transition-all duration-250 overflow-hidden group cursor-pointer block">
@@ -48,17 +59,9 @@ const ProductCard = ({ image, title, brand, specs, price, currency = "MMK", moq,
             <span className="text-xs font-medium opacity-50 px-4 text-center line-clamp-2">{brand}</span>
           </div>
         ) : (
-          <img
-            src={image}
-            alt={title}
-            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
-          />
+          <img src={image} alt={title} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300" loading="lazy" />
         )}
-        <button
-          className="absolute top-3 right-3 p-2 rounded-full bg-card/80 hover:bg-card text-muted-foreground hover:text-accent transition opacity-0 group-hover:opacity-100"
-          onClick={(e) => e.preventDefault()}
-        >
+        <button className="absolute top-3 right-3 p-2 rounded-full bg-card/80 hover:bg-card text-muted-foreground hover:text-accent transition opacity-0 group-hover:opacity-100" onClick={(e) => e.preventDefault()}>
           <Heart className="w-4 h-4" />
         </button>
       </div>
@@ -87,10 +90,11 @@ const ProductCard = ({ image, title, brand, specs, price, currency = "MMK", moq,
         )}
 
         <button
-          className="w-full mt-2 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-2.5 rounded-button transition-all text-sm active:scale-[0.98] flex items-center justify-center gap-2"
-          onClick={(e) => e.preventDefault()}
+          className="w-full mt-2 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-2.5 rounded-button transition-all text-sm active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-60"
+          onClick={handleAddToCart}
+          disabled={isAdding || stockStatus === "out_of_stock"}
         >
-          <ShoppingCart className="w-4 h-4" />
+          {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShoppingCart className="w-4 h-4" />}
           Add to Cart
         </button>
       </div>

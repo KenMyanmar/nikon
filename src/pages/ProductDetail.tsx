@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import MainLayout from "@/components/layout/MainLayout";
 import ProductCard from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Minus, Plus, ShoppingCart, FileText } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2 } from "lucide-react";
+import { useAddToCart } from "@/hooks/useCart";
 
 const stockConfig = {
   in_stock: { label: "In Stock", dotClass: "bg-emerald-500", textClass: "text-emerald-700", bgClass: "bg-emerald-50" },
@@ -16,6 +17,7 @@ const stockConfig = {
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [qty, setQty] = useState(1);
+  const { addToCart, isAdding } = useAddToCart();
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", slug],
@@ -138,8 +140,12 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex gap-3 pt-2">
-              <button className="flex-1 bg-accent hover:bg-ikon-red-dark text-accent-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2">
-                <ShoppingCart className="w-5 h-5" /> Add to Cart
+              <button
+                onClick={() => product.id && addToCart(product.id, qty, product.description || "")}
+                disabled={isAdding}
+                className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2 disabled:opacity-60"
+              >
+                {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />} Add to Cart
               </button>
               <button className="flex-1 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2">
                 <FileText className="w-5 h-5" /> Request Quote
@@ -179,6 +185,7 @@ const ProductDetail = () => {
               {related.map((p) => (
                 <div key={p.id} className="min-w-[220px] md:min-w-[260px] flex-shrink-0">
                   <ProductCard
+                    id={p.id || ""}
                     image={p.thumbnail_url || "/placeholder.svg"}
                     title={p.description || ""}
                     brand={p.brand_name || ""}
