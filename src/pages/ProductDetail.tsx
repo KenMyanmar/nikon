@@ -17,6 +17,7 @@ const stockConfig = {
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [qty, setQty] = useState(1);
+  const { addToCart, isAdding } = useAddToCart();
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", slug],
