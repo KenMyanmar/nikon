@@ -1,6 +1,7 @@
 import { Heart, ShoppingCart, Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAddToCart } from "@/hooks/useCart";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 interface ProductCardProps {
   id?: string;
@@ -40,6 +41,15 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
   const stock = stockConfig[stockStatus] || stockConfig.in_stock;
   const isPlaceholder = !image || image === "/placeholder.svg";
   const { addToCart, isAdding } = useAddToCart();
+  const { user, openAuthModal } = useAuthContext();
+  const navigate = useNavigate();
+
+  const handleRequestQuote = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) { openAuthModal(); return; }
+    if (id) navigate(`/request-quote?product=${id}`);
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -81,7 +91,7 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
           {price !== null && price !== undefined ? (
             <span className="text-lg font-bold text-accent">{currency} {price.toLocaleString()}</span>
           ) : (
-            <span className="text-sm font-semibold text-primary">Request Quote</span>
+            <button onClick={handleRequestQuote} className="text-sm font-semibold text-primary hover:underline">Request Quote</button>
           )}
         </div>
 

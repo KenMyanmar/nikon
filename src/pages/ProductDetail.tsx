@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuthContext } from "@/contexts/AuthContext";
 import MainLayout from "@/components/layout/MainLayout";
 import ProductCard from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,6 +19,13 @@ const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [qty, setQty] = useState(1);
   const { addToCart, isAdding } = useAddToCart();
+  const { user, openAuthModal } = useAuthContext();
+  const navigate = useNavigate();
+
+  const handleRequestQuote = () => {
+    if (!user) { openAuthModal(); return; }
+    if (product?.id) navigate(`/request-quote?product=${product.id}`);
+  };
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", slug],
@@ -147,7 +155,10 @@ const ProductDetail = () => {
               >
                 {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />} Add to Cart
               </button>
-              <button className="flex-1 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2">
+              <button
+                onClick={handleRequestQuote}
+                className="flex-1 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2"
+              >
                 <FileText className="w-5 h-5" /> Request Quote
               </button>
             </div>

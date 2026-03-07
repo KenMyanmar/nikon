@@ -1,14 +1,16 @@
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import MainLayout from "@/components/layout/MainLayout";
+import { toast } from "@/hooks/use-toast";
 import { Minus, Plus, Trash2, ShoppingCart, LogIn } from "lucide-react";
 
 const CartPage = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: customerId } = useQuery({
     queryKey: ["customer-id", user?.id],
@@ -268,11 +270,17 @@ const CartPage = () => {
 
               <div className="mt-6 space-y-3">
                 {hasUnpricedItems && (
-                  <button className="w-full bg-primary text-primary-foreground py-3 rounded-button font-semibold hover:bg-primary/90 transition">
+                  <button
+                    onClick={() => navigate("/request-quote?from=cart")}
+                    className="w-full bg-primary text-primary-foreground py-3 rounded-button font-semibold hover:bg-primary/90 transition"
+                  >
                     Request Quote
                   </button>
                 )}
-                <button className="w-full bg-accent text-accent-foreground py-3 rounded-button font-semibold hover:bg-accent/90 transition">
+                <button
+                  onClick={() => toast({ title: "Coming Soon", description: "Checkout coming soon! Use Request Quote for orders." })}
+                  className="w-full bg-accent text-accent-foreground py-3 rounded-button font-semibold hover:bg-accent/90 transition"
+                >
                   Proceed to Checkout
                 </button>
               </div>
