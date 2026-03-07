@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -25,7 +25,6 @@ interface Category {
   product_count: number;
 }
 
-// Shared hook for nav data
 export const useNavData = () => {
   const { data: groups = [] } = useQuery({
     queryKey: ["product-groups-nav"],
@@ -57,7 +56,7 @@ export const useNavData = () => {
   return { groups, categories };
 };
 
-// Desktop mega dropdown content
+// Desktop mega dropdown content — 3-column grid, no absolute inside
 const MegaMenuDropdown = ({
   group,
   categories,
@@ -66,41 +65,70 @@ const MegaMenuDropdown = ({
   categories: Category[];
 }) => {
   const groupCategories = categories.filter((c) => c.group_id === group.id);
+  const totalProducts = groupCategories.reduce((sum, c) => sum + c.product_count, 0);
 
   return (
-    <div className="absolute left-0 w-full bg-card shadow-xl border-t-2 border-primary z-50">
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-3 gap-8">
-          {/* Categories */}
-          <div className="col-span-2">
-            <h3 className="text-xs uppercase tracking-wider font-bold text-primary mb-4">
+    <div className="absolute left-0 right-0 top-full w-full bg-card border-t-2 border-primary shadow-xl z-50">
+      <div className="max-w-[1280px] mx-auto px-8 py-6">
+        <div className="grid grid-cols-[1fr_200px_200px] gap-8">
+          {/* Categories Column */}
+          <div className="min-w-0">
+            <h3 className="text-xs uppercase tracking-[0.05em] font-bold text-primary mb-4">
               {group.name}
             </h3>
-            <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+            <div className={`grid ${groupCategories.length > 6 ? "grid-cols-2" : "grid-cols-1"} gap-x-8 gap-y-2`}>
               {groupCategories.map((cat) => (
                 <Link
                   key={cat.id}
                   to={`/category/${cat.slug}`}
-                  className="flex items-center justify-between py-1.5 text-sm text-ikon-text-secondary hover:text-accent transition group/item"
+                  className="flex items-center gap-2 py-1.5 text-sm text-ikon-text-secondary hover:text-accent transition group/item min-w-0"
                 >
-                  <span className="group-hover/item:translate-x-1 transition-transform">{cat.name}</span>
-                  <span className="text-xs text-muted-foreground">{cat.product_count}</span>
+                  <span className="truncate min-w-0 group-hover/item:translate-x-1 transition-transform">
+                    {cat.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    ({cat.product_count})
+                  </span>
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* Promo */}
-          <div className="bg-ikon-navy-50 rounded-card p-6">
-            <h3 className="font-bold text-primary mb-2">Browse {group.name}</h3>
+          {/* Featured Brands Column */}
+          <div className="min-w-0">
+            <h3 className="text-xs uppercase tracking-[0.05em] font-bold text-primary mb-4">
+              Top Brands
+            </h3>
+            <div className="space-y-3">
+              {groupCategories.slice(0, 4).map((cat) => (
+                <Link
+                  key={cat.id}
+                  to={`/category/${cat.slug}`}
+                  className="block text-sm text-ikon-text-secondary hover:text-accent transition"
+                >
+                  <span className="font-medium truncate block">{cat.name}</span>
+                  <span className="text-xs text-muted-foreground">{cat.product_count} products</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Promo Column */}
+          <div className="bg-ikon-bg-tertiary rounded-lg p-6 min-w-0">
+            <h3 className="font-bold text-primary mb-2 break-words">
+              Browse {group.name}
+            </h3>
+            <p className="text-sm text-ikon-text-secondary mb-1">
+              {groupCategories.length} categories
+            </p>
             <p className="text-sm text-ikon-text-secondary mb-4">
-              {groupCategories.length} categories available
+              {totalProducts.toLocaleString()} products
             </p>
             <Link
               to="/categories"
               className="text-sm font-semibold text-accent hover:underline"
             >
-              View All Categories →
+              View All →
             </Link>
           </div>
         </div>
@@ -113,45 +141,70 @@ const MegaMenuDropdown = ({
 export const DesktopMegaNav = () => {
   const { groups, categories } = useNavData();
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMouseEnter = (groupId: string) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setActiveGroup(groupId);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => setActiveGroup(null), 150);
+  };
 
   return (
-    <nav className="hidden lg:block bg-primary relative">
-      <div className="container mx-auto px-4 flex items-center">
-        {groups.map((group) => (
-          <div
-            key={group.id}
-            className="relative"
-            onMouseEnter={() => setActiveGroup(group.id)}
-            onMouseLeave={() => setActiveGroup(null)}
+    <nav className="hidden lg:block bg-primary relative" ref={navRef}>
+      <div className="container mx-auto px-4">
+        <div className="flex items-center overflow-x-auto scrollbar-hide">
+          {groups.map((group) => (
+            <div
+              key={group.id}
+              onMouseEnter={() => handleMouseEnter(group.id)}
+              onMouseLeave={handleMouseLeave}
+            >
+              <button
+                className={`flex items-center gap-1 px-4 py-3 text-primary-foreground text-sm font-medium transition whitespace-nowrap ${
+                  activeGroup === group.id ? "bg-ikon-navy-light" : "hover:bg-ikon-navy-light"
+                }`}
+              >
+                {group.name}
+                <ChevronDown className="w-3 h-3 opacity-60" />
+              </button>
+            </div>
+          ))}
+          <Link
+            to="/categories"
+            className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition whitespace-nowrap"
           >
-            <button className="flex items-center gap-1 px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition whitespace-nowrap">
-              {group.name}
-              <ChevronDown className="w-3 h-3 opacity-60" />
-            </button>
-            {activeGroup === group.id && (
-              <MegaMenuDropdown group={group} categories={categories} />
-            )}
-          </div>
-        ))}
-        <Link
-          to="/categories"
-          className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition whitespace-nowrap"
-        >
-          All Categories
-        </Link>
-        <Link
-          to="/brands"
-          className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition whitespace-nowrap"
-        >
-          Brands
-        </Link>
-        <Link
-          to="/deals"
-          className="px-4 py-3 text-accent-foreground text-sm font-bold bg-accent hover:bg-ikon-red-dark transition whitespace-nowrap"
-        >
-          🔥 Deals
-        </Link>
+            All Categories
+          </Link>
+          <Link
+            to="/brands"
+            className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition whitespace-nowrap"
+          >
+            Brands
+          </Link>
+          <Link
+            to="/deals"
+            className="px-4 py-3 text-accent-foreground text-sm font-bold bg-accent hover:bg-ikon-red-dark transition whitespace-nowrap"
+          >
+            🔥 Deals
+          </Link>
+        </div>
       </div>
+      {/* Dropdown renders at nav level, not per-item */}
+      {activeGroup && (
+        <div
+          onMouseEnter={() => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }}
+          onMouseLeave={handleMouseLeave}
+        >
+          <MegaMenuDropdown
+            group={groups.find((g) => g.id === activeGroup)!}
+            categories={categories}
+          />
+        </div>
+      )}
     </nav>
   );
 };
@@ -178,8 +231,8 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
                     className="flex items-center justify-between py-2 text-sm text-ikon-text-secondary hover:text-accent transition"
                     onClick={onClose}
                   >
-                    <span>{cat.name}</span>
-                    <span className="text-xs text-muted-foreground">{cat.product_count}</span>
+                    <span className="truncate min-w-0">{cat.name}</span>
+                    <span className="text-xs text-muted-foreground shrink-0 ml-2">({cat.product_count})</span>
                   </Link>
                 ))}
               </AccordionContent>
@@ -212,6 +265,5 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
   );
 };
 
-// Default export for backward compat
 const MegaMenu = () => null;
 export default MegaMenu;

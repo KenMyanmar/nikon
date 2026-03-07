@@ -23,20 +23,6 @@ const stockConfig = {
   out_of_stock: { label: "Out of Stock", dotClass: "bg-red-500", textClass: "text-red-700", bgClass: "bg-red-50" },
 };
 
-const brandInitialColors = [
-  "bg-primary/10 text-primary",
-  "bg-accent/10 text-accent",
-  "bg-emerald-100 text-emerald-700",
-  "bg-amber-100 text-amber-700",
-  "bg-sky-100 text-sky-700",
-  "bg-violet-100 text-violet-700",
-];
-
-const getBrandColor = (brand: string) => {
-  const index = brand.charCodeAt(0) % brandInitialColors.length;
-  return brandInitialColors[index];
-};
-
 const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug }: ProductCardProps) => {
   const stock = stockConfig[stockStatus] || stockConfig.in_stock;
   const isPlaceholder = !image || image === "/placeholder.svg";
@@ -60,11 +46,11 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
   };
 
   return (
-    <Link to={`/product/${slug}`} className="bg-card rounded-card shadow-card hover:shadow-card-hover transition-all duration-250 overflow-hidden group cursor-pointer block">
+    <Link to={`/product/${slug}`} className="bg-card rounded-card shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-250 overflow-hidden group cursor-pointer block flex flex-col">
       {/* Image */}
       <div className="relative aspect-square bg-muted/30 overflow-hidden">
         {isPlaceholder ? (
-          <div className={`w-full h-full flex flex-col items-center justify-center gap-2 ${getBrandColor(brand)}`}>
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-slate-100 text-slate-500">
             <span className="text-4xl font-bold opacity-60">{brand?.charAt(0) || "?"}</span>
             <span className="text-xs font-medium opacity-50 px-4 text-center line-clamp-2">{brand}</span>
           </div>
@@ -77,21 +63,26 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-2">
+      <div className="p-4 space-y-2 flex flex-col flex-1">
         <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{brand}</p>
         <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-snug">{title}</h3>
         {specs && <p className="text-xs text-muted-foreground line-clamp-1">{specs}</p>}
 
-        <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${stock.textClass} ${stock.bgClass} px-2 py-0.5 rounded-full`}>
+        <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${stock.textClass} ${stock.bgClass} px-2 py-0.5 rounded-full w-fit`}>
           <span className={`w-1.5 h-1.5 ${stock.dotClass} rounded-full`}></span>
           {stock.label}
         </span>
 
-        <div>
+        <div className="mt-auto pt-2">
           {price !== null && price !== undefined ? (
             <span className="text-lg font-bold text-accent">{currency} {price.toLocaleString()}</span>
           ) : (
-            <button onClick={handleRequestQuote} className="text-sm font-semibold text-primary hover:underline">Request Quote</button>
+            <button
+              onClick={handleRequestQuote}
+              className="inline-flex items-center bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold hover:bg-primary/20 transition"
+            >
+              Request Quote
+            </button>
           )}
         </div>
 
@@ -100,7 +91,7 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
         )}
 
         <button
-          className="w-full mt-2 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-2.5 rounded-button transition-all text-sm active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-60"
+          className="w-full mt-2 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-2.5 min-h-[44px] rounded-button transition-all text-sm active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-60"
           onClick={handleAddToCart}
           disabled={isAdding || stockStatus === "out_of_stock"}
         >

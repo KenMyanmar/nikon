@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Facebook } from "lucide-react";
+import ikonLogo from "@/assets/ikon-logo.png";
 
 const Footer = () => {
   return (
@@ -8,9 +9,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About */}
           <div>
-            <div className="bg-primary rounded-lg px-3 py-1.5 inline-block mb-4">
-              <span className="text-primary-foreground font-bold text-xl">IKON</span>
-            </div>
+            <img src={ikonLogo} alt="IKON" className="h-10 mb-4 brightness-0 invert" />
             <p className="text-sm text-primary-foreground/70 mb-4">
               Myanmar's trusted marketplace for kitchen, hotel, restaurant & commercial supplies. 23+ years of expertise.
             </p>
