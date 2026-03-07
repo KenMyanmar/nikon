@@ -91,7 +91,7 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
           {price !== null && price !== undefined ? (
             <span className="text-lg font-bold text-accent">{currency} {price.toLocaleString()}</span>
           ) : (
-            <span className="text-sm font-semibold text-primary">Request Quote</span>
+            <button onClick={handleRequestQuote} className="text-sm font-semibold text-primary hover:underline">Request Quote</button>
           )}
         </div>
 

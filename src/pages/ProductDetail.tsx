@@ -155,7 +155,10 @@ const ProductDetail = () => {
               >
                 {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />} Add to Cart
               </button>
-              <button className="flex-1 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2">
+              <button
+                onClick={handleRequestQuote}
+                className="flex-1 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2"
+              >
                 <FileText className="w-5 h-5" /> Request Quote
               </button>
             </div>
