@@ -6,57 +6,80 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-import-key",
 };
 
+/** RFC 4180-compliant CSV parser that handles quoted fields with embedded newlines and commas */
 function parseCSV(text: string): Record<string, string>[] {
-  const lines = text.trim().split("\n");
-  if (lines.length < 2) return [];
-
-  const headers = parseCSVLine(lines[0]).map((h) => h.trim().toLowerCase());
-  const rows: Record<string, string>[] = [];
-
-  for (let i = 1; i < lines.length; i++) {
-    const values = parseCSVLine(lines[i]);
-    if (values.length === 0 || (values.length === 1 && values[0] === ""))
-      continue;
-    const row: Record<string, string> = {};
-    headers.forEach((h, idx) => {
-      row[h] = (values[idx] || "").trim();
-    });
-    rows.push(row);
-  }
-  return rows;
-}
-
-function parseCSVLine(line: string): string[] {
-  const result: string[] = [];
-  let current = "";
+  const rows: string[][] = [];
+  let currentRow: string[] = [];
+  let currentField = "";
   let inQuotes = false;
 
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+
     if (inQuotes) {
       if (char === '"') {
-        if (i + 1 < line.length && line[i + 1] === '"') {
-          current += '"';
+        if (i + 1 < text.length && text[i + 1] === '"') {
+          currentField += '"';
           i++;
         } else {
           inQuotes = false;
         }
       } else {
-        current += char;
+        currentField += char;
       }
     } else {
       if (char === '"') {
         inQuotes = true;
       } else if (char === ",") {
-        result.push(current);
-        current = "";
+        currentRow.push(currentField);
+        currentField = "";
+      } else if (char === "\n" || char === "\r") {
+        if (char === "\r" && i + 1 < text.length && text[i + 1] === "\n") {
+          i++; // skip \n in \r\n
+        }
+        currentRow.push(currentField);
+        currentField = "";
+        if (currentRow.some((f) => f.trim() !== "")) {
+          rows.push(currentRow);
+        }
+        currentRow = [];
       } else {
-        current += char;
+        currentField += char;
       }
     }
   }
-  result.push(current);
+
+  // Last field/row
+  currentRow.push(currentField);
+  if (currentRow.some((f) => f.trim() !== "")) {
+    rows.push(currentRow);
+  }
+
+  if (rows.length < 2) return [];
+
+  const headers = rows[0].map((h) => h.trim().toLowerCase());
+  const result: Record<string, string>[] = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    const row: Record<string, string> = {};
+    headers.forEach((h, idx) => {
+      row[h] = (rows[i][idx] || "").trim();
+    });
+    result.push(row);
+  }
   return result;
+}
+
+/** Deduplicate array by key, keeping the last occurrence */
+function deduplicateBy<T>(arr: T[], keyFn: (item: T) => string | undefined): T[] {
+  const map = new Map<string, T>();
+  for (const item of arr) {
+    const key = keyFn(item);
+    if (key !== undefined && key !== "") {
+      map.set(key, item);
+    }
+  }
+  return Array.from(map.values());
 }
 
 function slugify(text: string): string {
@@ -112,10 +135,10 @@ Deno.serve(async (req) => {
 
   try {
     if (table === "groups") {
-      const records = rows.map((r) => ({
-        code: r.code,
-        name: r.name,
-      }));
+      const records = deduplicateBy(
+        rows.map((r) => ({ code: r.code, name: r.name })),
+        (r) => r.code
+      );
       const { data, error } = await supabase
         .from("product_groups")
         .upsert(records, { onConflict: "code" })
@@ -125,17 +148,19 @@ Deno.serve(async (req) => {
     }
 
     if (table === "categories") {
-      // Lookup groups
       const { data: groups } = await supabase
         .from("product_groups")
         .select("id, code");
       const groupMap = new Map((groups || []).map((g) => [g.code, g.id]));
 
-      const records = rows.map((r) => ({
-        name: r.name,
-        slug: r.slug,
-        group_id: groupMap.get(r.group_code) || null,
-      }));
+      const records = deduplicateBy(
+        rows.map((r) => ({
+          name: r.name,
+          slug: r.slug,
+          group_id: groupMap.get(r.group_code) || null,
+        })),
+        (r) => r.slug
+      );
       const { data, error } = await supabase
         .from("categories")
         .upsert(records, { onConflict: "slug" })
@@ -145,10 +170,10 @@ Deno.serve(async (req) => {
     }
 
     if (table === "brands") {
-      const records = rows.map((r) => ({
-        name: r.name,
-        slug: r.slug,
-      }));
+      const records = deduplicateBy(
+        rows.map((r) => ({ name: r.name, slug: r.slug })),
+        (r) => r.slug
+      );
       const { data, error } = await supabase
         .from("brands")
         .upsert(records, { onConflict: "slug" })
@@ -158,53 +183,52 @@ Deno.serve(async (req) => {
     }
 
     if (table === "products") {
-      // Lookup categories by name
       const { data: cats } = await supabase
         .from("categories")
         .select("id, name");
       const catMap = new Map((cats || []).map((c) => [c.name, c.id]));
 
-      // Lookup brands by name
       const { data: brands } = await supabase
         .from("brands")
         .select("id, name");
       const brandMap = new Map((brands || []).map((b) => [b.name, b.id]));
 
-      // Lookup groups by code
       const { data: groups } = await supabase
         .from("product_groups")
         .select("id, code");
       const groupMap = new Map((groups || []).map((g) => [g.code, g.id]));
 
-      // Batch upsert in chunks of 200
       const CHUNK = 200;
       for (let i = 0; i < rows.length; i += CHUNK) {
         const chunk = rows.slice(i, i + CHUNK);
-        const records = chunk.map((r) => ({
-          stock_code: r.stock_code,
-          other_code: r.other_code || null,
-          description: r.description,
-          short_description: r.short_description || null,
-          slug: slugify(`${r.description}-${r.stock_code}`),
-          selling_price: null,
-          currency: r.currency || "MMK",
-          stock_status: r.stock_status || "in_stock",
-          moq: parseInt(r.moq) || 1,
-          onhand_qty: parseInt(r.onhand_qty) || 0,
-          min_qty: parseInt(r.min_qty) || 0,
-          max_qty: parseInt(r.max_qty) || 0,
-          reorder_qty: parseInt(r.reorder_qty) || 0,
-          unit_cost: parseFloat(r.unit_cost) || 0,
-          unit_of_measure: r.unit_of_measure || null,
-          packing: r.packing || null,
-          item_type: r.item_type || null,
-          main_vendor: r.main_vendor || null,
-          is_active: true,
-          is_featured: r.is_featured === "true",
-          category_id: catMap.get(r.category) || null,
-          brand_id: brandMap.get(r.brand) || null,
-          group_id: groupMap.get(r.group_code) || null,
-        }));
+        const records = deduplicateBy(
+          chunk.map((r) => ({
+            stock_code: r.stock_code,
+            other_code: r.other_code || null,
+            description: r.description,
+            short_description: r.short_description || null,
+            slug: slugify(`${r.description}-${r.stock_code}`),
+            selling_price: null,
+            currency: r.currency || "MMK",
+            stock_status: r.stock_status || "in_stock",
+            moq: parseInt(r.moq) || 1,
+            onhand_qty: parseInt(r.onhand_qty) || 0,
+            min_qty: parseInt(r.min_qty) || 0,
+            max_qty: parseInt(r.max_qty) || 0,
+            reorder_qty: parseInt(r.reorder_qty) || 0,
+            unit_cost: parseFloat(r.unit_cost) || 0,
+            unit_of_measure: r.unit_of_measure || null,
+            packing: r.packing || null,
+            item_type: r.item_type || null,
+            main_vendor: r.main_vendor || null,
+            is_active: true,
+            is_featured: r.is_featured === "true",
+            category_id: catMap.get(r.category) || null,
+            brand_id: brandMap.get(r.brand) || null,
+            group_id: groupMap.get(r.group_code) || null,
+          })),
+          (r) => r.stock_code
+        );
 
         const { data, error } = await supabase
           .from("products")
