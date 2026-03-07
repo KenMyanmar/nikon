@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About */}
           <div>
-            <img src="/src/assets/ikon-logo.png" alt="IKON" className="h-10 mb-4 brightness-0 invert" />
+            <img src={ikonLogo} alt="IKON" className="h-10 mb-4 brightness-0 invert" />
             <p className="text-sm text-primary-foreground/70 mb-4">
               Myanmar's trusted marketplace for kitchen, hotel, restaurant & commercial supplies. 23+ years of expertise.
             </p>
