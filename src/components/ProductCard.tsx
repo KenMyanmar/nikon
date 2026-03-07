@@ -41,6 +41,15 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
   const stock = stockConfig[stockStatus] || stockConfig.in_stock;
   const isPlaceholder = !image || image === "/placeholder.svg";
   const { addToCart, isAdding } = useAddToCart();
+  const { user, openAuthModal } = useAuthContext();
+  const navigate = useNavigate();
+
+  const handleRequestQuote = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) { openAuthModal(); return; }
+    if (id) navigate(`/request-quote?product=${id}`);
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
