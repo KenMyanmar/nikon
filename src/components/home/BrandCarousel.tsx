@@ -37,7 +37,7 @@ const BrandCarousel = () => {
               {brand.logo_url ? (
                 <img src={brand.logo_url} alt={brand.name} className="h-8 object-contain" />
               ) : (
-                <span className="text-sm font-bold text-primary tracking-wide whitespace-nowrap">{brand.name}</span>
+                <span className="text-sm font-bold text-primary tracking-wide whitespace-nowrap border-2 border-primary rounded-button px-3 py-1">{brand.name}</span>
               )}
             </Link>
           ))}
