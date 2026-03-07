@@ -1,5 +1,7 @@
-import { Search, ChefHat, Hotel, UtensilsCrossed, SprayCan, Wine, Refrigerator, BedDouble, Coffee } from "lucide-react";
+import { ChefHat, Hotel, UtensilsCrossed, SprayCan, Wine, Refrigerator, BedDouble, Coffee } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-kitchen.jpg";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
 
 const categoryShortcuts = [
   { name: "Kitchen", icon: ChefHat, slug: "kitchen-services" },
@@ -15,7 +17,6 @@ const categoryShortcuts = [
 const HeroSection = () => {
   return (
     <section className="relative overflow-hidden">
-      {/* Background image with overlay */}
       <div className="absolute inset-0">
         <img src={heroImage} alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--ikon-navy))] via-[hsl(var(--ikon-navy))/0.92] to-[hsl(var(--ikon-navy-dark))/0.95]" />
@@ -31,32 +32,24 @@ const HeroSection = () => {
           4,000+ products from 160+ premium international brands
         </p>
 
-        {/* Hero Search */}
-        <div className="max-w-2xl mx-auto relative mb-10">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-ikon-text-tertiary" />
-          <input
-            type="text"
-            placeholder="Search by product name, brand, or SKU..."
-            className="w-full pl-12 pr-28 py-4 rounded-lg text-base outline-none shadow-xl bg-card text-foreground"
-          />
-          <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground px-6 py-2 rounded-md font-semibold hover:bg-ikon-red-dark transition">
-            Search
-          </button>
-        </div>
+        <SearchAutocomplete
+          className="max-w-2xl mx-auto mb-10"
+          inputClassName="w-full pl-12 pr-28 py-4 rounded-lg text-base outline-none shadow-xl bg-card text-foreground"
+          showButton={true}
+        />
 
-        {/* Category Shortcuts */}
         <div className="flex justify-center gap-4 md:gap-8 flex-wrap">
           {categoryShortcuts.map((cat) => (
-            <a
+            <Link
               key={cat.slug}
-              href={`/category/${cat.slug}`}
+              to={`/category/${cat.slug}`}
               className="flex flex-col items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition group"
             >
               <div className="w-14 h-14 bg-primary-foreground/10 rounded-xl flex items-center justify-center group-hover:bg-primary-foreground/20 transition">
                 <cat.icon className="w-7 h-7" />
               </div>
               <span className="text-sm font-medium">{cat.name}</span>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
