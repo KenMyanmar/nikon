@@ -66,7 +66,7 @@ const FlashDealsPage = () => {
       </div>
 
       {/* Hero Banner */}
-      <section className="bg-gradient-to-r from-accent to-orange-500 py-10 md:py-14 text-white">
+      <section className="bg-gradient-to-r from-red-600 to-orange-500 py-10 md:py-14 text-white">
         <div className="container mx-auto px-4 text-center">
           <Zap className="w-10 h-10 mx-auto mb-3 fill-white" />
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Flash Deals</h1>
@@ -129,7 +129,7 @@ const FlashDealsPage = () => {
                       className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform"
                       loading="lazy"
                     />
-                    <span className="absolute top-2 left-2 bg-accent text-accent-foreground text-xs font-bold px-2.5 py-1 rounded-full">
+                    <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
                       -{discountPct}%
                     </span>
                   </div>
@@ -148,7 +148,7 @@ const FlashDealsPage = () => {
                       <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${
-                            soldPct > 70 ? "bg-accent" : soldPct > 30 ? "bg-orange-400" : "bg-emerald-500"
+                            soldPct > 70 ? "bg-red-500" : soldPct > 30 ? "bg-orange-400" : "bg-emerald-500"
                           }`}
                           style={{ width: `${Math.min(soldPct, 100)}%` }}
                         />

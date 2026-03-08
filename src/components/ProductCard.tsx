@@ -76,7 +76,7 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
         <div className="absolute top-2 left-2 flex flex-col gap-1.5">
           {/* Flash Deal Badge */}
           {flashDeal && (
-            <span className="bg-accent text-accent-foreground text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 w-fit">
+            <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 w-fit">
               <Zap className="w-3 h-3 fill-current" />
               -{flashDeal.discount_percentage || Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100)}%
             </span>
@@ -127,7 +127,7 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
         {specs && <p className="text-xs text-muted-foreground line-clamp-1">{specs}</p>}
 
         {flashDeal && (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full w-fit">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full w-fit">
             <Zap className="w-3 h-3" /> Flash Deal
           </span>
         )}
