@@ -32,6 +32,12 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { getFlashDeal, getPromotion } = useMarketingData();
 
+  // Countdown timer for flash deals - must be before early returns
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
   const handleRequestQuote = () => {
     if (!user) { openAuthModal(); return; }
     if (product?.id) navigate(`/request-quote?product=${product.id}`);
