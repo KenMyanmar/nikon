@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +7,7 @@ import MainLayout from "@/components/layout/MainLayout";
 import ProductCard from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Check, Star, Package, ShieldCheck } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard } from "lucide-react";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
 
@@ -25,11 +25,18 @@ const formatCountdown = (ms: number) => {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 };
 
+const paymentMethods = ["KBZ Bank", "KBZ Pay", "AYA Pay", "MPU", "CBPay"];
+
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [qty, setQty] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [now, setNow] = useState(Date.now());
+  const [isZooming, setIsZooming] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [activeTab, setActiveTab] = useState("description");
+  const imgRef = useRef<HTMLDivElement>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
   const { addToCart, isAdding } = useAddToCart();
   const { user, openAuthModal } = useAuthContext();
   const navigate = useNavigate();
@@ -43,6 +50,19 @@ const ProductDetail = () => {
   const handleRequestQuote = () => {
     if (!user) { openAuthModal(); return; }
     if (product?.id) navigate(`/request-quote?product=${product.id}`);
+  };
+
+  const handleImageMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imgRef.current) return;
+    const rect = imgRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomPos({ x, y });
+  };
+
+  const scrollToReviews = () => {
+    setActiveTab("reviews");
+    setTimeout(() => tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
   };
 
   const { data: product, isLoading } = useQuery({
@@ -155,6 +175,9 @@ const ProductDetail = () => {
   const flashTimeLeft = flashDeal ? new Date(flashDeal.end_time).getTime() - now : 0;
   const flashSoldPct = flashDeal ? ((flashDeal.sold_count || 0) / flashDeal.stock_limit) * 100 : 0;
 
+  // Determine active pricing tier based on qty
+  const activeTier = pricingTiers?.find((t) => qty >= t.min_qty && (t.max_qty == null || qty <= t.max_qty));
+
   // Build images array
   const images: { url: string; alt: string }[] = [];
   if (productImages && productImages.length > 0) {
@@ -190,13 +213,24 @@ const ProductDetail = () => {
       <div className="container mx-auto px-4 py-8">
         {/* ── 2-Column Layout ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
-          {/* LEFT: Image Gallery */}
+          {/* LEFT: Image Gallery with Zoom */}
           <div className="lg:col-span-5">
-            <div className="bg-card rounded-card shadow-card p-4 flex items-center justify-center aspect-square mb-3 border border-border">
+            <div
+              ref={imgRef}
+              onMouseEnter={() => setIsZooming(true)}
+              onMouseLeave={() => setIsZooming(false)}
+              onMouseMove={handleImageMouseMove}
+              className="bg-card rounded-card shadow-card p-4 flex items-center justify-center aspect-square mb-3 border border-border overflow-hidden cursor-crosshair relative"
+            >
               <img
                 src={images[selectedImage]?.url}
                 alt={images[selectedImage]?.alt}
-                className="max-w-full max-h-full object-contain"
+                className="max-w-full max-h-full object-contain transition-transform duration-150 ease-out"
+                style={isZooming ? {
+                  transform: "scale(2.5)",
+                  transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                } : undefined}
+                draggable={false}
               />
             </div>
             {images.length > 1 && (
@@ -216,8 +250,8 @@ const ProductDetail = () => {
             )}
           </div>
 
-          {/* RIGHT: Compact Product Info + Price + CTAs */}
-          <div className="lg:col-span-7 space-y-4">
+          {/* RIGHT: Product Info */}
+          <div className="lg:col-span-7 space-y-5">
             {/* Brand */}
             {product.brand_name && (
               <div className="flex items-center gap-2">
@@ -231,22 +265,29 @@ const ProductDetail = () => {
             {/* Title */}
             <h1 className="text-xl md:text-2xl font-bold text-foreground leading-tight">{product.description}</h1>
 
+            {/* Star Rating Row */}
+            <div className="flex items-center gap-2">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <Star key={s} className="w-4 h-4 text-muted-foreground/30" />
+              ))}
+              <button onClick={scrollToReviews} className="text-xs text-primary hover:underline ml-1">
+                0 reviews
+              </button>
+            </div>
+
             {/* Short description — max 2 lines */}
             {product.short_description && (
               <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">{product.short_description}</p>
             )}
 
-            {/* Stock + SKU inline */}
+            {/* Stock + SKU + Quantity inline */}
             <div className="flex items-center gap-4 flex-wrap">
               <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${stock.textClass} ${stock.bgClass} px-3 py-1 rounded-full`}>
                 <span className={`w-2 h-2 ${stock.dotClass} rounded-full`}></span>
-                {stock.label}
+                {stock.label}{product.onhand_qty != null && product.onhand_qty > 0 ? ` - ${product.onhand_qty}` : ""}
               </span>
               {product.stock_code && (
                 <span className="text-xs text-muted-foreground">SKU: <span className="font-semibold text-foreground">{product.stock_code}</span></span>
-              )}
-              {product.onhand_qty != null && product.onhand_qty > 0 && product.onhand_qty <= 10 && (
-                <span className="text-xs text-amber-600 font-medium">Only {product.onhand_qty} left!</span>
               )}
             </div>
 
@@ -280,11 +321,11 @@ const ProductDetail = () => {
             )}
 
             {/* ── Price Block ── */}
-            <div className="border-t border-border pt-4">
+            <div className="border-t border-b border-border py-4">
               {flashDeal ? (
                 <div className="space-y-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-accent">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl font-bold text-accent">
                       {product.currency || "MMK"} {Number(flashDeal.flash_price).toLocaleString()}
                     </span>
                   </div>
@@ -298,11 +339,11 @@ const ProductDetail = () => {
                   </div>
                 </div>
               ) : product.selling_price ? (
-                <div>
-                  <span className="text-2xl font-bold text-accent">
-                    {product.currency || "MMK"} {Number(product.selling_price).toLocaleString()}
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-accent">
+                    {product.currency || "MMK"} {Number(activeTier?.unit_price || product.selling_price).toLocaleString()}
                   </span>
-                  <span className="text-xs text-muted-foreground ml-2">
+                  <span className="text-xs text-muted-foreground">
                     / {product.unit_of_measure || "per piece"}
                   </span>
                 </div>
@@ -311,64 +352,88 @@ const ProductDetail = () => {
               )}
             </div>
 
-            {/* Bulk Pricing Tiers */}
+            {/* Buy More & Save — Visual Tier Cards */}
             {pricingTiers && pricingTiers.length > 0 && (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
                   <Package className="w-3.5 h-3.5 text-primary" />
-                  Bulk Pricing
+                  Buy more and save
                 </h4>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                  {pricingTiers.map((tier) => (
-                    <div key={tier.id} className="flex items-center gap-2 text-xs">
-                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                      <span className="font-semibold text-foreground">
-                        {product.currency || "MMK"} {Number(tier.unit_price).toLocaleString()}
-                      </span>
-                      <span className="text-muted-foreground">
-                        ({tier.min_qty}{tier.max_qty ? `–${tier.max_qty}` : "+"})
-                      </span>
-                    </div>
-                  ))}
+                <div className="flex gap-2 flex-wrap">
+                  {pricingTiers.map((tier) => {
+                    const isActive = activeTier?.id === tier.id;
+                    return (
+                      <button
+                        key={tier.id}
+                        onClick={() => setQty(tier.min_qty)}
+                        className={`rounded-lg border-2 px-4 py-2.5 text-center transition-all min-w-[110px] ${
+                          isActive
+                            ? "border-primary bg-primary/5 shadow-sm"
+                            : "border-border bg-muted/30 hover:border-primary/40"
+                        }`}
+                      >
+                        <div className="text-[10px] text-muted-foreground font-medium">
+                          {tier.min_qty}{tier.max_qty ? `–${tier.max_qty}` : "+"} pcs
+                        </div>
+                        <div className={`text-sm font-bold ${isActive ? "text-primary" : "text-foreground"}`}>
+                          {product.currency || "MMK"} {Number(tier.unit_price).toLocaleString()}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
-            {/* Quantity + CTAs */}
-            <div className="flex items-end gap-4 flex-wrap">
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Quantity</label>
-                <div className="flex items-center border border-border rounded-lg overflow-hidden">
-                  <button onClick={() => setQty(Math.max(moq, qty - 1))} className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted transition">
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="px-4 py-2.5 text-sm font-semibold text-foreground min-w-[3rem] text-center border-x border-border">{qty}</span>
-                  <button onClick={() => setQty(qty + 1)} className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted transition">
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-                {moq > 1 && <p className="text-[10px] text-muted-foreground mt-1">Min order: {moq}</p>}
+            {/* Quantity Selector */}
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Quantity</label>
+              <div className="flex items-center border border-border rounded-lg overflow-hidden w-fit">
+                <button onClick={() => setQty(Math.max(moq, qty - 1))} className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted transition">
+                  <Minus className="w-4 h-4" />
+                </button>
+                <span className="px-5 py-2.5 text-sm font-semibold text-foreground min-w-[3.5rem] text-center border-x border-border">{qty}</span>
+                <button onClick={() => setQty(qty + 1)} className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted transition">
+                  <Plus className="w-4 h-4" />
+                </button>
               </div>
+              {moq > 1 && <p className="text-[10px] text-muted-foreground mt-1">Min order: {moq}</p>}
+            </div>
 
+            {/* Full-Width CTA Buttons */}
+            <div className="space-y-2.5">
               <button
                 onClick={() => product.id && addToCart(product.id, qty, product.description || "")}
                 disabled={isAdding || product.stock_status === "out_of_stock"}
-                className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold py-2.5 px-6 rounded-button transition flex items-center gap-2 disabled:opacity-60 text-sm"
+                className="w-full bg-gradient-to-r from-accent to-accent/85 hover:from-accent/90 hover:to-accent/75 text-accent-foreground font-bold py-3.5 px-6 rounded-button transition-all flex items-center justify-center gap-2.5 disabled:opacity-60 text-base shadow-md hover:shadow-lg"
               >
                 {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
                 Add to Cart
+                <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
                 onClick={handleRequestQuote}
-                className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-2.5 px-6 rounded-button transition flex items-center gap-2 text-sm"
+                className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 px-6 rounded-button transition-all flex items-center justify-center gap-2.5 text-sm"
               >
                 <FileText className="w-5 h-5" /> Request Quote
               </button>
             </div>
 
-            {/* Ships info + trust */}
-            <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1">
+            {/* Payment Methods Strip */}
+            <div className="flex items-center gap-3 flex-wrap pt-1">
+              <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1">
+                <CreditCard className="w-3.5 h-3.5" /> We Accept:
+              </span>
+              {paymentMethods.map((pm) => (
+                <span key={pm} className="text-[10px] font-semibold text-foreground bg-muted border border-border rounded px-2 py-0.5">
+                  {pm}
+                </span>
+              ))}
+            </div>
+
+            {/* Trust Signals */}
+            <div className="flex items-center gap-5 text-xs text-muted-foreground pt-2 border-t border-border">
               <span className="flex items-center gap-1.5">
                 <Truck className="w-4 h-4 text-primary" /> Ships in 1–2 business days
               </span>
@@ -392,8 +457,8 @@ const ProductDetail = () => {
         </div>
 
         {/* ── Tabs: Description / Specifications / Reviews ── */}
-        <div className="mb-16">
-          <Tabs defaultValue="description" className="w-full">
+        <div className="mb-16" ref={tabsRef}>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1">
               <TabsTrigger value="description" className="text-sm font-semibold">Description</TabsTrigger>
               <TabsTrigger value="specifications" className="text-sm font-semibold">Specifications</TabsTrigger>
@@ -418,14 +483,12 @@ const ProductDetail = () => {
               <div className="bg-card rounded-card shadow-card border border-border overflow-hidden">
                 <table className="w-full text-sm">
                   <tbody>
-                    {/* Product info rows */}
                     {infoRows.map(({ label, value }, i) => (
                       <tr key={label} className={i % 2 === 0 ? "bg-muted/30" : ""}>
                         <td className="px-5 py-3 font-medium text-muted-foreground w-1/3 border-r border-border">{label}</td>
                         <td className="px-5 py-3 text-foreground font-semibold">{value}</td>
                       </tr>
                     ))}
-                    {/* Technical specs from JSONB */}
                     {specs.map(([key, val], i) => (
                       <tr key={key} className={(infoRows.length + i) % 2 === 0 ? "bg-muted/30" : ""}>
                         <td className="px-5 py-3 font-medium text-muted-foreground w-1/3 border-r border-border">{key}</td>
