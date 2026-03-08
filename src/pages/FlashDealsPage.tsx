@@ -66,7 +66,7 @@ const FlashDealsPage = () => {
       </div>
 
       {/* Hero Banner */}
-      <section className="bg-gradient-to-r from-accent to-orange-500 py-10 md:py-14 text-white">
+      <section className="bg-gradient-to-r from-red-600 to-orange-500 py-10 md:py-14 text-white">
         <div className="container mx-auto px-4 text-center">
           <Zap className="w-10 h-10 mx-auto mb-3 fill-white" />
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Flash Deals</h1>
