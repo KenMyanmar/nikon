@@ -52,12 +52,16 @@ const ProductDetail = () => {
     if (product?.id) navigate(`/request-quote?product=${product.id}`);
   };
 
+  const LENS_SIZE = 30; // percentage of image container
+
   const handleImageMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imgRef.current) return;
     const rect = imgRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setZoomPos({ x, y });
+    const clampedX = Math.max(LENS_SIZE / 2, Math.min(100 - LENS_SIZE / 2, x));
+    const clampedY = Math.max(LENS_SIZE / 2, Math.min(100 - LENS_SIZE / 2, y));
+    setZoomPos({ x: clampedX, y: clampedY });
   };
 
   const scrollToReviews = () => {
