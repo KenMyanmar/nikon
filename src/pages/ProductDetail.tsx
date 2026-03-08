@@ -106,7 +106,8 @@ const ProductDetail = () => {
     ? Object.entries(product.specifications as Record<string, string>)
     : [];
   const moq = product.moq || 1;
-
+  const flashDeal = product.id ? getFlashDeal(product.id) : undefined;
+  const promotion = product.id ? getPromotion(product.id, product.category_id, product.brand_id) : undefined;
   const flashTimeLeft = flashDeal ? new Date(flashDeal.end_time).getTime() - now : 0;
   const flashSoldPct = flashDeal ? ((flashDeal.sold_count || 0) / flashDeal.stock_limit) * 100 : 0;
 
