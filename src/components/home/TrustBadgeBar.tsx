@@ -1,23 +1,25 @@
-import { ShieldCheck, Building, Award, Users } from "lucide-react";
+import { Truck, BadgeDollarSign, ShieldCheck, Handshake } from "lucide-react";
 
-const stats = [
-  { icon: ShieldCheck, value: "23+", label: "Years of Expertise" },
-  { icon: Building, value: "300+", label: "Kitchens Installed" },
-  { icon: Award, value: "160+", label: "Premium Brands" },
-  { icon: Users, value: "1,000+", label: "Happy Customers" },
+const badges = [
+  { icon: Truck, label: "Fast Delivery", sub: "Yangon Metro" },
+  { icon: BadgeDollarSign, label: "Wholesale Pricing", sub: "Best B2B Rates" },
+  { icon: ShieldCheck, label: "160+ Brands", sub: "Trusted Names" },
+  { icon: Handshake, label: "B2B Accounts", sub: "Credit Terms" },
 ];
 
 const TrustBadgeBar = () => {
   return (
-    <section className="bg-ikon-navy-50 py-8 md:py-10">
+    <section className="border-y border-border bg-card py-5">
       <div className="container mx-auto px-4">
-        <div className="flex justify-center gap-8 md:gap-16 flex-wrap">
-          {stats.map((stat) => (
-            <div key={stat.label} className="flex items-center gap-3">
-              <stat.icon className="w-8 h-8 text-primary" />
+        <div className="flex justify-between items-center gap-6 overflow-x-auto scrollbar-hide">
+          {badges.map((b) => (
+            <div key={b.label} className="flex items-center gap-3 min-w-fit">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <b.icon className="w-5 h-5 text-primary" />
+              </div>
               <div>
-                <p className="font-bold text-primary text-lg">{stat.value}</p>
-                <p className="text-sm text-ikon-text-secondary">{stat.label}</p>
+                <p className="text-sm font-semibold text-foreground leading-tight">{b.label}</p>
+                <p className="text-xs text-muted-foreground">{b.sub}</p>
               </div>
             </div>
           ))}

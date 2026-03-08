@@ -97,9 +97,11 @@ const Header = () => {
           <Link to="/cart" className="relative flex flex-col items-center text-xs text-muted-foreground hover:text-primary transition">
             <ShoppingCart className="w-5 h-5" />
             <span className="hidden sm:block">Cart</span>
-            <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
-              {cartCount || 0}
-            </span>
+            {cartCount && cartCount > 0 ? (
+              <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                {cartCount}
+              </span>
+            ) : null}
           </Link>
 
           <a href="tel:01534216" className="hidden lg:flex flex-col items-center text-xs text-muted-foreground hover:text-primary transition">

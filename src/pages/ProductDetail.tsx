@@ -6,9 +6,10 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import MainLayout from "@/components/layout/MainLayout";
 import ProductCard from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, BadgeDollarSign, ShieldCheck, Check } from "lucide-react";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
+
 const stockConfig = {
   in_stock: { label: "In Stock", dotClass: "bg-emerald-500", textClass: "text-emerald-700", bgClass: "bg-emerald-50" },
   low_stock: { label: "Low Stock", dotClass: "bg-amber-500", textClass: "text-amber-700", bgClass: "bg-amber-50" },
@@ -23,16 +24,23 @@ const formatCountdown = (ms: number) => {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 };
 
+const wholesaleBenefits = [
+  "Bulk Discounts Available",
+  "Business Account Credit Terms",
+  "Fast Delivery — Yangon Metro",
+  "Dedicated Account Manager",
+];
+
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [qty, setQty] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0);
   const [now, setNow] = useState(Date.now());
   const { addToCart, isAdding } = useAddToCart();
   const { user, openAuthModal } = useAuthContext();
   const navigate = useNavigate();
   const { getFlashDeal, getPromotion } = useMarketingData();
 
-  // Countdown timer for flash deals - must be before early returns
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
@@ -63,7 +71,7 @@ const ProductDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products_public")
-        .select("id, slug, description, short_description, brand_name, selling_price, currency, stock_status, stock_code, moq, thumbnail_url")
+        .select("id, slug, description, short_description, brand_name, selling_price, currency, stock_status, stock_code, moq, thumbnail_url, is_featured, onhand_qty, unit_of_measure")
         .eq("is_active", true)
         .eq("category_id", product!.category_id!)
         .neq("id", product!.id!)
@@ -78,13 +86,14 @@ const ProductDetail = () => {
     return (
       <MainLayout>
         <div className="container mx-auto px-4 py-8">
-          <div className="grid md:grid-cols-2 gap-8">
-            <Skeleton className="aspect-square rounded-card" />
-            <div className="space-y-4">
+          <div className="grid lg:grid-cols-12 gap-8">
+            <Skeleton className="aspect-square rounded-card lg:col-span-5" />
+            <div className="space-y-4 lg:col-span-4">
               <Skeleton className="h-8 w-3/4" />
               <Skeleton className="h-6 w-1/2" />
               <Skeleton className="h-10 w-1/3" />
             </div>
+            <Skeleton className="h-64 rounded-card lg:col-span-3" />
           </div>
         </div>
       </MainLayout>
@@ -111,27 +120,66 @@ const ProductDetail = () => {
   const flashTimeLeft = flashDeal ? new Date(flashDeal.end_time).getTime() - now : 0;
   const flashSoldPct = flashDeal ? ((flashDeal.sold_count || 0) / flashDeal.stock_limit) * 100 : 0;
 
+  // Build images array from product.images or fallback to thumbnail
+  const images: string[] = [];
+  if (product.images && Array.isArray(product.images)) {
+    (product.images as string[]).forEach((img) => {
+      if (typeof img === "string" && img) images.push(img);
+    });
+  }
+  if (images.length === 0 && product.thumbnail_url) {
+    images.push(product.thumbnail_url);
+  }
+  if (images.length === 0) {
+    images.push("/placeholder.svg");
+  }
+
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          {/* Image */}
-          <div className="bg-card rounded-card shadow-card p-8 flex items-center justify-center aspect-square">
-            <img
-              src={product.thumbnail_url || "/placeholder.svg"}
-              alt={product.description || ""}
-              className="max-w-full max-h-full object-contain"
-            />
+        {/* 3-Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+          {/* LEFT: Image Gallery */}
+          <div className="lg:col-span-5">
+            <div className="bg-card rounded-card shadow-card p-6 flex items-center justify-center aspect-square mb-3">
+              <img
+                src={images[selectedImage]}
+                alt={product.description || ""}
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+            {images.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedImage(i)}
+                    className={`w-16 h-16 rounded-lg border-2 overflow-hidden shrink-0 transition-colors ${
+                      i === selectedImage ? "border-primary" : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <img src={img} alt="" className="w-full h-full object-contain p-1" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Details */}
-          <div className="space-y-4">
+          {/* MIDDLE: Product Info & Specs */}
+          <div className="lg:col-span-4 space-y-5">
             {product.brand_name && (
-              <p className="text-sm font-semibold text-primary uppercase tracking-wide">{product.brand_name}</p>
+              <div className="flex items-center gap-2">
+                {product.brand_logo && (
+                  <img src={product.brand_logo} alt={product.brand_name} className="h-6 w-auto object-contain" />
+                )}
+                <span className="text-sm font-semibold text-primary uppercase tracking-wide">{product.brand_name}</span>
+              </div>
             )}
+
             <h1 className="text-h2 text-foreground">{product.description}</h1>
+
             {product.short_description && (
-              <p className="text-sm text-ikon-text-secondary">{product.short_description}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{product.short_description}</p>
             )}
 
             <div className="flex items-center gap-4">
@@ -139,78 +187,12 @@ const ProductDetail = () => {
                 <span className={`w-2 h-2 ${stock.dotClass} rounded-full`}></span>
                 {stock.label}
               </span>
-              <span className="text-sm text-ikon-text-tertiary">SKU: {product.stock_code}</span>
+              <span className="text-sm text-muted-foreground">SKU: {product.stock_code}</span>
             </div>
 
-            {/* Flash Deal Banner */}
-            {flashDeal && (
-              <div className="bg-accent/10 border border-accent/30 rounded-card p-4 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-accent fill-accent" />
-                  <span className="text-sm font-bold text-accent">Flash Deal — Ends in {formatCountdown(flashTimeLeft)}</span>
-                </div>
-                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${flashSoldPct > 70 ? "bg-accent" : flashSoldPct > 30 ? "bg-orange-400" : "bg-emerald-500"}`}
-                    style={{ width: `${Math.min(flashSoldPct, 100)}%` }}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground">{flashDeal.sold_count || 0} of {flashDeal.stock_limit} claimed</p>
-              </div>
+            {product.category_name && (
+              <p className="text-xs text-muted-foreground">Category: <span className="font-medium text-foreground">{product.category_name}</span></p>
             )}
-
-            {/* Price */}
-            <div className="pt-2">
-              {flashDeal ? (
-                <div className="flex items-baseline gap-3">
-                  <span className="text-2xl font-bold text-accent">
-                    {product.currency || "MMK"} {Number(flashDeal.flash_price).toLocaleString()}
-                  </span>
-                  <span className="text-base text-muted-foreground line-through">
-                    {product.currency || "MMK"} {Number(flashDeal.original_price).toLocaleString()}
-                  </span>
-                  <span className="bg-accent text-accent-foreground text-xs font-bold px-2 py-0.5 rounded-full">
-                    -{flashDeal.discount_percentage || Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100)}%
-                  </span>
-                </div>
-              ) : product.selling_price ? (
-                <span className="text-2xl font-bold text-accent">
-                  {product.currency || "MMK"} {Number(product.selling_price).toLocaleString()}
-                </span>
-              ) : (
-                <span className="text-lg font-semibold text-primary">Price on Request</span>
-              )}
-            </div>
-
-            {/* Quantity + Buttons */}
-            <div className="flex items-center gap-4 pt-4">
-              <div className="flex items-center border border-ikon-border rounded-md">
-                <button onClick={() => setQty(Math.max(moq, qty - 1))} className="px-3 py-2 text-ikon-text-secondary hover:text-foreground">
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="px-4 py-2 text-sm font-semibold text-foreground min-w-[3rem] text-center">{qty}</span>
-                <button onClick={() => setQty(qty + 1)} className="px-3 py-2 text-ikon-text-secondary hover:text-foreground">
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-              {moq > 1 && <span className="text-xs text-ikon-text-tertiary">MOQ: {moq}</span>}
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <button
-                onClick={() => product.id && addToCart(product.id, qty, product.description || "")}
-                disabled={isAdding}
-                className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2 disabled:opacity-60"
-              >
-                {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />} Add to Cart
-              </button>
-              <button
-                onClick={handleRequestQuote}
-                className="flex-1 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold py-3 rounded-button transition flex items-center justify-center gap-2"
-              >
-                <FileText className="w-5 h-5" /> Request Quote
-              </button>
-            </div>
 
             {/* Promotion Info */}
             {promotion && !flashDeal && (
@@ -221,34 +203,142 @@ const ProductDetail = () => {
                 {promotion.description && (
                   <p className="text-xs text-muted-foreground mt-1">{promotion.description}</p>
                 )}
-                <p className="text-[10px] text-muted-foreground mt-1">Discount applied automatically at checkout</p>
+              </div>
+            )}
+
+            {/* Key Specs as label:value rows */}
+            {specs.length > 0 && (
+              <div className="border-t border-border pt-4 space-y-0">
+                <h3 className="text-sm font-semibold text-foreground mb-3">Specifications</h3>
+                {specs.map(([key, val], i) => (
+                  <div key={key} className={`flex justify-between py-2.5 text-sm ${i < specs.length - 1 ? "border-b border-border" : ""}`}>
+                    <span className="text-muted-foreground">{key}</span>
+                    <span className="font-medium text-foreground text-right">{String(val)}</span>
+                  </div>
+                ))}
               </div>
             )}
 
             {product.unit_of_measure && (
-              <p className="text-xs text-ikon-text-tertiary">Unit: {product.unit_of_measure}</p>
+              <p className="text-xs text-muted-foreground">Unit of Measure: <span className="font-medium">{product.unit_of_measure}</span></p>
             )}
           </div>
-        </div>
 
-        {/* Specifications */}
-        {specs.length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-h3 text-foreground mb-4">Specifications</h2>
-            <div className="bg-card rounded-card shadow-card overflow-hidden">
-              <table className="w-full text-sm">
-                <tbody>
-                  {specs.map(([key, val], i) => (
-                    <tr key={key} className={i % 2 === 0 ? "bg-ikon-bg-secondary" : ""}>
-                      <td className="px-4 py-3 font-medium text-foreground w-1/3">{key}</td>
-                      <td className="px-4 py-3 text-ikon-text-secondary">{String(val)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {/* RIGHT: Price Sidebar */}
+          <div className="lg:col-span-3 space-y-4">
+            {/* Price Box */}
+            <div className="bg-card rounded-card shadow-card p-5 space-y-4 border border-border">
+              {/* Flash Deal Banner */}
+              {flashDeal && (
+                <div className="bg-accent/10 border border-accent/30 rounded-lg p-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-accent fill-accent" />
+                    <span className="text-xs font-bold text-accent">Flash Deal — {formatCountdown(flashTimeLeft)}</span>
+                  </div>
+                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${flashSoldPct > 70 ? "bg-accent" : flashSoldPct > 30 ? "bg-amber-500" : "bg-emerald-500"}`}
+                      style={{ width: `${Math.min(flashSoldPct, 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">{flashDeal.sold_count || 0} / {flashDeal.stock_limit} claimed</p>
+                </div>
+              )}
+
+              {/* Price */}
+              {flashDeal ? (
+                <div className="space-y-1">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-bold text-accent">
+                      {product.currency || "MMK"} {Number(flashDeal.flash_price).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground line-through">
+                      {product.currency || "MMK"} {Number(flashDeal.original_price).toLocaleString()}
+                    </span>
+                    <span className="bg-accent text-accent-foreground text-xs font-bold px-2 py-0.5 rounded-full">
+                      -{flashDeal.discount_percentage || Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100)}%
+                    </span>
+                  </div>
+                </div>
+              ) : product.selling_price ? (
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-accent">
+                    {product.currency || "MMK"} {Number(product.selling_price).toLocaleString()}
+                  </span>
+                  {product.unit_of_measure && (
+                    <span className="text-sm text-muted-foreground">/ {product.unit_of_measure}</span>
+                  )}
+                </div>
+              ) : (
+                <span className="text-lg font-semibold text-primary">Price on Request</span>
+              )}
+
+              {/* Ships info */}
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Truck className="w-4 h-4 text-primary" />
+                Ships in 1–2 business days
+              </div>
+
+              {/* Quantity */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Quantity</label>
+                <div className="flex items-center border border-border rounded-lg overflow-hidden">
+                  <button onClick={() => setQty(Math.max(moq, qty - 1))} className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted transition">
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="px-4 py-2.5 text-sm font-semibold text-foreground min-w-[3rem] text-center border-x border-border">{qty}</span>
+                  <button onClick={() => setQty(qty + 1)} className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted transition">
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+                {moq > 1 && <p className="text-[10px] text-muted-foreground mt-1">Minimum order: {moq} units</p>}
+              </div>
+
+              {/* CTA Buttons */}
+              <button
+                onClick={() => product.id && addToCart(product.id, qty, product.description || "")}
+                disabled={isAdding || product.stock_status === "out_of_stock"}
+                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold py-3 rounded-button transition flex items-center justify-center gap-2 disabled:opacity-60 text-sm"
+              >
+                {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
+                Add to Cart
+              </button>
+
+              <button
+                onClick={handleRequestQuote}
+                className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 rounded-button transition flex items-center justify-center gap-2 text-sm"
+              >
+                <FileText className="w-5 h-5" /> Request Bulk Quote
+              </button>
+            </div>
+
+            {/* Wholesale Benefits */}
+            <div className="bg-card rounded-card shadow-card p-5 border border-border">
+              <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                <BadgeDollarSign className="w-4 h-4 text-primary" />
+                Wholesale Benefits
+              </h4>
+              <ul className="space-y-2.5">
+                {wholesaleBenefits.map((b) => (
+                  <li key={b} className="flex items-start gap-2 text-xs text-muted-foreground">
+                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Trust mini bar */}
+            <div className="bg-muted/50 rounded-lg p-3 text-center">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                <ShieldCheck className="w-3.5 h-3.5 inline mr-1 -mt-0.5" />
+                Trusted by 1,000+ HoReCa Professionals
+              </p>
             </div>
           </div>
-        )}
+        </div>
 
         {/* Related Products */}
         {related && related.length > 0 && (
@@ -269,6 +359,9 @@ const ProductDetail = () => {
                     stockStatus={(p.stock_status as "in_stock" | "low_stock" | "out_of_stock") || "in_stock"}
                     sku={p.stock_code || ""}
                     slug={p.slug || ""}
+                    isFeatured={p.is_featured || false}
+                    onhandQty={p.onhand_qty || undefined}
+                    unitOfMeasure={p.unit_of_measure || undefined}
                   />
                 </div>
               ))}
