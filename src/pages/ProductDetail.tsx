@@ -144,9 +144,38 @@ const ProductDetail = () => {
               <span className="text-sm text-ikon-text-tertiary">SKU: {product.stock_code}</span>
             </div>
 
+            {/* Flash Deal Banner */}
+            {flashDeal && (
+              <div className="bg-accent/10 border border-accent/30 rounded-card p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-accent fill-accent" />
+                  <span className="text-sm font-bold text-accent">Flash Deal — Ends in {formatCountdown(flashTimeLeft)}</span>
+                </div>
+                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${flashSoldPct > 70 ? "bg-accent" : flashSoldPct > 30 ? "bg-orange-400" : "bg-emerald-500"}`}
+                    style={{ width: `${Math.min(flashSoldPct, 100)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">{flashDeal.sold_count || 0} of {flashDeal.stock_limit} claimed</p>
+              </div>
+            )}
+
             {/* Price */}
             <div className="pt-2">
-              {product.selling_price ? (
+              {flashDeal ? (
+                <div className="flex items-baseline gap-3">
+                  <span className="text-2xl font-bold text-accent">
+                    {product.currency || "MMK"} {Number(flashDeal.flash_price).toLocaleString()}
+                  </span>
+                  <span className="text-base text-muted-foreground line-through">
+                    {product.currency || "MMK"} {Number(flashDeal.original_price).toLocaleString()}
+                  </span>
+                  <span className="bg-accent text-accent-foreground text-xs font-bold px-2 py-0.5 rounded-full">
+                    -{flashDeal.discount_percentage || Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100)}%
+                  </span>
+                </div>
+              ) : product.selling_price ? (
                 <span className="text-2xl font-bold text-accent">
                   {product.currency || "MMK"} {Number(product.selling_price).toLocaleString()}
                 </span>
