@@ -7,7 +7,8 @@ import BestSellers from "@/components/home/BestSellers";
 import PromotionsStrip from "@/components/home/PromotionsStrip";
 import BrandCarousel from "@/components/home/BrandCarousel";
 import TrustBadgeBar from "@/components/home/TrustBadgeBar";
-import IndustrySolutions from "@/components/home/IndustrySolutions";
+import ShopByBusinessType from "@/components/home/ShopByBusinessType";
+import ClientLogos from "@/components/home/ClientLogos";
 import QuotationCTA from "@/components/home/QuotationCTA";
 import NewArrivals from "@/components/home/NewArrivals";
 
@@ -16,13 +17,14 @@ const Index = () => {
     <MainLayout>
       <HeroBannerCarousel />
       <HeroSection />
+      <TrustBadgeBar />
       <FeaturedCategories />
       <FlashDealsRow />
       <BestSellers />
+      <ShopByBusinessType />
       <PromotionsStrip />
+      <ClientLogos />
       <BrandCarousel />
-      <TrustBadgeBar />
-      <IndustrySolutions />
       <QuotationCTA />
       <NewArrivals />
     </MainLayout>

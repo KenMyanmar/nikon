@@ -1,4 +1,4 @@
-import { Heart, ShoppingCart, Loader2, Zap } from "lucide-react";
+import { Heart, ShoppingCart, Loader2, Zap, Star, AlertTriangle, Package } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAddToCart } from "@/hooks/useCart";
 import { useAuthContext } from "@/contexts/AuthContext";
@@ -18,6 +18,9 @@ interface ProductCardProps {
   slug: string;
   categoryId?: string | null;
   brandId?: string | null;
+  isFeatured?: boolean;
+  onhandQty?: number;
+  unitOfMeasure?: string;
 }
 
 const stockConfig = {
@@ -26,7 +29,7 @@ const stockConfig = {
   out_of_stock: { label: "Out of Stock", dotClass: "bg-red-500", textClass: "text-red-700", bgClass: "bg-red-50" },
 };
 
-const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug, categoryId, brandId }: ProductCardProps) => {
+const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug, categoryId, brandId, isFeatured, onhandQty, unitOfMeasure }: ProductCardProps) => {
   const stock = stockConfig[stockStatus] || stockConfig.in_stock;
   const isPlaceholder = !image || image === "/placeholder.svg";
   const { addToCart, isAdding } = useAddToCart();
@@ -54,13 +57,14 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
 
   const displayPrice = flashDeal ? Number(flashDeal.flash_price) : price;
   const originalPrice = flashDeal ? Number(flashDeal.original_price) : null;
+  const showUrgency = stockStatus === "low_stock" && onhandQty && onhandQty <= 5;
 
   return (
     <Link to={`/product/${slug}`} className="bg-card rounded-card shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-250 overflow-hidden group cursor-pointer block flex flex-col">
       {/* Image */}
       <div className="relative aspect-square bg-muted/30 overflow-hidden">
         {isPlaceholder ? (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-slate-100 text-slate-500">
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-muted text-muted-foreground">
             <span className="text-4xl font-bold opacity-60">{brand?.charAt(0) || "?"}</span>
             <span className="text-xs font-medium opacity-50 px-4 text-center line-clamp-2">{brand}</span>
           </div>
@@ -68,23 +72,47 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
           <img src={image} alt={title} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300" loading="lazy" />
         )}
 
-        {/* Flash Deal Badge */}
-        {flashDeal && (
-          <span className="absolute top-2 left-2 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
-            <Zap className="w-3 h-3 fill-current" />
-            -{flashDeal.discount_percentage || Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100)}%
-          </span>
-        )}
+        {/* Top-left badges stack */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1.5">
+          {/* Flash Deal Badge */}
+          {flashDeal && (
+            <span className="bg-accent text-accent-foreground text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 w-fit">
+              <Zap className="w-3 h-3 fill-current" />
+              -{flashDeal.discount_percentage || Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100)}%
+            </span>
+          )}
 
-        {/* Promotion Badge */}
-        {!flashDeal && promotion && (
-          <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full">
-            {promotion.type === "percentage" && promotion.discount_value
-              ? `${promotion.discount_value}% OFF`
-              : promotion.type === "buy_x_get_y"
-              ? `B${promotion.buy_quantity}G${promotion.get_quantity}`
-              : promotion.title}
-          </span>
+          {/* Promotion Badge */}
+          {!flashDeal && promotion && (
+            <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full w-fit">
+              {promotion.type === "percentage" && promotion.discount_value
+                ? `${promotion.discount_value}% OFF`
+                : promotion.type === "buy_x_get_y"
+                ? `B${promotion.buy_quantity}G${promotion.get_quantity}`
+                : promotion.title}
+            </span>
+          )}
+
+          {/* Best Seller Badge */}
+          {isFeatured && (
+            <span className="bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 w-fit">
+              <Star className="w-3 h-3 fill-current" /> Best Seller
+            </span>
+          )}
+
+          {/* Bulk Order Badge */}
+          {moq && moq > 1 && (
+            <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 w-fit">
+              <Package className="w-3 h-3" /> Bulk Order
+            </span>
+          )}
+        </div>
+
+        {/* Urgency label */}
+        {showUrgency && (
+          <div className="absolute bottom-2 left-2 bg-amber-500/90 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
+            <AlertTriangle className="w-3 h-3" /> Only {onhandQty} left!
+          </div>
         )}
 
         <button className="absolute top-3 right-3 p-2 rounded-full bg-card/80 hover:bg-card text-muted-foreground hover:text-accent transition opacity-0 group-hover:opacity-100" onClick={(e) => e.preventDefault()}>
@@ -112,13 +140,16 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
         <div className="mt-auto pt-2">
           {displayPrice !== null && displayPrice !== undefined ? (
             <div className="flex items-baseline gap-2 flex-wrap">
-              <span className={`text-lg font-bold ${flashDeal ? "text-accent" : "text-accent"}`}>
+              <span className={`text-lg font-bold text-accent`}>
                 {currency} {displayPrice.toLocaleString()}
               </span>
               {originalPrice && (
                 <span className="text-xs text-muted-foreground line-through">
                   {currency} {originalPrice.toLocaleString()}
                 </span>
+              )}
+              {unitOfMeasure && (
+                <span className="text-xs text-muted-foreground">/ {unitOfMeasure}</span>
               )}
             </div>
           ) : (
