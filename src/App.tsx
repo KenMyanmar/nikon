@@ -17,6 +17,7 @@ import ResetPassword from "./pages/ResetPassword";
 import RequestQuotePage from "./pages/RequestQuotePage";
 import AllCategoriesPage from "./pages/AllCategoriesPage";
 import AllBrandsPage from "./pages/AllBrandsPage";
+import FlashDealsPage from "./pages/FlashDealsPage";
 
 const queryClient = new QueryClient();
 
