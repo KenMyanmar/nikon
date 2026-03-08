@@ -56,9 +56,9 @@ const FlashDealsRow = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <Zap className="w-6 h-6 text-accent fill-accent" />
+            <Zap className="w-6 h-6 text-red-600 fill-red-600" />
             <h2 className="text-h3 text-foreground">Flash Deals</h2>
-            <span className="bg-accent text-accent-foreground text-xs font-bold px-3 py-1 rounded-full">
+            <span className="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
               {formatTime(timeLeft)}
             </span>
           </div>
