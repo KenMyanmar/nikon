@@ -233,7 +233,7 @@ const ProductDetail = () => {
         {/* ── 3-Column Layout ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-10">
           {/* COL 1: Image Gallery */}
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-5 relative">
             <div
               ref={imgRef}
               onMouseEnter={() => setIsZooming(true)}
@@ -244,14 +244,42 @@ const ProductDetail = () => {
               <img
                 src={images[selectedImage]?.url}
                 alt={images[selectedImage]?.alt}
-                className="max-w-full max-h-full object-contain transition-transform duration-150 ease-out"
-                style={isZooming ? {
-                  transform: "scale(2.5)",
-                  transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
-                } : undefined}
+                className="max-w-full max-h-full object-contain"
                 draggable={false}
               />
+
+              {/* Lens overlay */}
+              {isZooming && (
+                <div
+                  className="absolute border-2 border-primary/60 bg-primary/10 pointer-events-none z-10 hidden lg:block"
+                  style={{
+                    width: `${LENS_SIZE}%`,
+                    height: `${LENS_SIZE}%`,
+                    left: `${zoomPos.x - LENS_SIZE / 2}%`,
+                    top: `${zoomPos.y - LENS_SIZE / 2}%`,
+                  }}
+                />
+              )}
             </div>
+
+            {/* Zoom panel — overlays specs column */}
+            {isZooming && (
+              <div
+                className="absolute top-0 left-full ml-4 w-[400px] aspect-square border-2 border-border rounded-lg shadow-xl overflow-hidden bg-background z-50 hidden lg:block"
+              >
+                <img
+                  src={images[selectedImage]?.url}
+                  alt="Zoomed view"
+                  className="absolute max-w-none"
+                  style={{
+                    width: `${100 / (LENS_SIZE / 100)}%`,
+                    height: `${100 / (LENS_SIZE / 100)}%`,
+                    left: `-${(zoomPos.x - LENS_SIZE / 2) / (LENS_SIZE / 100)}%`,
+                    top: `-${(zoomPos.y - LENS_SIZE / 2) / (LENS_SIZE / 100)}%`,
+                  }}
+                />
+              </div>
+            )}
             {images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
                 {images.map((img, i) => (
