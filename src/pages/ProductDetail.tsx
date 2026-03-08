@@ -6,7 +6,8 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import MainLayout from "@/components/layout/MainLayout";
 import ProductCard from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, BadgeDollarSign, ShieldCheck, Check } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, BadgeDollarSign, ShieldCheck, Check, Star, Package } from "lucide-react";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
 
@@ -66,6 +67,51 @@ const ProductDetail = () => {
     enabled: !!slug,
   });
 
+  // Fetch long_description from products table (not in view)
+  const { data: productExtra } = useQuery({
+    queryKey: ["product-extra", product?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("long_description, tags")
+        .eq("id", product!.id!)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!product?.id,
+  });
+
+  // Fetch product images from dedicated table
+  const { data: productImages } = useQuery({
+    queryKey: ["product-images", product?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_images")
+        .select("*")
+        .eq("product_id", product!.id!)
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!product?.id,
+  });
+
+  // Fetch pricing tiers
+  const { data: pricingTiers } = useQuery({
+    queryKey: ["pricing-tiers", product?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("pricing_tiers")
+        .select("*")
+        .eq("product_id", product!.id!)
+        .order("min_qty", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!product?.id,
+  });
+
   const { data: related } = useQuery({
     queryKey: ["related-products", product?.category_id],
     queryFn: async () => {
@@ -120,36 +166,52 @@ const ProductDetail = () => {
   const flashTimeLeft = flashDeal ? new Date(flashDeal.end_time).getTime() - now : 0;
   const flashSoldPct = flashDeal ? ((flashDeal.sold_count || 0) / flashDeal.stock_limit) * 100 : 0;
 
-  // Build images array from product.images or fallback to thumbnail
-  const images: string[] = [];
-  if (product.images && Array.isArray(product.images)) {
+  // Build images array: prefer product_images table, then JSON, then thumbnail
+  const images: { url: string; alt: string }[] = [];
+  if (productImages && productImages.length > 0) {
+    productImages.forEach((img) => {
+      images.push({ url: img.image_url, alt: img.alt_text || product.description || "" });
+    });
+  } else if (product.images && Array.isArray(product.images)) {
     (product.images as string[]).forEach((img) => {
-      if (typeof img === "string" && img) images.push(img);
+      if (typeof img === "string" && img) images.push({ url: img, alt: product.description || "" });
     });
   }
   if (images.length === 0 && product.thumbnail_url) {
-    images.push(product.thumbnail_url);
+    images.push({ url: product.thumbnail_url, alt: product.description || "" });
   }
   if (images.length === 0) {
-    images.push("/placeholder.svg");
+    images.push({ url: "/placeholder.svg", alt: "Product placeholder" });
   }
+
+  // Build info rows for middle column
+  const infoRows: { label: string; value: string }[] = [];
+  if (product.brand_name) infoRows.push({ label: "Brand", value: product.brand_name });
+  if (product.category_name) infoRows.push({ label: "Category", value: product.category_name });
+  if (product.group_name) infoRows.push({ label: "Group", value: product.group_name });
+  if (product.stock_code) infoRows.push({ label: "SKU / Stock Code", value: product.stock_code });
+  if (product.other_code) infoRows.push({ label: "Alt Code", value: product.other_code });
+  if (product.unit_of_measure) infoRows.push({ label: "Unit of Measure", value: product.unit_of_measure });
+  if (product.packing) infoRows.push({ label: "Packing", value: product.packing });
+  if (product.item_type) infoRows.push({ label: "Type", value: product.item_type });
+  if (moq > 1) infoRows.push({ label: "Min Order Qty", value: `${moq} units` });
 
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
         {/* 3-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
           {/* LEFT: Image Gallery */}
           <div className="lg:col-span-5">
-            <div className="bg-card rounded-card shadow-card p-6 flex items-center justify-center aspect-square mb-3">
+            <div className="bg-card rounded-card shadow-card p-4 flex items-center justify-center aspect-square mb-3 border border-border">
               <img
-                src={images[selectedImage]}
-                alt={product.description || ""}
+                src={images[selectedImage]?.url}
+                alt={images[selectedImage]?.alt}
                 className="max-w-full max-h-full object-contain"
               />
             </div>
             {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
                 {images.map((img, i) => (
                   <button
                     key={i}
@@ -158,7 +220,7 @@ const ProductDetail = () => {
                       i === selectedImage ? "border-primary" : "border-border hover:border-primary/50"
                     }`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-contain p-1" />
+                    <img src={img.url} alt={img.alt} className="w-full h-full object-contain p-1" />
                   </button>
                 ))}
               </div>
@@ -167,36 +229,36 @@ const ProductDetail = () => {
 
           {/* MIDDLE: Product Info & Specs */}
           <div className="lg:col-span-4 space-y-5">
+            {/* Brand logo + name */}
             {product.brand_name && (
               <div className="flex items-center gap-2">
                 {product.brand_logo && (
-                  <img src={product.brand_logo} alt={product.brand_name} className="h-6 w-auto object-contain" />
+                  <img src={product.brand_logo} alt={product.brand_name} className="h-7 w-auto object-contain" />
                 )}
-                <span className="text-sm font-semibold text-primary uppercase tracking-wide">{product.brand_name}</span>
+                <span className="text-xs font-semibold text-primary uppercase tracking-widest">{product.brand_name}</span>
               </div>
             )}
 
-            <h1 className="text-h2 text-foreground">{product.description}</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-foreground leading-tight">{product.description}</h1>
 
             {product.short_description && (
               <p className="text-sm text-muted-foreground leading-relaxed">{product.short_description}</p>
             )}
 
-            <div className="flex items-center gap-4">
-              <span className={`inline-flex items-center gap-1.5 text-sm font-medium ${stock.textClass} ${stock.bgClass} px-3 py-1 rounded-full`}>
+            {/* Stock status */}
+            <div className="flex items-center gap-3">
+              <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${stock.textClass} ${stock.bgClass} px-3 py-1 rounded-full`}>
                 <span className={`w-2 h-2 ${stock.dotClass} rounded-full`}></span>
                 {stock.label}
               </span>
-              <span className="text-sm text-muted-foreground">SKU: {product.stock_code}</span>
+              {product.onhand_qty != null && product.onhand_qty > 0 && product.onhand_qty <= 10 && (
+                <span className="text-xs text-amber-600 font-medium">Only {product.onhand_qty} left!</span>
+              )}
             </div>
-
-            {product.category_name && (
-              <p className="text-xs text-muted-foreground">Category: <span className="font-medium text-foreground">{product.category_name}</span></p>
-            )}
 
             {/* Promotion Info */}
             {promotion && !flashDeal && (
-              <div className="bg-primary/5 border border-primary/20 rounded-card p-3">
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
                 <p className="text-sm font-semibold text-primary flex items-center gap-1.5">
                   🏷️ {promotion.title}
                 </p>
@@ -206,21 +268,27 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {/* Key Specs as label:value rows */}
-            {specs.length > 0 && (
-              <div className="border-t border-border pt-4 space-y-0">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Specifications</h3>
-                {specs.map(([key, val], i) => (
-                  <div key={key} className={`flex justify-between py-2.5 text-sm ${i < specs.length - 1 ? "border-b border-border" : ""}`}>
-                    <span className="text-muted-foreground">{key}</span>
-                    <span className="font-medium text-foreground text-right">{String(val)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* Key Info Rows — reference style */}
+            <div className="border-t border-border pt-4">
+              <h3 className="text-sm font-bold text-foreground mb-2">Product Details</h3>
+              {infoRows.map((row, i) => (
+                <div key={row.label} className={`flex justify-between py-2.5 text-sm ${i < infoRows.length - 1 ? "border-b border-border/60" : ""}`}>
+                  <span className="text-muted-foreground">{row.label}</span>
+                  <span className="font-semibold text-foreground text-right max-w-[60%]">{row.value}</span>
+                </div>
+              ))}
+            </div>
 
-            {product.unit_of_measure && (
-              <p className="text-xs text-muted-foreground">Unit of Measure: <span className="font-medium">{product.unit_of_measure}</span></p>
+            {/* Datasheet link */}
+            {product.datasheet_url && (
+              <a
+                href={product.datasheet_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm text-primary hover:underline font-medium"
+              >
+                <FileText className="w-4 h-4" /> Download Datasheet (PDF)
+              </a>
             )}
           </div>
 
@@ -263,16 +331,39 @@ const ProductDetail = () => {
                   </div>
                 </div>
               ) : product.selling_price ? (
-                <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-accent">
-                    {product.currency || "MMK"} {Number(product.selling_price).toLocaleString()}
+                <div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-bold text-accent">
+                      {product.currency || "MMK"} {Number(product.selling_price).toLocaleString()}
+                    </span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    / {product.unit_of_measure || "per piece"}
                   </span>
-                  {product.unit_of_measure && (
-                    <span className="text-sm text-muted-foreground">/ {product.unit_of_measure}</span>
-                  )}
                 </div>
               ) : (
                 <span className="text-lg font-semibold text-primary">Price on Request</span>
+              )}
+
+              {/* Bulk Pricing Tiers */}
+              {pricingTiers && pricingTiers.length > 0 && (
+                <div className="border-t border-border pt-3 space-y-2">
+                  <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <Package className="w-3.5 h-3.5 text-primary" />
+                    Bulk Pricing
+                  </h4>
+                  {pricingTiers.map((tier) => (
+                    <div key={tier.id} className="flex items-center gap-2 text-xs">
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                      <span className="font-semibold text-foreground">
+                        {product.currency || "MMK"} {Number(tier.unit_price).toLocaleString()}
+                      </span>
+                      <span className="text-muted-foreground">
+                        / {product.unit_of_measure || "pc"} ({tier.min_qty}{tier.max_qty ? `–${tier.max_qty}` : "+"} units)
+                      </span>
+                    </div>
+                  ))}
+                </div>
               )}
 
               {/* Ships info */}
@@ -340,10 +431,61 @@ const ProductDetail = () => {
           </div>
         </div>
 
+        {/* Product Description */}
+        {productExtra?.long_description && (
+          <div className="mb-12">
+            <h2 className="text-lg font-bold text-foreground mb-4">Product Description</h2>
+            <div className="bg-card rounded-card shadow-card border border-border p-6">
+              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                {productExtra.long_description}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Tabs: Specifications & Customer Reviews */}
+        <div className="mb-16">
+          <Tabs defaultValue="specifications" className="w-full">
+            <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1">
+              <TabsTrigger value="specifications" className="text-sm font-semibold">Specifications</TabsTrigger>
+              <TabsTrigger value="reviews" className="text-sm font-semibold">Customer Reviews</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="specifications" className="mt-4">
+              {specs.length > 0 ? (
+                <div className="bg-card rounded-card shadow-card border border-border overflow-hidden">
+                  <table className="w-full text-sm">
+                    <tbody>
+                      {specs.map(([key, val], i) => (
+                        <tr key={key} className={i % 2 === 0 ? "bg-muted/30" : ""}>
+                          <td className="px-5 py-3 font-medium text-muted-foreground w-1/3 border-r border-border">{key}</td>
+                          <td className="px-5 py-3 text-foreground font-semibold">{String(val)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="bg-card rounded-card shadow-card border border-border p-8 text-center">
+                  <p className="text-sm text-muted-foreground">No specifications available for this product.</p>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="reviews" className="mt-4">
+              <div className="bg-card rounded-card shadow-card border border-border p-8 text-center space-y-3">
+                <Star className="w-10 h-10 text-muted-foreground/30 mx-auto" />
+                <h3 className="text-sm font-bold text-foreground">No reviews yet</h3>
+                <p className="text-xs text-muted-foreground">Be the first to review this product. Your feedback helps other buyers make informed decisions.</p>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+
         {/* Related Products */}
         {related && related.length > 0 && (
-          <div>
-            <h2 className="text-h3 text-foreground mb-6">Related Products</h2>
+          <div className="mb-8">
+            <h2 className="text-lg font-bold text-foreground mb-6">Related Products</h2>
             <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4">
               {related.map((p) => (
                 <div key={p.id} className="min-w-[220px] md:min-w-[260px] flex-shrink-0">
