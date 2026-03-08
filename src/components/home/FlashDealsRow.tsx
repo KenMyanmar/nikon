@@ -87,7 +87,7 @@ const FlashDealsRow = () => {
                     className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform"
                     loading="lazy"
                   />
-                  <span className="absolute top-2 left-2 bg-accent text-accent-foreground text-xs font-bold px-2 py-1 rounded-full">
+                  <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
                     -{discountPct}%
                   </span>
                   {soldPct > 70 && (
