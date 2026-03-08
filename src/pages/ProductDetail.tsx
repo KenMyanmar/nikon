@@ -466,7 +466,7 @@ const ProductDetail = () => {
         </div>
 
         {/* Tabs: Specifications & Customer Reviews */}
-        <div className="mb-16">
+        <div id="product-specifications" className="mb-16 scroll-mt-24">
           <Tabs defaultValue="specifications" className="w-full">
             <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1">
               <TabsTrigger value="specifications" className="text-sm font-semibold">Specifications</TabsTrigger>
