@@ -432,16 +432,20 @@ const ProductDetail = () => {
         </div>
 
         {/* Product Description */}
-        {productExtra?.long_description && (
-          <div className="mb-12">
-            <h2 className="text-lg font-bold text-foreground mb-4">Product Description</h2>
-            <div className="bg-card rounded-card shadow-card border border-border p-6">
+        <div className="mb-12">
+          <h2 className="text-lg font-bold text-foreground mb-4">Product Description</h2>
+          <div className="bg-card rounded-card shadow-card border border-border p-6">
+            {productExtra?.long_description ? (
               <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                 {productExtra.long_description}
               </p>
-            </div>
+            ) : (
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {product.short_description || product.description || "Detailed description coming soon. Contact us for more information about this product."}
+              </p>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Tabs: Specifications & Customer Reviews */}
         <div className="mb-16">
