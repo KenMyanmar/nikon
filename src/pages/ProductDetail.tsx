@@ -432,12 +432,12 @@ const ProductDetail = () => {
         </div>
 
         {/* Product Description */}
-        {(product as any).long_description && (
+        {productExtra?.long_description && (
           <div className="mb-12">
             <h2 className="text-lg font-bold text-foreground mb-4">Product Description</h2>
             <div className="bg-card rounded-card shadow-card border border-border p-6">
               <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                {(product as any).long_description}
+                {productExtra.long_description}
               </p>
             </div>
           </div>
