@@ -30,7 +30,7 @@ const Header = () => {
       {/* Announcement Bar */}
       <div className="bg-accent text-accent-foreground text-center py-2 text-sm font-medium">
         🚚 Free delivery on orders over MMK 500,000 in Yangon Metro
-        <Link to="/deals" className="underline ml-2 font-bold">Shop Deals →</Link>
+        <Link to="/flash-deals" className="underline ml-2 font-bold">Shop Deals →</Link>
       </div>
 
       {/* Main Header */}

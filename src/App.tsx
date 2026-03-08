@@ -17,6 +17,7 @@ import ResetPassword from "./pages/ResetPassword";
 import RequestQuotePage from "./pages/RequestQuotePage";
 import AllCategoriesPage from "./pages/AllCategoriesPage";
 import AllBrandsPage from "./pages/AllBrandsPage";
+import FlashDealsPage from "./pages/FlashDealsPage";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/request-quote" element={<RequestQuotePage />} />
             <Route path="/categories" element={<AllCategoriesPage />} />
             <Route path="/brands" element={<AllBrandsPage />} />
+            <Route path="/flash-deals" element={<FlashDealsPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

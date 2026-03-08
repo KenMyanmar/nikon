@@ -1,11 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
-import { Minus, Plus, Trash2, ShoppingCart, LogIn } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, LogIn, Tag, X, Loader2, ChevronDown } from "lucide-react";
 
 const CartPage = () => {
   const { user, loading: authLoading } = useAuth();
@@ -252,8 +252,8 @@ const CartPage = () => {
           <div className="lg:w-80 shrink-0">
             <div className="bg-card rounded-card shadow-card p-6 sticky top-28">
               <h2 className="text-h4 text-foreground mb-4">Order Summary</h2>
-
-              <div className="space-y-3 text-sm">
+              <CouponInput subtotal={subtotal} />
+              <div className="space-y-3 text-sm mt-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span className="font-semibold text-foreground">MMK {subtotal.toLocaleString()}</span>
@@ -289,6 +289,104 @@ const CartPage = () => {
         </div>
       </div>
     </MainLayout>
+  );
+};
+
+/* Coupon Input Component */
+const CouponInput = ({ subtotal }: { subtotal: number }) => {
+  const [open, setOpen] = useState(false);
+  const [code, setCode] = useState("");
+  const [validating, setValidating] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; title: string; discount: number } | null>(null);
+  const [error, setError] = useState("");
+
+  const handleApply = async () => {
+    if (!code.trim()) return;
+    setValidating(true);
+    setError("");
+    try {
+      const { data, error: qErr } = await supabase
+        .from("coupons")
+        .select("*")
+        .eq("code", code.trim().toUpperCase())
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (qErr) throw qErr;
+      if (!data) { setError("Invalid or expired promo code"); return; }
+      if (data.max_uses && (data.used_count || 0) >= data.max_uses) { setError("This coupon has been fully redeemed"); return; }
+      if (data.min_order_amount && subtotal < Number(data.min_order_amount)) {
+        setError(`Minimum order of MMK ${Number(data.min_order_amount).toLocaleString()} required`);
+        return;
+      }
+
+      let discount = 0;
+      if (data.type === "percentage") {
+        discount = subtotal * (Number(data.discount_value) / 100);
+        if (data.max_discount_amount) discount = Math.min(discount, Number(data.max_discount_amount));
+      } else if (data.type === "fixed_amount") {
+        discount = Number(data.discount_value);
+      }
+
+      setAppliedCoupon({ code: data.code, title: data.title, discount });
+      setCode("");
+    } catch {
+      setError("Error validating coupon");
+    } finally {
+      setValidating(false);
+    }
+  };
+
+  if (appliedCoupon) {
+    return (
+      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Tag className="w-4 h-4 text-emerald-600" />
+            <div>
+              <p className="text-xs font-bold text-emerald-700">{appliedCoupon.code} applied!</p>
+              <p className="text-[10px] text-emerald-600">You save MMK {appliedCoupon.discount.toLocaleString()}</p>
+            </div>
+          </div>
+          <button onClick={() => setAppliedCoupon(null)} className="text-muted-foreground hover:text-destructive">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition"
+      >
+        <Tag className="w-4 h-4" />
+        Have a promo code?
+        <ChevronDown className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="mt-2 space-y-2">
+          <div className="flex gap-2">
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              placeholder="ENTER CODE"
+              className="flex-1 px-3 py-2 text-sm border border-input rounded-md bg-background uppercase placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <button
+              onClick={handleApply}
+              disabled={validating || !code.trim()}
+              className="px-4 py-2 bg-primary text-primary-foreground text-sm font-semibold rounded-md hover:bg-primary/90 transition disabled:opacity-60"
+            >
+              {validating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
+            </button>
+          </div>
+          {error && <p className="text-xs text-destructive">{error}</p>}
+        </div>
+      )}
+    </div>
   );
 };
 

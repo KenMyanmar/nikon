@@ -186,10 +186,10 @@ export const DesktopMegaNav = () => {
             Brands
           </Link>
           <Link
-            to="/deals"
+            to="/flash-deals"
             className="px-4 py-3 text-accent-foreground text-sm font-bold bg-accent hover:bg-ikon-red-dark transition whitespace-nowrap"
           >
-            🔥 Deals
+            ⚡ Flash Deals
           </Link>
         </div>
       </div>
@@ -255,11 +255,11 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
         Brands
       </Link>
       <Link
-        to="/deals"
+        to="/flash-deals"
         className="block py-2.5 px-3 text-sm font-bold text-accent hover:bg-ikon-red-light rounded-md"
         onClick={onClose}
       >
-        🔥 Deals
+        ⚡ Flash Deals
       </Link>
     </div>
   );
