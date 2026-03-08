@@ -290,6 +290,24 @@ const ProductDetail = () => {
                 <FileText className="w-4 h-4" /> Download Datasheet (PDF)
               </a>
             )}
+
+            {/* Quick-nav buttons */}
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => document.getElementById("product-description")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg text-sm font-semibold text-foreground hover:bg-muted transition"
+              >
+                <FileText className="w-4 h-4 text-primary" />
+                Description
+              </button>
+              <button
+                onClick={() => document.getElementById("product-specifications")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg text-sm font-semibold text-foreground hover:bg-muted transition"
+              >
+                <Package className="w-4 h-4 text-primary" />
+                Specifications
+              </button>
+            </div>
           </div>
 
           {/* RIGHT: Price Sidebar */}
@@ -432,7 +450,7 @@ const ProductDetail = () => {
         </div>
 
         {/* Product Description */}
-        <div className="mb-12">
+        <div id="product-description" className="mb-12 scroll-mt-24">
           <h2 className="text-lg font-bold text-foreground mb-4">Product Description</h2>
           <div className="bg-card rounded-card shadow-card border border-border p-6">
             {productExtra?.long_description ? (
@@ -448,7 +466,7 @@ const ProductDetail = () => {
         </div>
 
         {/* Tabs: Specifications & Customer Reviews */}
-        <div className="mb-16">
+        <div id="product-specifications" className="mb-16 scroll-mt-24">
           <Tabs defaultValue="specifications" className="w-full">
             <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1">
               <TabsTrigger value="specifications" className="text-sm font-semibold">Specifications</TabsTrigger>
