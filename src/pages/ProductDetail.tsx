@@ -290,6 +290,24 @@ const ProductDetail = () => {
                 <FileText className="w-4 h-4" /> Download Datasheet (PDF)
               </a>
             )}
+
+            {/* Quick-nav buttons */}
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => document.getElementById("product-description")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg text-sm font-semibold text-foreground hover:bg-muted transition"
+              >
+                <FileText className="w-4 h-4 text-primary" />
+                Description
+              </button>
+              <button
+                onClick={() => document.getElementById("product-specifications")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg text-sm font-semibold text-foreground hover:bg-muted transition"
+              >
+                <Package className="w-4 h-4 text-primary" />
+                Specifications
+              </button>
+            </div>
           </div>
 
           {/* RIGHT: Price Sidebar */}
