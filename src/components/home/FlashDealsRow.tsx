@@ -62,7 +62,7 @@ const FlashDealsRow = () => {
               {formatTime(timeLeft)}
             </span>
           </div>
-          <Link to="/flash-deals" className="text-sm font-semibold text-accent hover:underline">
+          <Link to="/flash-deals" className="text-sm font-semibold text-red-600 hover:underline">
             View All Deals →
           </Link>
         </div>
