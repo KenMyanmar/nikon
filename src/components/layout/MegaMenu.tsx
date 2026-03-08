@@ -186,10 +186,10 @@ export const DesktopMegaNav = () => {
             Brands
           </Link>
           <Link
-            to="/deals"
+            to="/flash-deals"
             className="px-4 py-3 text-accent-foreground text-sm font-bold bg-accent hover:bg-ikon-red-dark transition whitespace-nowrap"
           >
-            🔥 Deals
+            ⚡ Flash Deals
           </Link>
         </div>
       </div>
