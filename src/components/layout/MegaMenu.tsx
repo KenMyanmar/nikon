@@ -187,7 +187,7 @@ export const DesktopMegaNav = () => {
           </Link>
           <Link
             to="/flash-deals"
-            className="px-4 py-3 text-accent-foreground text-sm font-bold bg-accent hover:bg-ikon-red-dark transition whitespace-nowrap"
+            className="px-4 py-3 text-white text-sm font-bold bg-red-600 hover:bg-red-700 transition whitespace-nowrap"
           >
             ⚡ Flash Deals
           </Link>
