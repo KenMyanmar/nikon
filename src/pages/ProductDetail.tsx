@@ -7,7 +7,7 @@ import MainLayout from "@/components/layout/MainLayout";
 import ProductCard from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, BadgeDollarSign, ShieldCheck, Check, Star, Package } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Check, Star, Package, ShieldCheck } from "lucide-react";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
 
@@ -24,13 +24,6 @@ const formatCountdown = (ms: number) => {
   const s = Math.floor((ms % 60000) / 1000);
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 };
-
-const wholesaleBenefits = [
-  "Bulk Discounts Available",
-  "Business Account Credit Terms",
-  "Fast Delivery — Yangon Metro",
-  "Dedicated Account Manager",
-];
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -67,7 +60,6 @@ const ProductDetail = () => {
     enabled: !!slug,
   });
 
-  // Fetch long_description from products table (not in view)
   const { data: productExtra } = useQuery({
     queryKey: ["product-extra", product?.id],
     queryFn: async () => {
@@ -82,7 +74,6 @@ const ProductDetail = () => {
     enabled: !!product?.id,
   });
 
-  // Fetch product images from dedicated table
   const { data: productImages } = useQuery({
     queryKey: ["product-images", product?.id],
     queryFn: async () => {
@@ -97,7 +88,6 @@ const ProductDetail = () => {
     enabled: !!product?.id,
   });
 
-  // Fetch pricing tiers
   const { data: pricingTiers } = useQuery({
     queryKey: ["pricing-tiers", product?.id],
     queryFn: async () => {
@@ -134,12 +124,11 @@ const ProductDetail = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="grid lg:grid-cols-12 gap-8">
             <Skeleton className="aspect-square rounded-card lg:col-span-5" />
-            <div className="space-y-4 lg:col-span-4">
+            <div className="space-y-4 lg:col-span-7">
               <Skeleton className="h-8 w-3/4" />
               <Skeleton className="h-6 w-1/2" />
               <Skeleton className="h-10 w-1/3" />
             </div>
-            <Skeleton className="h-64 rounded-card lg:col-span-3" />
           </div>
         </div>
       </MainLayout>
@@ -166,7 +155,7 @@ const ProductDetail = () => {
   const flashTimeLeft = flashDeal ? new Date(flashDeal.end_time).getTime() - now : 0;
   const flashSoldPct = flashDeal ? ((flashDeal.sold_count || 0) / flashDeal.stock_limit) * 100 : 0;
 
-  // Build images array: prefer product_images table, then JSON, then thumbnail
+  // Build images array
   const images: { url: string; alt: string }[] = [];
   if (productImages && productImages.length > 0) {
     productImages.forEach((img) => {
@@ -184,7 +173,7 @@ const ProductDetail = () => {
     images.push({ url: "/placeholder.svg", alt: "Product placeholder" });
   }
 
-  // Build info rows for middle column
+  // Build info rows for specifications tab
   const infoRows: { label: string; value: string }[] = [];
   if (product.brand_name) infoRows.push({ label: "Brand", value: product.brand_name });
   if (product.category_name) infoRows.push({ label: "Category", value: product.category_name });
@@ -199,8 +188,8 @@ const ProductDetail = () => {
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
-        {/* 3-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+        {/* ── 2-Column Layout ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
           {/* LEFT: Image Gallery */}
           <div className="lg:col-span-5">
             <div className="bg-card rounded-card shadow-card p-4 flex items-center justify-center aspect-square mb-3 border border-border">
@@ -227,36 +216,41 @@ const ProductDetail = () => {
             )}
           </div>
 
-          {/* MIDDLE: Product Info & Specs */}
-          <div className="lg:col-span-4 space-y-5">
-            {/* Brand logo + name */}
+          {/* RIGHT: Compact Product Info + Price + CTAs */}
+          <div className="lg:col-span-7 space-y-4">
+            {/* Brand */}
             {product.brand_name && (
               <div className="flex items-center gap-2">
                 {product.brand_logo && (
-                  <img src={product.brand_logo} alt={product.brand_name} className="h-7 w-auto object-contain" />
+                  <img src={product.brand_logo} alt={product.brand_name} className="h-6 w-auto object-contain" />
                 )}
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest">{product.brand_name}</span>
               </div>
             )}
 
+            {/* Title */}
             <h1 className="text-xl md:text-2xl font-bold text-foreground leading-tight">{product.description}</h1>
 
+            {/* Short description — max 2 lines */}
             {product.short_description && (
-              <p className="text-sm text-muted-foreground leading-relaxed">{product.short_description}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">{product.short_description}</p>
             )}
 
-            {/* Stock status */}
-            <div className="flex items-center gap-3">
+            {/* Stock + SKU inline */}
+            <div className="flex items-center gap-4 flex-wrap">
               <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${stock.textClass} ${stock.bgClass} px-3 py-1 rounded-full`}>
                 <span className={`w-2 h-2 ${stock.dotClass} rounded-full`}></span>
                 {stock.label}
               </span>
+              {product.stock_code && (
+                <span className="text-xs text-muted-foreground">SKU: <span className="font-semibold text-foreground">{product.stock_code}</span></span>
+              )}
               {product.onhand_qty != null && product.onhand_qty > 0 && product.onhand_qty <= 10 && (
                 <span className="text-xs text-amber-600 font-medium">Only {product.onhand_qty} left!</span>
               )}
             </div>
 
-            {/* Promotion Info */}
+            {/* Promotion banner */}
             {promotion && !flashDeal && (
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
                 <p className="text-sm font-semibold text-primary flex items-center gap-1.5">
@@ -268,70 +262,25 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {/* Key Info Rows — reference style */}
-            <div className="border-t border-border pt-4">
-              <h3 className="text-sm font-bold text-foreground mb-2">Product Details</h3>
-              {infoRows.map((row, i) => (
-                <div key={row.label} className={`flex justify-between py-2.5 text-sm ${i < infoRows.length - 1 ? "border-b border-border/60" : ""}`}>
-                  <span className="text-muted-foreground">{row.label}</span>
-                  <span className="font-semibold text-foreground text-right max-w-[60%]">{row.value}</span>
+            {/* Flash Deal Banner */}
+            {flashDeal && (
+              <div className="bg-accent/10 border border-accent/30 rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-accent fill-accent" />
+                  <span className="text-xs font-bold text-accent">Flash Deal — {formatCountdown(flashTimeLeft)}</span>
                 </div>
-              ))}
-            </div>
-
-            {/* Datasheet link */}
-            {product.datasheet_url && (
-              <a
-                href={product.datasheet_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-primary hover:underline font-medium"
-              >
-                <FileText className="w-4 h-4" /> Download Datasheet (PDF)
-              </a>
+                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${flashSoldPct > 70 ? "bg-accent" : flashSoldPct > 30 ? "bg-amber-500" : "bg-emerald-500"}`}
+                    style={{ width: `${Math.min(flashSoldPct, 100)}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-muted-foreground">{flashDeal.sold_count || 0} / {flashDeal.stock_limit} claimed</p>
+              </div>
             )}
 
-            {/* Quick-nav buttons */}
-            <div className="flex gap-3 pt-2">
-              <button
-                onClick={() => document.getElementById("product-description")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg text-sm font-semibold text-foreground hover:bg-muted transition"
-              >
-                <FileText className="w-4 h-4 text-primary" />
-                Description
-              </button>
-              <button
-                onClick={() => document.getElementById("product-specifications")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg text-sm font-semibold text-foreground hover:bg-muted transition"
-              >
-                <Package className="w-4 h-4 text-primary" />
-                Specifications
-              </button>
-            </div>
-          </div>
-
-          {/* RIGHT: Price Sidebar */}
-          <div className="lg:col-span-3 space-y-4">
-            {/* Price Box */}
-            <div className="bg-card rounded-card shadow-card p-5 space-y-4 border border-border">
-              {/* Flash Deal Banner */}
-              {flashDeal && (
-                <div className="bg-accent/10 border border-accent/30 rounded-lg p-3 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-accent fill-accent" />
-                    <span className="text-xs font-bold text-accent">Flash Deal — {formatCountdown(flashTimeLeft)}</span>
-                  </div>
-                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${flashSoldPct > 70 ? "bg-accent" : flashSoldPct > 30 ? "bg-amber-500" : "bg-emerald-500"}`}
-                      style={{ width: `${Math.min(flashSoldPct, 100)}%` }}
-                    />
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">{flashDeal.sold_count || 0} / {flashDeal.stock_limit} claimed</p>
-                </div>
-              )}
-
-              {/* Price */}
+            {/* ── Price Block ── */}
+            <div className="border-t border-border pt-4">
               {flashDeal ? (
                 <div className="space-y-1">
                   <div className="flex items-baseline gap-2">
@@ -350,26 +299,26 @@ const ProductDetail = () => {
                 </div>
               ) : product.selling_price ? (
                 <div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-accent">
-                      {product.currency || "MMK"} {Number(product.selling_price).toLocaleString()}
-                    </span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-2xl font-bold text-accent">
+                    {product.currency || "MMK"} {Number(product.selling_price).toLocaleString()}
+                  </span>
+                  <span className="text-xs text-muted-foreground ml-2">
                     / {product.unit_of_measure || "per piece"}
                   </span>
                 </div>
               ) : (
                 <span className="text-lg font-semibold text-primary">Price on Request</span>
               )}
+            </div>
 
-              {/* Bulk Pricing Tiers */}
-              {pricingTiers && pricingTiers.length > 0 && (
-                <div className="border-t border-border pt-3 space-y-2">
-                  <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                    <Package className="w-3.5 h-3.5 text-primary" />
-                    Bulk Pricing
-                  </h4>
+            {/* Bulk Pricing Tiers */}
+            {pricingTiers && pricingTiers.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Package className="w-3.5 h-3.5 text-primary" />
+                  Bulk Pricing
+                </h4>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-1">
                   {pricingTiers.map((tier) => (
                     <div key={tier.id} className="flex items-center gap-2 text-xs">
                       <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
@@ -377,20 +326,16 @@ const ProductDetail = () => {
                         {product.currency || "MMK"} {Number(tier.unit_price).toLocaleString()}
                       </span>
                       <span className="text-muted-foreground">
-                        / {product.unit_of_measure || "pc"} ({tier.min_qty}{tier.max_qty ? `–${tier.max_qty}` : "+"} units)
+                        ({tier.min_qty}{tier.max_qty ? `–${tier.max_qty}` : "+"})
                       </span>
                     </div>
                   ))}
                 </div>
-              )}
-
-              {/* Ships info */}
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Truck className="w-4 h-4 text-primary" />
-                Ships in 1–2 business days
               </div>
+            )}
 
-              {/* Quantity */}
+            {/* Quantity + CTAs */}
+            <div className="flex items-end gap-4 flex-wrap">
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Quantity</label>
                 <div className="flex items-center border border-border rounded-lg overflow-hidden">
@@ -402,14 +347,13 @@ const ProductDetail = () => {
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
-                {moq > 1 && <p className="text-[10px] text-muted-foreground mt-1">Minimum order: {moq} units</p>}
+                {moq > 1 && <p className="text-[10px] text-muted-foreground mt-1">Min order: {moq}</p>}
               </div>
 
-              {/* CTA Buttons */}
               <button
                 onClick={() => product.id && addToCart(product.id, qty, product.description || "")}
                 disabled={isAdding || product.stock_status === "out_of_stock"}
-                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold py-3 rounded-button transition flex items-center justify-center gap-2 disabled:opacity-60 text-sm"
+                className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold py-2.5 px-6 rounded-button transition flex items-center gap-2 disabled:opacity-60 text-sm"
               >
                 {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
                 Add to Cart
@@ -417,94 +361,98 @@ const ProductDetail = () => {
 
               <button
                 onClick={handleRequestQuote}
-                className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 rounded-button transition flex items-center justify-center gap-2 text-sm"
+                className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-2.5 px-6 rounded-button transition flex items-center gap-2 text-sm"
               >
-                <FileText className="w-5 h-5" /> Request Bulk Quote
+                <FileText className="w-5 h-5" /> Request Quote
               </button>
             </div>
 
-            {/* Wholesale Benefits */}
-            <div className="bg-card rounded-card shadow-card p-5 border border-border">
-              <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-                <BadgeDollarSign className="w-4 h-4 text-primary" />
-                Wholesale Benefits
-              </h4>
-              <ul className="space-y-2.5">
-                {wholesaleBenefits.map((b) => (
-                  <li key={b} className="flex items-start gap-2 text-xs text-muted-foreground">
-                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                    {b}
-                  </li>
-                ))}
-              </ul>
+            {/* Ships info + trust */}
+            <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1">
+              <span className="flex items-center gap-1.5">
+                <Truck className="w-4 h-4 text-primary" /> Ships in 1–2 business days
+              </span>
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-primary" /> Trusted by 1,000+ buyers
+              </span>
             </div>
 
-            {/* Trust mini bar */}
-            <div className="bg-muted/50 rounded-lg p-3 text-center">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                <ShieldCheck className="w-3.5 h-3.5 inline mr-1 -mt-0.5" />
-                Trusted by 1,000+ HoReCa Professionals
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Product Description */}
-        <div id="product-description" className="mb-12 scroll-mt-24">
-          <h2 className="text-lg font-bold text-foreground mb-4">Product Description</h2>
-          <div className="bg-card rounded-card shadow-card border border-border p-6">
-            {productExtra?.long_description ? (
-              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                {productExtra.long_description}
-              </p>
-            ) : (
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {product.short_description || product.description || "Detailed description coming soon. Contact us for more information about this product."}
-              </p>
+            {/* Datasheet */}
+            {product.datasheet_url && (
+              <a
+                href={product.datasheet_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm text-primary hover:underline font-medium"
+              >
+                <FileText className="w-4 h-4" /> Download Datasheet (PDF)
+              </a>
             )}
           </div>
         </div>
 
-        {/* Tabs: Specifications & Customer Reviews */}
-        <div id="product-specifications" className="mb-16 scroll-mt-24">
-          <Tabs defaultValue="specifications" className="w-full">
+        {/* ── Tabs: Description / Specifications / Reviews ── */}
+        <div className="mb-16">
+          <Tabs defaultValue="description" className="w-full">
             <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1">
+              <TabsTrigger value="description" className="text-sm font-semibold">Description</TabsTrigger>
               <TabsTrigger value="specifications" className="text-sm font-semibold">Specifications</TabsTrigger>
               <TabsTrigger value="reviews" className="text-sm font-semibold">Customer Reviews</TabsTrigger>
             </TabsList>
 
+            <TabsContent value="description" className="mt-4">
+              <div className="bg-card rounded-card shadow-card border border-border p-6">
+                {productExtra?.long_description ? (
+                  <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {productExtra.long_description}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {product.short_description || product.description || "Detailed description coming soon. Contact us for more information about this product."}
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+
             <TabsContent value="specifications" className="mt-4">
-              {specs.length > 0 ? (
-                <div className="bg-card rounded-card shadow-card border border-border overflow-hidden">
-                  <table className="w-full text-sm">
-                    <tbody>
-                      {specs.map(([key, val], i) => (
-                        <tr key={key} className={i % 2 === 0 ? "bg-muted/30" : ""}>
-                          <td className="px-5 py-3 font-medium text-muted-foreground w-1/3 border-r border-border">{key}</td>
-                          <td className="px-5 py-3 text-foreground font-semibold">{String(val)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="bg-card rounded-card shadow-card border border-border p-8 text-center">
-                  <p className="text-sm text-muted-foreground">No specifications available for this product.</p>
-                </div>
-              )}
+              <div className="bg-card rounded-card shadow-card border border-border overflow-hidden">
+                <table className="w-full text-sm">
+                  <tbody>
+                    {/* Product info rows */}
+                    {infoRows.map(({ label, value }, i) => (
+                      <tr key={label} className={i % 2 === 0 ? "bg-muted/30" : ""}>
+                        <td className="px-5 py-3 font-medium text-muted-foreground w-1/3 border-r border-border">{label}</td>
+                        <td className="px-5 py-3 text-foreground font-semibold">{value}</td>
+                      </tr>
+                    ))}
+                    {/* Technical specs from JSONB */}
+                    {specs.map(([key, val], i) => (
+                      <tr key={key} className={(infoRows.length + i) % 2 === 0 ? "bg-muted/30" : ""}>
+                        <td className="px-5 py-3 font-medium text-muted-foreground w-1/3 border-r border-border">{key}</td>
+                        <td className="px-5 py-3 text-foreground font-semibold">{String(val)}</td>
+                      </tr>
+                    ))}
+                    {infoRows.length === 0 && specs.length === 0 && (
+                      <tr>
+                        <td colSpan={2} className="px-5 py-8 text-center text-muted-foreground">No specifications available.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </TabsContent>
 
             <TabsContent value="reviews" className="mt-4">
               <div className="bg-card rounded-card shadow-card border border-border p-8 text-center space-y-3">
                 <Star className="w-10 h-10 text-muted-foreground/30 mx-auto" />
                 <h3 className="text-sm font-bold text-foreground">No reviews yet</h3>
-                <p className="text-xs text-muted-foreground">Be the first to review this product. Your feedback helps other buyers make informed decisions.</p>
+                <p className="text-xs text-muted-foreground">Be the first to review this product.</p>
               </div>
             </TabsContent>
           </Tabs>
         </div>
 
-        {/* Related Products */}
+        {/* ── Related Products ── */}
         {related && related.length > 0 && (
           <div className="mb-8">
             <h2 className="text-lg font-bold text-foreground mb-6">Related Products</h2>
