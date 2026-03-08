@@ -249,43 +249,7 @@ const CartPage = () => {
           </div>
 
           {/* Summary Sidebar */}
-          <div className="lg:w-80 shrink-0">
-            <div className="bg-card rounded-card shadow-card p-6 sticky top-28">
-              <h2 className="text-h4 text-foreground mb-4">Order Summary</h2>
-
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span className="font-semibold text-foreground">MMK {subtotal.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Shipping</span>
-                  <span className="text-ikon-text-secondary text-xs">Contact for quote</span>
-                </div>
-                <div className="border-t border-ikon-border pt-3 flex justify-between">
-                  <span className="font-bold text-foreground">Total</span>
-                  <span className="font-bold text-foreground text-lg">MMK {subtotal.toLocaleString()}</span>
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-3">
-                {hasUnpricedItems && (
-                  <button
-                    onClick={() => navigate("/request-quote?from=cart")}
-                    className="w-full bg-primary text-primary-foreground py-3 rounded-button font-semibold hover:bg-primary/90 transition"
-                  >
-                    Request Quote
-                  </button>
-                )}
-                <button
-                  onClick={() => toast({ title: "Coming Soon", description: "Checkout coming soon! Use Request Quote for orders." })}
-                  className="w-full bg-accent text-accent-foreground py-3 rounded-button font-semibold hover:bg-accent/90 transition"
-                >
-                  Proceed to Checkout
-                </button>
-              </div>
-            </div>
-          </div>
+          <CartSummary subtotal={subtotal} hasUnpricedItems={hasUnpricedItems} navigate={navigate} />
         </div>
       </div>
     </MainLayout>

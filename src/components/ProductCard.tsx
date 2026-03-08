@@ -1,7 +1,8 @@
-import { Heart, ShoppingCart, Loader2 } from "lucide-react";
+import { Heart, ShoppingCart, Loader2, Zap } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAddToCart } from "@/hooks/useCart";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { useMarketingData } from "@/hooks/useMarketingData";
 
 interface ProductCardProps {
   id?: string;
@@ -15,6 +16,8 @@ interface ProductCardProps {
   stockStatus: "in_stock" | "low_stock" | "out_of_stock";
   sku: string;
   slug: string;
+  categoryId?: string | null;
+  brandId?: string | null;
 }
 
 const stockConfig = {
@@ -23,12 +26,16 @@ const stockConfig = {
   out_of_stock: { label: "Out of Stock", dotClass: "bg-red-500", textClass: "text-red-700", bgClass: "bg-red-50" },
 };
 
-const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug }: ProductCardProps) => {
+const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug, categoryId, brandId }: ProductCardProps) => {
   const stock = stockConfig[stockStatus] || stockConfig.in_stock;
   const isPlaceholder = !image || image === "/placeholder.svg";
   const { addToCart, isAdding } = useAddToCart();
   const { user, openAuthModal } = useAuthContext();
   const navigate = useNavigate();
+  const { getFlashDeal, getPromotion } = useMarketingData();
+
+  const flashDeal = id ? getFlashDeal(id) : undefined;
+  const promotion = id ? getPromotion(id, categoryId, brandId) : undefined;
 
   const handleRequestQuote = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,6 +52,9 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
     }
   };
 
+  const displayPrice = flashDeal ? Number(flashDeal.flash_price) : price;
+  const originalPrice = flashDeal ? Number(flashDeal.original_price) : null;
+
   return (
     <Link to={`/product/${slug}`} className="bg-card rounded-card shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-250 overflow-hidden group cursor-pointer block flex flex-col">
       {/* Image */}
@@ -57,6 +67,26 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
         ) : (
           <img src={image} alt={title} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300" loading="lazy" />
         )}
+
+        {/* Flash Deal Badge */}
+        {flashDeal && (
+          <span className="absolute top-2 left-2 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
+            <Zap className="w-3 h-3 fill-current" />
+            -{flashDeal.discount_percentage || Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100)}%
+          </span>
+        )}
+
+        {/* Promotion Badge */}
+        {!flashDeal && promotion && (
+          <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full">
+            {promotion.type === "percentage" && promotion.discount_value
+              ? `${promotion.discount_value}% OFF`
+              : promotion.type === "buy_x_get_y"
+              ? `B${promotion.buy_quantity}G${promotion.get_quantity}`
+              : promotion.title}
+          </span>
+        )}
+
         <button className="absolute top-3 right-3 p-2 rounded-full bg-card/80 hover:bg-card text-muted-foreground hover:text-accent transition opacity-0 group-hover:opacity-100" onClick={(e) => e.preventDefault()}>
           <Heart className="w-4 h-4" />
         </button>
@@ -68,14 +98,29 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
         <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-snug">{title}</h3>
         {specs && <p className="text-xs text-muted-foreground line-clamp-1">{specs}</p>}
 
+        {flashDeal && (
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full w-fit">
+            <Zap className="w-3 h-3" /> Flash Deal
+          </span>
+        )}
+
         <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${stock.textClass} ${stock.bgClass} px-2 py-0.5 rounded-full w-fit`}>
           <span className={`w-1.5 h-1.5 ${stock.dotClass} rounded-full`}></span>
           {stock.label}
         </span>
 
         <div className="mt-auto pt-2">
-          {price !== null && price !== undefined ? (
-            <span className="text-lg font-bold text-accent">{currency} {price.toLocaleString()}</span>
+          {displayPrice !== null && displayPrice !== undefined ? (
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span className={`text-lg font-bold ${flashDeal ? "text-accent" : "text-accent"}`}>
+                {currency} {displayPrice.toLocaleString()}
+              </span>
+              {originalPrice && (
+                <span className="text-xs text-muted-foreground line-through">
+                  {currency} {originalPrice.toLocaleString()}
+                </span>
+              )}
+            </div>
           ) : (
             <button
               onClick={handleRequestQuote}

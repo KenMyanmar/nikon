@@ -255,11 +255,11 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
         Brands
       </Link>
       <Link
-        to="/deals"
+        to="/flash-deals"
         className="block py-2.5 px-3 text-sm font-bold text-accent hover:bg-ikon-red-light rounded-md"
         onClick={onClose}
       >
-        🔥 Deals
+        ⚡ Flash Deals
       </Link>
     </div>
   );

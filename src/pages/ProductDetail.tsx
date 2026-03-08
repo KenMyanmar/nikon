@@ -214,6 +214,19 @@ const ProductDetail = () => {
               </button>
             </div>
 
+            {/* Promotion Info */}
+            {promotion && !flashDeal && (
+              <div className="bg-primary/5 border border-primary/20 rounded-card p-3">
+                <p className="text-sm font-semibold text-primary flex items-center gap-1.5">
+                  🏷️ {promotion.title}
+                </p>
+                {promotion.description && (
+                  <p className="text-xs text-muted-foreground mt-1">{promotion.description}</p>
+                )}
+                <p className="text-[10px] text-muted-foreground mt-1">Discount applied automatically at checkout</p>
+              </div>
+            )}
+
             {product.unit_of_measure && (
               <p className="text-xs text-ikon-text-tertiary">Unit: {product.unit_of_measure}</p>
             )}
