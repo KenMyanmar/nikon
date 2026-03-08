@@ -148,7 +148,7 @@ const FlashDealsPage = () => {
                       <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${
-                            soldPct > 70 ? "bg-accent" : soldPct > 30 ? "bg-orange-400" : "bg-emerald-500"
+                            soldPct > 70 ? "bg-red-500" : soldPct > 30 ? "bg-orange-400" : "bg-emerald-500"
                           }`}
                           style={{ width: `${Math.min(soldPct, 100)}%` }}
                         />

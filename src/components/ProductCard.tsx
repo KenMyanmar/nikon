@@ -127,7 +127,7 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
         {specs && <p className="text-xs text-muted-foreground line-clamp-1">{specs}</p>}
 
         {flashDeal && (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full w-fit">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full w-fit">
             <Zap className="w-3 h-3" /> Flash Deal
           </span>
         )}

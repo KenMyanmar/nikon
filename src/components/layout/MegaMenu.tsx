@@ -256,7 +256,7 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
       </Link>
       <Link
         to="/flash-deals"
-        className="block py-2.5 px-3 text-sm font-bold text-accent hover:bg-ikon-red-light rounded-md"
+        className="block py-2.5 px-3 text-sm font-bold text-red-600 hover:bg-red-50 rounded-md"
         onClick={onClose}
       >
         ⚡ Flash Deals

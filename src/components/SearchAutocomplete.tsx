@@ -96,7 +96,7 @@ const SearchAutocomplete = ({
       {showButton && (
         <button
           onClick={handleSubmit}
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground px-6 py-2 rounded-md font-semibold hover:bg-ikon-red-dark transition text-sm"
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground px-6 py-2 rounded-md font-semibold hover:bg-accent/90 transition text-sm"
         >
           Search
         </button>
