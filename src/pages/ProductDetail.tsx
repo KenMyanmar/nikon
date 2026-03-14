@@ -64,12 +64,19 @@ const ProductDetail = () => {
   const [isZooming, setIsZooming] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const [activeTab, setActiveTab] = useState("description");
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [commentText, setCommentText] = useState("");
+  const [reviewerName, setReviewerName] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const imgRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const { addToCart, isAdding } = useAddToCart();
   const { user, openAuthModal } = useAuthContext();
   const navigate = useNavigate();
   const { getFlashDeal, getPromotion } = useMarketingData();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
