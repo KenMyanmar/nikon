@@ -35,22 +35,24 @@ export default function ResetPassword() {
       }
     });
 
+    const hash = window.location.hash;
+    const hasRecoveryToken = hash && (hash.includes("type=recovery") || hash.includes("access_token"));
+
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const hash = window.location.hash;
-        if (hash.includes("type=recovery")) {
-          setStatus("ready");
-          return;
-        }
         setStatus("ready");
+      } else if (!hasRecoveryToken) {
+        setStatus("error");
       } else {
         setTimeout(() => {
           setStatus((prev) => (prev === "loading" ? "error" : prev));
         }, 5000);
       }
     };
-    checkSession();
+
+    // Delay to let Supabase auto-exchange hash tokens
+    setTimeout(checkSession, 1000);
 
     return () => subscription.unsubscribe();
   }, []);
