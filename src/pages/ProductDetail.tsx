@@ -85,20 +85,6 @@ const ProductDetail = () => {
     enabled: !!slug,
   });
 
-  const { data: productExtra } = useQuery({
-    queryKey: ["product-extra", product?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("long_description, tags")
-        .eq("id", product!.id!)
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!product?.id,
-  });
-
   const { data: productImages } = useQuery({
     queryKey: ["product-images", product?.id],
     queryFn: async () => {
