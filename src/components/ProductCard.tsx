@@ -21,6 +21,7 @@ interface ProductCardProps {
   isFeatured?: boolean;
   onhandQty?: number;
   unitOfMeasure?: string;
+  categoryName?: string;
 }
 
 const stockConfig = {
