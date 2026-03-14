@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthContext";
 import MainLayout from "@/components/layout/MainLayout";
@@ -11,6 +11,34 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle } from "lucide-react";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+
+const renderStars = (rating: number, size = 4) => {
+  const rounded = Math.round(rating);
+  return [1, 2, 3, 4, 5].map((s) => (
+    <Star
+      key={s}
+      className={`w-${size} h-${size} ${s <= rounded ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30"}`}
+    />
+  ));
+};
+
+const relativeTime = (dateStr: string) => {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return `${weeks}w ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+  return `${Math.floor(months / 12)}y ago`;
+};
 
 const stockConfig = {
   in_stock: { label: "In Stock", dotClass: "bg-emerald-500", textClass: "text-emerald-700", bgClass: "bg-emerald-50" },
