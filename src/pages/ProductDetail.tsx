@@ -733,10 +733,127 @@ const ProductDetail = () => {
             </TabsContent>
 
             <TabsContent value="reviews" className="mt-4">
-              <div className="bg-card rounded-card shadow-card border border-border p-8 text-center space-y-3">
-                <Star className="w-10 h-10 text-muted-foreground/30 mx-auto" />
-                <h3 className="text-sm font-bold text-foreground">No reviews yet</h3>
-                <p className="text-xs text-muted-foreground">Be the first to review this product.</p>
+              <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-8">
+                {/* Review Summary */}
+                <div className="flex flex-col md:flex-row gap-8">
+                  {/* Average */}
+                  <div className="flex flex-col items-center justify-center gap-2 min-w-[140px]">
+                    <span className="text-4xl font-bold text-foreground">
+                      {reviewStats?.avg_rating ? Number(reviewStats.avg_rating).toFixed(1) : "—"}
+                    </span>
+                    <div className="flex gap-0.5">{renderStars(reviewStats?.avg_rating ? Number(reviewStats.avg_rating) : 0, 5)}</div>
+                    <span className="text-xs text-muted-foreground">
+                      Based on {reviewStats?.review_count || 0} reviews
+                    </span>
+                  </div>
+                  {/* Distribution bars */}
+                  <div className="flex-1 space-y-2">
+                    {[5, 4, 3, 2, 1].map((star) => {
+                      const count = Number(reviewStats?.[`${["one", "two", "three", "four", "five"][star - 1]}_star` as keyof typeof reviewStats] || 0);
+                      const total = Number(reviewStats?.review_count || 0);
+                      const pct = total > 0 ? (count / total) * 100 : 0;
+                      return (
+                        <div key={star} className="flex items-center gap-3 text-sm">
+                          <span className="w-8 text-right text-muted-foreground font-medium">{star}★</span>
+                          <div className="flex-1 h-2.5 bg-muted rounded-full overflow-hidden">
+                            <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                          </div>
+                          <span className="w-8 text-muted-foreground text-xs">{count}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Reviews List */}
+                {reviews && reviews.length > 0 ? (
+                  <div className="space-y-4 border-t border-border pt-6">
+                    {reviews.map((review) => (
+                      <div key={review.id} className="space-y-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex gap-0.5">{renderStars(review.rating, 4)}</div>
+                          <span className="text-sm font-semibold text-foreground">{review.reviewer_name}</span>
+                          {review.is_verified_purchase && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                              <CheckCircle className="w-3 h-3" /> Verified
+                            </span>
+                          )}
+                          <span className="text-xs text-muted-foreground">{relativeTime(review.created_at!)}</span>
+                        </div>
+                        {review.comment && (
+                          <p className="text-sm text-muted-foreground">{review.comment}</p>
+                        )}
+                        {review.admin_response && (
+                          <div className="ml-6 bg-muted/50 border border-border rounded-lg p-3 mt-1">
+                            <p className="text-xs font-semibold text-foreground mb-1">IKON Mart replied:</p>
+                            <p className="text-xs text-muted-foreground">{review.admin_response}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground">No reviews yet. Be the first to share your experience!</p>
+                  </div>
+                )}
+
+                {/* Review Submission Form */}
+                <div className="border-t border-border pt-6">
+                  {user ? (
+                    <div className="space-y-4 max-w-lg">
+                      <h3 className="text-base font-semibold text-foreground">Share Your Feedback</h3>
+                      {/* Star selector */}
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            onMouseEnter={() => setHoverRating(s)}
+                            onMouseLeave={() => setHoverRating(0)}
+                            onClick={() => setSelectedRating(s)}
+                            className="p-0.5"
+                          >
+                            <Star
+                              className={`w-7 h-7 transition-colors ${
+                                s <= (hoverRating || selectedRating)
+                                  ? "text-amber-400 fill-amber-400"
+                                  : "text-muted-foreground/30"
+                              }`}
+                            />
+                          </button>
+                        ))}
+                        {selectedRating > 0 && (
+                          <span className="text-xs text-muted-foreground ml-2">{selectedRating}/5</span>
+                        )}
+                      </div>
+                      <Input
+                        placeholder="Your name"
+                        value={reviewerName}
+                        onChange={(e) => setReviewerName(e.target.value)}
+                        className="max-w-xs"
+                      />
+                      <Textarea
+                        placeholder="Tell us about your experience with this product..."
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        rows={3}
+                      />
+                      <button
+                        onClick={handleSubmitReview}
+                        disabled={isSubmitting || selectedRating === 0}
+                        className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-6 rounded-button transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
+                      >
+                        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Star className="w-4 h-4" />}
+                        Submit Review
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      <button onClick={openAuthModal} className="text-primary hover:underline font-medium">Sign in</button> to leave a review.
+                    </p>
+                  )}
+                </div>
               </div>
             </TabsContent>
           </Tabs>
