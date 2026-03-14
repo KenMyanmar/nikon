@@ -567,21 +567,8 @@ const ProductDetail = () => {
             <TabsContent value="description" className="mt-4">
               <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-4">
                 <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {product.long_description || product.short_description || product.description || "Detailed description coming soon. Contact us for more information about this product."}
+                  {product.short_description || product.description || "Detailed description coming soon. Contact us for more information about this product."}
                 </div>
-                {product.features && (
-                  <div>
-                    <h4 className="text-sm font-bold text-foreground mb-2">Features</h4>
-                    <ul className="space-y-1.5">
-                      {product.features.split(/\n|;/).filter((f: string) => f.trim()).map((feat: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                          {feat.trim()}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </div>
             </TabsContent>
 

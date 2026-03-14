@@ -1396,13 +1396,13 @@ export type Database = {
     Functions: {
       bulk_update_product: {
         Args: {
-          p_long_description?: string
-          p_selling_price?: number
-          p_short_description?: string
-          p_specifications?: Json
+          p_long_description: string
+          p_selling_price: number
+          p_short_description: string
+          p_specifications: Json
           p_stock_code: string
-          p_subcategory_name?: string
-          p_unit_of_measure?: string
+          p_subcategory_name: string
+          p_unit_of_measure: string
         }
         Returns: string
       }
