@@ -47,12 +47,12 @@ export default function ResetPassword() {
       } else {
         setTimeout(() => {
           setStatus((prev) => (prev === "loading" ? "error" : prev));
-        }, 5000);
+        }, 8000);
       }
     };
 
     // Delay to let Supabase auto-exchange hash tokens
-    setTimeout(checkSession, 1000);
+    setTimeout(checkSession, 500);
 
     return () => subscription.unsubscribe();
   }, []);
