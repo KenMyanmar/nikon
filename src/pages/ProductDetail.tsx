@@ -419,11 +419,9 @@ const ProductDetail = () => {
 
             {/* Star Rating */}
             <div className="flex items-center gap-1.5 mb-4">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} className="w-4 h-4 text-muted-foreground/30" />
-              ))}
+              {renderStars(reviewStats?.avg_rating ? Number(reviewStats.avg_rating) : 0, 4)}
               <button onClick={scrollToReviews} className="text-xs text-primary hover:underline ml-1">
-                0 reviews
+                {reviewStats?.review_count ? `(${reviewStats.review_count} reviews)` : "No reviews yet"}
               </button>
             </div>
 
