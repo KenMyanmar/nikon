@@ -27,7 +27,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Early check: if URL has recovery token, redirect to reset page immediately
+    const hash = window.location.hash;
+    if (hash && hash.includes("type=recovery") && window.location.pathname !== "/reset-password") {
+      window.location.href = "/reset-password" + window.location.hash;
+      return; // Page will reload — skip setting up listener
+    }
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        // Don't set user as logged in — redirect to reset page
+        if (window.location.pathname !== "/reset-password") {
+          window.location.href = "/reset-password";
+        }
+        return;
+      }
       setUser(session?.user ?? null);
       setLoading(false);
     });

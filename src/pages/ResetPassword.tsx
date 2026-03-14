@@ -52,7 +52,7 @@ export default function ResetPassword() {
     };
 
     // Delay to let Supabase auto-exchange hash tokens
-    setTimeout(checkSession, 1000);
+    setTimeout(checkSession, 500);
 
     return () => subscription.unsubscribe();
   }, []);
