@@ -47,7 +47,7 @@ export default function ResetPassword() {
       } else {
         setTimeout(() => {
           setStatus((prev) => (prev === "loading" ? "error" : prev));
-        }, 5000);
+        }, 8000);
       }
     };
 
