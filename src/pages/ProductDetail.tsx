@@ -559,6 +559,7 @@ const ProductDetail = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1">
               <TabsTrigger value="description" className="text-sm font-semibold">Description</TabsTrigger>
+              <TabsTrigger value="features" className="text-sm font-semibold">Features</TabsTrigger>
               <TabsTrigger value="specifications" className="text-sm font-semibold">Specifications</TabsTrigger>
               <TabsTrigger value="reviews" className="text-sm font-semibold">Customer Reviews</TabsTrigger>
             </TabsList>
