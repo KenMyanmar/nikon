@@ -85,20 +85,6 @@ const ProductDetail = () => {
     enabled: !!slug,
   });
 
-  const { data: productExtra } = useQuery({
-    queryKey: ["product-extra", product?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("long_description, tags")
-        .eq("id", product!.id!)
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!product?.id,
-  });
-
   const { data: productImages } = useQuery({
     queryKey: ["product-images", product?.id],
     queryFn: async () => {
@@ -339,6 +325,21 @@ const ProductDetail = () => {
               <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-4">{product.short_description}</p>
             )}
 
+            {/* Features */}
+            {product.features && (
+              <div className="mb-4">
+                <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-2">Features</h3>
+                <ul className="space-y-1.5">
+                  {product.features.split(/\n|;/).filter((f: string) => f.trim()).map((feat: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                      {feat.trim()}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Specifications Table */}
             <div className="border border-border rounded-lg overflow-hidden">
               <div className="bg-primary px-4 py-2">
@@ -563,15 +564,22 @@ const ProductDetail = () => {
             </TabsList>
 
             <TabsContent value="description" className="mt-4">
-              <div className="bg-card rounded-card shadow-card border border-border p-6">
-                {productExtra?.long_description ? (
-                  <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {productExtra.long_description}
+              <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-4">
+                <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {product.long_description || product.short_description || product.description || "Detailed description coming soon. Contact us for more information about this product."}
+                </div>
+                {product.features && (
+                  <div>
+                    <h4 className="text-sm font-bold text-foreground mb-2">Features</h4>
+                    <ul className="space-y-1.5">
+                      {product.features.split(/\n|;/).filter((f: string) => f.trim()).map((feat: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                          {feat.trim()}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {product.short_description || product.description || "Detailed description coming soon. Contact us for more information about this product."}
-                  </p>
                 )}
               </div>
             </TabsContent>
