@@ -164,6 +164,78 @@ const ProductDetail = () => {
     enabled: !!product?.category_id && !!product?.id,
   });
 
+  // Review stats
+  const { data: reviewStats } = useQuery({
+    queryKey: ["review-stats", product?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("product_review_stats")
+        .select("*")
+        .eq("product_id", product!.id!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!product?.id,
+  });
+
+  // Approved reviews
+  const { data: reviews } = useQuery({
+    queryKey: ["product-reviews", product?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("reviews")
+        .select("id, rating, comment, reviewer_name, is_verified_purchase, admin_response, created_at")
+        .eq("product_id", product!.id!)
+        .eq("status", "approved")
+        .order("created_at", { ascending: false })
+        .limit(20);
+      return data || [];
+    },
+    enabled: !!product?.id,
+  });
+
+  // Customer record for review submission
+  const { data: currentCustomer } = useQuery({
+    queryKey: ["customer-for-review", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("customers")
+        .select("id, name, email")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Pre-fill reviewer name
+  useEffect(() => {
+    if (currentCustomer?.name) setReviewerName(currentCustomer.name);
+    else if (user?.email) setReviewerName(user.email.split("@")[0]);
+  }, [currentCustomer, user]);
+
+  const handleSubmitReview = async () => {
+    if (!selectedRating || !currentCustomer?.id || !product?.id) return;
+    setIsSubmitting(true);
+    const { error } = await supabase.from("reviews").insert({
+      product_id: product.id,
+      customer_id: currentCustomer.id,
+      rating: selectedRating,
+      comment: commentText || null,
+      reviewer_name: reviewerName || "Anonymous",
+    });
+    setIsSubmitting(false);
+    if (error) {
+      toast({ title: "Error", description: "Could not submit review. Please try again.", variant: "destructive" });
+    } else {
+      toast({ title: "Thank you!", description: "Your review will appear after approval." });
+      setSelectedRating(0);
+      setCommentText("");
+      queryClient.invalidateQueries({ queryKey: ["product-reviews", product.id] });
+      queryClient.invalidateQueries({ queryKey: ["review-stats", product.id] });
+    }
+  };
+
   if (isLoading) {
     return (
       <MainLayout>
