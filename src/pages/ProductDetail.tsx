@@ -325,6 +325,21 @@ const ProductDetail = () => {
               <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-4">{product.short_description}</p>
             )}
 
+            {/* Features */}
+            {product.features && (
+              <div className="mb-4">
+                <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-2">Features</h3>
+                <ul className="space-y-1.5">
+                  {product.features.split(/\n|;/).filter((f: string) => f.trim()).map((feat: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                      {feat.trim()}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Specifications Table */}
             <div className="border border-border rounded-lg overflow-hidden">
               <div className="bg-primary px-4 py-2">
