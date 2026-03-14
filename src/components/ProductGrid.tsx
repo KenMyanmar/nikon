@@ -12,6 +12,7 @@ interface Product {
   stock_code?: string | null;
   moq?: number | null;
   thumbnail_url?: string | null;
+  category_name?: string | null;
 }
 
 interface ProductGridProps {
