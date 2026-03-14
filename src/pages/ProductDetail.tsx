@@ -8,7 +8,7 @@ import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle } from "lucide-react";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
 
@@ -559,6 +559,7 @@ const ProductDetail = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1">
               <TabsTrigger value="description" className="text-sm font-semibold">Description</TabsTrigger>
+              <TabsTrigger value="features" className="text-sm font-semibold">Features</TabsTrigger>
               <TabsTrigger value="specifications" className="text-sm font-semibold">Specifications</TabsTrigger>
               <TabsTrigger value="reviews" className="text-sm font-semibold">Customer Reviews</TabsTrigger>
             </TabsList>
@@ -580,6 +581,25 @@ const ProductDetail = () => {
                       ))}
                     </ul>
                   </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="features" className="mt-4">
+              <div className="bg-card rounded-card shadow-card border border-border p-6">
+                {product.features ? (
+                  <ul className="space-y-3">
+                    {product.features.split(/\n|;/).filter((f: string) => f.trim()).map((feat: string, i: number) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
+                        <CheckCircle className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" />
+                        <span>{feat.trim()}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    Features information coming soon.
+                  </p>
                 )}
               </div>
             </TabsContent>
