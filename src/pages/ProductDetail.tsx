@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthContext";
 import MainLayout from "@/components/layout/MainLayout";
@@ -11,6 +11,34 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle } from "lucide-react";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+
+const renderStars = (rating: number, size = 4) => {
+  const rounded = Math.round(rating);
+  return [1, 2, 3, 4, 5].map((s) => (
+    <Star
+      key={s}
+      className={`w-${size} h-${size} ${s <= rounded ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30"}`}
+    />
+  ));
+};
+
+const relativeTime = (dateStr: string) => {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return `${weeks}w ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+  return `${Math.floor(months / 12)}y ago`;
+};
 
 const stockConfig = {
   in_stock: { label: "In Stock", dotClass: "bg-emerald-500", textClass: "text-emerald-700", bgClass: "bg-emerald-50" },
@@ -36,12 +64,19 @@ const ProductDetail = () => {
   const [isZooming, setIsZooming] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const [activeTab, setActiveTab] = useState("description");
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [commentText, setCommentText] = useState("");
+  const [reviewerName, setReviewerName] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const imgRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const { addToCart, isAdding } = useAddToCart();
   const { user, openAuthModal } = useAuthContext();
   const navigate = useNavigate();
   const { getFlashDeal, getPromotion } = useMarketingData();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
@@ -128,6 +163,78 @@ const ProductDetail = () => {
     },
     enabled: !!product?.category_id && !!product?.id,
   });
+
+  // Review stats
+  const { data: reviewStats } = useQuery({
+    queryKey: ["review-stats", product?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("product_review_stats")
+        .select("*")
+        .eq("product_id", product!.id!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!product?.id,
+  });
+
+  // Approved reviews
+  const { data: reviews } = useQuery({
+    queryKey: ["product-reviews", product?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("reviews")
+        .select("id, rating, comment, reviewer_name, is_verified_purchase, admin_response, created_at")
+        .eq("product_id", product!.id!)
+        .eq("status", "approved")
+        .order("created_at", { ascending: false })
+        .limit(20);
+      return data || [];
+    },
+    enabled: !!product?.id,
+  });
+
+  // Customer record for review submission
+  const { data: currentCustomer } = useQuery({
+    queryKey: ["customer-for-review", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("customers")
+        .select("id, name, email")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Pre-fill reviewer name
+  useEffect(() => {
+    if (currentCustomer?.name) setReviewerName(currentCustomer.name);
+    else if (user?.email) setReviewerName(user.email.split("@")[0]);
+  }, [currentCustomer, user]);
+
+  const handleSubmitReview = async () => {
+    if (!selectedRating || !currentCustomer?.id || !product?.id) return;
+    setIsSubmitting(true);
+    const { error } = await supabase.from("reviews").insert({
+      product_id: product.id,
+      customer_id: currentCustomer.id,
+      rating: selectedRating,
+      comment: commentText || null,
+      reviewer_name: reviewerName || "Anonymous",
+    });
+    setIsSubmitting(false);
+    if (error) {
+      toast({ title: "Error", description: "Could not submit review. Please try again.", variant: "destructive" });
+    } else {
+      toast({ title: "Thank you!", description: "Your review will appear after approval." });
+      setSelectedRating(0);
+      setCommentText("");
+      queryClient.invalidateQueries({ queryKey: ["product-reviews", product.id] });
+      queryClient.invalidateQueries({ queryKey: ["review-stats", product.id] });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -312,11 +419,9 @@ const ProductDetail = () => {
 
             {/* Star Rating */}
             <div className="flex items-center gap-1.5 mb-4">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} className="w-4 h-4 text-muted-foreground/30" />
-              ))}
+              {renderStars(reviewStats?.avg_rating ? Number(reviewStats.avg_rating) : 0, 4)}
               <button onClick={scrollToReviews} className="text-xs text-primary hover:underline ml-1">
-                0 reviews
+                {reviewStats?.review_count ? `(${reviewStats.review_count} reviews)` : "No reviews yet"}
               </button>
             </div>
 
@@ -628,10 +733,127 @@ const ProductDetail = () => {
             </TabsContent>
 
             <TabsContent value="reviews" className="mt-4">
-              <div className="bg-card rounded-card shadow-card border border-border p-8 text-center space-y-3">
-                <Star className="w-10 h-10 text-muted-foreground/30 mx-auto" />
-                <h3 className="text-sm font-bold text-foreground">No reviews yet</h3>
-                <p className="text-xs text-muted-foreground">Be the first to review this product.</p>
+              <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-8">
+                {/* Review Summary */}
+                <div className="flex flex-col md:flex-row gap-8">
+                  {/* Average */}
+                  <div className="flex flex-col items-center justify-center gap-2 min-w-[140px]">
+                    <span className="text-4xl font-bold text-foreground">
+                      {reviewStats?.avg_rating ? Number(reviewStats.avg_rating).toFixed(1) : "—"}
+                    </span>
+                    <div className="flex gap-0.5">{renderStars(reviewStats?.avg_rating ? Number(reviewStats.avg_rating) : 0, 5)}</div>
+                    <span className="text-xs text-muted-foreground">
+                      Based on {reviewStats?.review_count || 0} reviews
+                    </span>
+                  </div>
+                  {/* Distribution bars */}
+                  <div className="flex-1 space-y-2">
+                    {[5, 4, 3, 2, 1].map((star) => {
+                      const count = Number(reviewStats?.[`${["one", "two", "three", "four", "five"][star - 1]}_star` as keyof typeof reviewStats] || 0);
+                      const total = Number(reviewStats?.review_count || 0);
+                      const pct = total > 0 ? (count / total) * 100 : 0;
+                      return (
+                        <div key={star} className="flex items-center gap-3 text-sm">
+                          <span className="w-8 text-right text-muted-foreground font-medium">{star}★</span>
+                          <div className="flex-1 h-2.5 bg-muted rounded-full overflow-hidden">
+                            <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                          </div>
+                          <span className="w-8 text-muted-foreground text-xs">{count}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Reviews List */}
+                {reviews && reviews.length > 0 ? (
+                  <div className="space-y-4 border-t border-border pt-6">
+                    {reviews.map((review) => (
+                      <div key={review.id} className="space-y-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex gap-0.5">{renderStars(review.rating, 4)}</div>
+                          <span className="text-sm font-semibold text-foreground">{review.reviewer_name}</span>
+                          {review.is_verified_purchase && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                              <CheckCircle className="w-3 h-3" /> Verified
+                            </span>
+                          )}
+                          <span className="text-xs text-muted-foreground">{relativeTime(review.created_at!)}</span>
+                        </div>
+                        {review.comment && (
+                          <p className="text-sm text-muted-foreground">{review.comment}</p>
+                        )}
+                        {review.admin_response && (
+                          <div className="ml-6 bg-muted/50 border border-border rounded-lg p-3 mt-1">
+                            <p className="text-xs font-semibold text-foreground mb-1">IKON Mart replied:</p>
+                            <p className="text-xs text-muted-foreground">{review.admin_response}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground">No reviews yet. Be the first to share your experience!</p>
+                  </div>
+                )}
+
+                {/* Review Submission Form */}
+                <div className="border-t border-border pt-6">
+                  {user ? (
+                    <div className="space-y-4 max-w-lg">
+                      <h3 className="text-base font-semibold text-foreground">Share Your Feedback</h3>
+                      {/* Star selector */}
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            onMouseEnter={() => setHoverRating(s)}
+                            onMouseLeave={() => setHoverRating(0)}
+                            onClick={() => setSelectedRating(s)}
+                            className="p-0.5"
+                          >
+                            <Star
+                              className={`w-7 h-7 transition-colors ${
+                                s <= (hoverRating || selectedRating)
+                                  ? "text-amber-400 fill-amber-400"
+                                  : "text-muted-foreground/30"
+                              }`}
+                            />
+                          </button>
+                        ))}
+                        {selectedRating > 0 && (
+                          <span className="text-xs text-muted-foreground ml-2">{selectedRating}/5</span>
+                        )}
+                      </div>
+                      <Input
+                        placeholder="Your name"
+                        value={reviewerName}
+                        onChange={(e) => setReviewerName(e.target.value)}
+                        className="max-w-xs"
+                      />
+                      <Textarea
+                        placeholder="Tell us about your experience with this product..."
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        rows={3}
+                      />
+                      <button
+                        onClick={handleSubmitReview}
+                        disabled={isSubmitting || selectedRating === 0}
+                        className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-6 rounded-button transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
+                      >
+                        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Star className="w-4 h-4" />}
+                        Submit Review
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      <button onClick={openAuthModal} className="text-primary hover:underline font-medium">Sign in</button> to leave a review.
+                    </p>
+                  )}
+                </div>
               </div>
             </TabsContent>
           </Tabs>
