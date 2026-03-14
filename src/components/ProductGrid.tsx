@@ -12,6 +12,7 @@ interface Product {
   stock_code?: string | null;
   moq?: number | null;
   thumbnail_url?: string | null;
+  category_name?: string | null;
 }
 
 interface ProductGridProps {
@@ -35,6 +36,7 @@ const ProductGrid = ({ products }: ProductGridProps) => {
           stockStatus={(p.stock_status as "in_stock" | "low_stock" | "out_of_stock") || "in_stock"}
           sku={p.stock_code || ""}
           slug={p.slug}
+          categoryName={p.category_name || undefined}
         />
       ))}
     </div>

@@ -21,6 +21,7 @@ interface ProductCardProps {
   isFeatured?: boolean;
   onhandQty?: number;
   unitOfMeasure?: string;
+  categoryName?: string;
 }
 
 const stockConfig = {
@@ -29,7 +30,7 @@ const stockConfig = {
   out_of_stock: { label: "Out of Stock", dotClass: "bg-red-500", textClass: "text-red-700", bgClass: "bg-red-50" },
 };
 
-const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug, categoryId, brandId, isFeatured, onhandQty, unitOfMeasure }: ProductCardProps) => {
+const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug, categoryId, brandId, isFeatured, onhandQty, unitOfMeasure, categoryName }: ProductCardProps) => {
   const stock = stockConfig[stockStatus] || stockConfig.in_stock;
   const isPlaceholder = !image || image === "/placeholder.svg";
   const { addToCart, isAdding } = useAddToCart();
@@ -107,6 +108,13 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
             </span>
           )}
         </div>
+
+        {/* Category badge */}
+        {categoryName && !showUrgency && (
+          <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full">
+            {categoryName}
+          </div>
+        )}
 
         {/* Urgency label */}
         {showUrgency && (
