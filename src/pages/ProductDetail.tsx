@@ -585,6 +585,25 @@ const ProductDetail = () => {
               </div>
             </TabsContent>
 
+            <TabsContent value="features" className="mt-4">
+              <div className="bg-card rounded-card shadow-card border border-border p-6">
+                {product.features ? (
+                  <ul className="space-y-3">
+                    {product.features.split(/\n|;/).filter((f: string) => f.trim()).map((feat: string, i: number) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
+                        <CheckCircle className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" />
+                        <span>{feat.trim()}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    Features information coming soon.
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+
             <TabsContent value="specifications" className="mt-4">
               <div className="bg-card rounded-card shadow-card border border-border overflow-hidden">
                 <table className="w-full text-sm">
