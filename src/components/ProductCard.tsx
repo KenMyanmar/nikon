@@ -109,6 +109,13 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
           )}
         </div>
 
+        {/* Category badge */}
+        {categoryName && !showUrgency && (
+          <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full">
+            {categoryName}
+          </div>
+        )}
+
         {/* Urgency label */}
         {showUrgency && (
           <div className="absolute bottom-2 left-2 bg-amber-500/90 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">

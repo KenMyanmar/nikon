@@ -231,6 +231,19 @@ const ProductDetail = () => {
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          segments={[
+            ...(product.group_name ? [{ label: product.group_name, href: "/categories" }] : []),
+            ...(product.parent_category_name && product.parent_category_slug
+              ? [{ label: product.parent_category_name, href: `/category/${product.parent_category_slug}` }]
+              : []),
+            ...(product.category_name && product.category_slug
+              ? [{ label: product.category_name, href: `/category/${product.category_slug}` }]
+              : []),
+            { label: product.description || "Product" },
+          ]}
+        />
         {/* ── 3-Column Layout ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-10">
           {/* COL 1: Image Gallery */}

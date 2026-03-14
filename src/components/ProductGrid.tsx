@@ -36,6 +36,7 @@ const ProductGrid = ({ products }: ProductGridProps) => {
           stockStatus={(p.stock_status as "in_stock" | "low_stock" | "out_of_stock") || "in_stock"}
           sku={p.stock_code || ""}
           slug={p.slug}
+          categoryName={p.category_name || undefined}
         />
       ))}
     </div>
