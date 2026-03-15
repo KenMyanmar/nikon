@@ -65,7 +65,12 @@ const AccountOrders = () => {
 
   return (
     <div className="space-y-3">
-      <h2 className="text-h3 text-foreground mb-4">My Orders</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-h3 text-foreground">My Orders</h2>
+        <Link to="/orders" className="text-sm text-primary hover:underline flex items-center gap-1">
+          View All <ExternalLink className="w-3 h-3" />
+        </Link>
+      </div>
       {orders.map((order) => (
         <div key={order.id} className="bg-card rounded-card shadow-card overflow-hidden">
           <button
