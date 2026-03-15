@@ -260,13 +260,19 @@ const CartPage = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span className="text-ikon-text-secondary text-xs">Contact for quote</span>
+                  <span className="text-muted-foreground text-xs">Calculated at checkout</span>
                 </div>
                 <div className="border-t border-ikon-border pt-3 flex justify-between">
                   <span className="font-bold text-foreground">Total</span>
                   <span className="font-bold text-foreground text-lg">MMK {subtotal.toLocaleString()}</span>
                 </div>
               </div>
+
+              {hasUnpricedItems && (
+                <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <p className="text-xs text-amber-700 font-medium">Some items require a price quotation. Remove unpriced items or use "Request Quote" for those items to proceed to checkout.</p>
+                </div>
+              )}
 
               <div className="mt-6 space-y-3">
                 {hasUnpricedItems && (
@@ -278,8 +284,9 @@ const CartPage = () => {
                   </button>
                 )}
                 <button
-                  onClick={() => toast({ title: "Coming Soon", description: "Checkout coming soon! Use Request Quote for orders." })}
-                  className="w-full bg-accent text-accent-foreground py-3 rounded-button font-semibold hover:bg-accent/90 transition"
+                  onClick={() => navigate("/checkout")}
+                  disabled={hasUnpricedItems || subtotal === 0}
+                  className="w-full bg-accent text-accent-foreground py-3 rounded-button font-semibold hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Proceed to Checkout
                 </button>

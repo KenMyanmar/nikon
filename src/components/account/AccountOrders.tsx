@@ -1,15 +1,24 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { ChevronDown, ChevronUp, Package } from "lucide-react";
+import { ChevronDown, ChevronUp, Package, ExternalLink } from "lucide-react";
 
 const statusBadge: Record<string, string> = {
   pending: "bg-amber-100 text-amber-700",
   confirmed: "bg-blue-100 text-blue-700",
+  confirmed_cod: "bg-blue-100 text-blue-700",
+  awaiting_payment_proof: "bg-red-100 text-red-700",
+  payment_under_review: "bg-amber-100 text-amber-700",
+  paid: "bg-emerald-100 text-emerald-700",
+  packed: "bg-blue-100 text-blue-700",
+  out_for_delivery: "bg-amber-100 text-amber-700",
   shipped: "bg-purple-100 text-purple-700",
   delivered: "bg-emerald-100 text-emerald-700",
-  cancelled: "bg-red-100 text-red-700",
+  cancelled: "bg-gray-100 text-gray-600",
+  payment_rejected: "bg-red-100 text-red-700",
+  expired: "bg-gray-100 text-gray-600",
 };
 
 const AccountOrders = () => {
@@ -56,7 +65,12 @@ const AccountOrders = () => {
 
   return (
     <div className="space-y-3">
-      <h2 className="text-h3 text-foreground mb-4">My Orders</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-h3 text-foreground">My Orders</h2>
+        <Link to="/orders" className="text-sm text-primary hover:underline flex items-center gap-1">
+          View All <ExternalLink className="w-3 h-3" />
+        </Link>
+      </div>
       {orders.map((order) => (
         <div key={order.id} className="bg-card rounded-card shadow-card overflow-hidden">
           <button

@@ -18,6 +18,8 @@ import RequestQuotePage from "./pages/RequestQuotePage";
 import AllCategoriesPage from "./pages/AllCategoriesPage";
 import AllBrandsPage from "./pages/AllBrandsPage";
 import FlashDealsPage from "./pages/FlashDealsPage";
+import Checkout from "./pages/Checkout";
+import MyOrders from "./pages/MyOrders";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +44,8 @@ const App = () => (
             <Route path="/categories" element={<AllCategoriesPage />} />
             <Route path="/brands" element={<AllBrandsPage />} />
             <Route path="/flash-deals" element={<FlashDealsPage />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/orders" element={<MyOrders />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
