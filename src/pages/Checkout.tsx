@@ -38,6 +38,7 @@ const Checkout = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { getFlashDeal } = useMarketingData();
   const [step, setStep] = useState(1);
   const placingRef = useRef(false);
 
