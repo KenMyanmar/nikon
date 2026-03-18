@@ -3,14 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useMarketingData } from "@/hooks/useMarketingData";
 import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
-import { Minus, Plus, Trash2, ShoppingCart, LogIn, Tag, X, Loader2, ChevronDown } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, LogIn, Tag, X, Loader2, ChevronDown, Zap } from "lucide-react";
 
 const CartPage = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { getFlashDeal } = useMarketingData();
 
   const { data: customerId } = useQuery({
     queryKey: ["customer-id", user?.id],
@@ -93,16 +95,25 @@ const CartPage = () => {
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["cart", customerId] }),
   });
 
+  const getEffectivePrice = (item: any) => {
+    const flashDeal = getFlashDeal(item.product_id);
+    const now = new Date();
+    if (flashDeal && new Date(flashDeal.start_time) <= now && new Date(flashDeal.end_time) >= now && (flashDeal.sold_count ?? 0) < flashDeal.stock_limit) {
+      return { price: flashDeal.flash_price, originalPrice: Number(item.product?.selling_price) || 0, isFlashDeal: true };
+    }
+    return { price: Number(item.product?.selling_price) || 0, originalPrice: 0, isFlashDeal: false };
+  };
+
   const { subtotal, hasUnpricedItems } = useMemo(() => {
     let total = 0;
     let unpriced = false;
     cartItems.forEach((item) => {
-      const price = Number(item.product?.selling_price) || 0;
+      const { price } = getEffectivePrice(item);
       if (price === 0) unpriced = true;
       total += price * item.quantity;
     });
     return { subtotal: total, hasUnpricedItems: unpriced };
-  }, [cartItems]);
+  }, [cartItems, getFlashDeal]);
 
   if (authLoading) {
     return (
@@ -174,7 +185,7 @@ const CartPage = () => {
               const product = item.product;
               if (!product) return null;
 
-              const price = Number(product.selling_price) || 0;
+              const { price, originalPrice, isFlashDeal } = getEffectivePrice(item);
               const moq = product.moq || 1;
               const maxQty = product.onhand_qty || 9999;
               const lineTotal = price * item.quantity;
@@ -221,7 +232,19 @@ const CartPage = () => {
                       {/* Unit Price */}
                       <div className="text-sm">
                         {price > 0 ? (
-                          <span className="text-foreground font-medium">{product.currency || "MMK"} {price.toLocaleString()}</span>
+                          <div className="flex items-center gap-1.5">
+                            {isFlashDeal && (
+                              <>
+                                <span className="inline-flex items-center gap-0.5 bg-destructive/10 text-destructive text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                  <Zap className="w-3 h-3" /> Flash
+                                </span>
+                                <span className="text-muted-foreground line-through text-xs">{originalPrice.toLocaleString()}</span>
+                              </>
+                            )}
+                            <span className={`font-medium ${isFlashDeal ? "text-destructive" : "text-foreground"}`}>
+                              {product.currency || "MMK"} {price.toLocaleString()}
+                            </span>
+                          </div>
                         ) : (
                           <span className="text-primary font-medium">Quote</span>
                         )}

@@ -1,13 +1,14 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useMarketingData } from "@/hooks/useMarketingData";
 import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
 import {
   Truck, CreditCard, CheckCircle, Plus, Banknote, Smartphone, Wallet,
-  Upload, X, Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper
+  Upload, X, Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap
 } from "lucide-react";
 
 const TOWNSHIPS = [
@@ -37,6 +38,7 @@ const Checkout = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { getFlashDeal } = useMarketingData();
   const [step, setStep] = useState(1);
   const placingRef = useRef(false);
 
@@ -98,7 +100,19 @@ const Checkout = () => {
     },
   });
 
-  const subtotal = useMemo(() => cartItems.reduce((s, i) => s + (Number(i.product?.selling_price) || 0) * i.quantity, 0), [cartItems]);
+  const getEffectivePrice = useCallback((productId: string, sellingPrice: number) => {
+    const flashDeal = getFlashDeal(productId);
+    const now = new Date();
+    if (flashDeal && new Date(flashDeal.start_time) <= now && new Date(flashDeal.end_time) >= now && (flashDeal.sold_count ?? 0) < flashDeal.stock_limit) {
+      return { price: flashDeal.flash_price, originalPrice: sellingPrice, isFlashDeal: true };
+    }
+    return { price: sellingPrice, originalPrice: 0, isFlashDeal: false };
+  }, [getFlashDeal]);
+
+  const subtotal = useMemo(() => cartItems.reduce((s, i) => {
+    const { price } = getEffectivePrice(i.product_id, Number(i.product?.selling_price) || 0);
+    return s + price * i.quantity;
+  }, 0), [cartItems, getEffectivePrice]);
 
   // ── Delivery state
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
@@ -324,6 +338,7 @@ const Checkout = () => {
             onBack={() => setStep(1)}
             codEligible={codEligible}
             maxCod={maxCod}
+            getEffectivePrice={getEffectivePrice}
           />
         )}
 
@@ -520,13 +535,14 @@ interface PaymentProps {
   onBack: () => void;
   codEligible: boolean;
   maxCod: number | null;
+  getEffectivePrice: (productId: string, sellingPrice: number) => { price: number; originalPrice: number; isFlashDeal: boolean };
 }
 
 const StepPayment = ({
   cartItems, subtotal, deliveryFee, total,
   paymentMethod, setPaymentMethod, paymentProofUrl, setPaymentProofUrl,
   paymentRef, setPaymentRef, uploading, onUpload, placing, onPlaceOrder,
-  onBack, codEligible, maxCod,
+  onBack, codEligible, maxCod, getEffectivePrice,
 }: PaymentProps) => {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const codDisabled = !codEligible || (maxCod !== null && total > maxCod);
@@ -642,7 +658,7 @@ const StepPayment = ({
               {cartItems.map((item) => {
                 const p = item.product;
                 if (!p) return null;
-                const price = Number(p.selling_price) || 0;
+                const { price, originalPrice, isFlashDeal } = getEffectivePrice(item.product_id, Number(p.selling_price) || 0);
                 return (
                   <div key={item.id} className="flex items-center gap-2 text-sm">
                     <div className="w-10 h-10 rounded bg-muted/30 overflow-hidden shrink-0">
@@ -650,7 +666,13 @@ const StepPayment = ({
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-foreground line-clamp-1">{p.description}</p>
-                      <p className="text-[10px] text-muted-foreground">{item.quantity} × {price.toLocaleString()}</p>
+                      <div className="flex items-center gap-1">
+                        {isFlashDeal && <Zap className="w-3 h-3 text-destructive" />}
+                        <p className="text-[10px] text-muted-foreground">
+                          {item.quantity} × {isFlashDeal && <span className="line-through mr-1">{originalPrice.toLocaleString()}</span>}
+                          <span className={isFlashDeal ? "text-destructive font-medium" : ""}>{price.toLocaleString()}</span>
+                        </p>
+                      </div>
                     </div>
                     <span className="text-xs font-semibold text-foreground shrink-0">{(price * item.quantity).toLocaleString()}</span>
                   </div>
