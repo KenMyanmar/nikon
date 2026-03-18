@@ -8,8 +8,17 @@ import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
 import {
   Truck, CreditCard, CheckCircle, Plus, Banknote, Smartphone, Wallet,
-  Upload, X, Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap
+  Upload, X, Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap, Tag
 } from "lucide-react";
+
+interface AppliedCoupon {
+  code: string;
+  title: string;
+  discount: number;
+  type: string;
+  discount_value: number;
+  max_discount_amount: number | null;
+}
 
 const TOWNSHIPS = [
   "Kamayut", "Hlaing", "Bahan", "Sanchaung", "Kyimyindaing", "Dagon",
@@ -151,7 +160,27 @@ const Checkout = () => {
   const codEligible = feeRow?.cod_eligible !== false;
   const maxCod = feeRow?.max_cod_amount ? Number(feeRow.max_cod_amount) : null;
   const estimatedDays = feeRow?.estimated_days || "2-4 days";
-  const total = subtotal + deliveryFee;
+  // ── Coupon from cart (persisted in sessionStorage)
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(() => {
+    try {
+      const stored = sessionStorage.getItem("appliedCoupon");
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
+  });
+
+  const couponDiscount = useMemo(() => {
+    if (!appliedCoupon) return 0;
+    let discount = 0;
+    if (appliedCoupon.type === "percentage") {
+      discount = subtotal * (appliedCoupon.discount_value / 100);
+      if (appliedCoupon.max_discount_amount) discount = Math.min(discount, appliedCoupon.max_discount_amount);
+    } else {
+      discount = appliedCoupon.discount_value;
+    }
+    return Math.min(discount, subtotal);
+  }, [appliedCoupon, subtotal]);
+
+  const total = subtotal + deliveryFee - couponDiscount;
 
   // ── Payment state
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
@@ -250,6 +279,7 @@ const Checkout = () => {
         p_customer_notes: (showNewAddress ? addrForm.delivery_notes : addr?.delivery_notes) || null,
         p_payment_proof_url: paymentProofUrl || null,
         p_payment_reference: paymentRef || null,
+        p_coupon_code: appliedCoupon?.code || null,
       });
 
       if (error) throw error;
@@ -257,6 +287,7 @@ const Checkout = () => {
       if (data?.success) {
         setOrderResult(data);
         setStep(3);
+        sessionStorage.removeItem("appliedCoupon");
         queryClient.invalidateQueries({ queryKey: ["cart-count"] });
         queryClient.invalidateQueries({ queryKey: ["cart"] });
         queryClient.invalidateQueries({ queryKey: ["cart-checkout"] });
@@ -339,6 +370,8 @@ const Checkout = () => {
             codEligible={codEligible}
             maxCod={maxCod}
             getEffectivePrice={getEffectivePrice}
+            couponDiscount={couponDiscount}
+            couponCode={appliedCoupon?.code || null}
           />
         )}
 
@@ -533,6 +566,8 @@ interface PaymentProps {
   placing: boolean;
   onPlaceOrder: () => void;
   onBack: () => void;
+  couponDiscount: number;
+  couponCode: string | null;
   codEligible: boolean;
   maxCod: number | null;
   getEffectivePrice: (productId: string, sellingPrice: number) => { price: number; originalPrice: number; isFlashDeal: boolean };
@@ -542,7 +577,7 @@ const StepPayment = ({
   cartItems, subtotal, deliveryFee, total,
   paymentMethod, setPaymentMethod, paymentProofUrl, setPaymentProofUrl,
   paymentRef, setPaymentRef, uploading, onUpload, placing, onPlaceOrder,
-  onBack, codEligible, maxCod, getEffectivePrice,
+  onBack, codEligible, maxCod, getEffectivePrice, couponDiscount, couponCode,
 }: PaymentProps) => {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const codDisabled = !codEligible || (maxCod !== null && total > maxCod);
@@ -682,6 +717,12 @@ const StepPayment = ({
             <hr className="my-3 border-border" />
             <div className="space-y-2 text-sm">
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span className="text-foreground">{fmt(subtotal)}</span></div>
+              {couponDiscount > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-emerald-600 font-medium flex items-center gap-1"><Tag className="w-3 h-3" />Coupon ({couponCode})</span>
+                  <span className="text-emerald-600 font-medium">-{fmt(couponDiscount)}</span>
+                </div>
+              )}
               <div className="flex justify-between"><span className="text-muted-foreground">Delivery</span><span className={deliveryFee === 0 ? "text-emerald-600 font-medium" : "text-foreground"}>{deliveryFee === 0 ? "FREE" : fmt(deliveryFee)}</span></div>
               <hr className="border-border" />
               <div className="flex justify-between font-bold text-base"><span className="text-foreground">Total</span><span className="text-accent">{fmt(total)}</span></div>

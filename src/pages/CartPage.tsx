@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,11 +8,21 @@ import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
 import { Minus, Plus, Trash2, ShoppingCart, LogIn, Tag, X, Loader2, ChevronDown, Zap } from "lucide-react";
 
+interface AppliedCoupon {
+  code: string;
+  title: string;
+  discount: number;
+  type: string;
+  discount_value: number;
+  max_discount_amount: number | null;
+}
+
 const CartPage = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { getFlashDeal } = useMarketingData();
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
 
   const { data: customerId } = useQuery({
     queryKey: ["customer-id", user?.id],
@@ -95,14 +105,14 @@ const CartPage = () => {
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["cart", customerId] }),
   });
 
-  const getEffectivePrice = (item: any) => {
+  const getEffectivePrice = useCallback((item: any) => {
     const flashDeal = getFlashDeal(item.product_id);
     const now = new Date();
     if (flashDeal && new Date(flashDeal.start_time) <= now && new Date(flashDeal.end_time) >= now && (flashDeal.sold_count ?? 0) < flashDeal.stock_limit) {
       return { price: flashDeal.flash_price, originalPrice: Number(item.product?.selling_price) || 0, isFlashDeal: true };
     }
     return { price: Number(item.product?.selling_price) || 0, originalPrice: 0, isFlashDeal: false };
-  };
+  }, [getFlashDeal]);
 
   const { subtotal, hasUnpricedItems } = useMemo(() => {
     let total = 0;
@@ -113,7 +123,37 @@ const CartPage = () => {
       total += price * item.quantity;
     });
     return { subtotal: total, hasUnpricedItems: unpriced };
-  }, [cartItems, getFlashDeal]);
+  }, [cartItems, getEffectivePrice]);
+
+  const couponDiscount = useMemo(() => {
+    if (!appliedCoupon) return 0;
+    let discount = 0;
+    if (appliedCoupon.type === "percentage") {
+      discount = subtotal * (appliedCoupon.discount_value / 100);
+      if (appliedCoupon.max_discount_amount) discount = Math.min(discount, appliedCoupon.max_discount_amount);
+    } else {
+      discount = appliedCoupon.discount_value;
+    }
+    return Math.min(discount, subtotal);
+  }, [appliedCoupon, subtotal]);
+
+  const displayTotal = subtotal - couponDiscount;
+
+  const handleApplyCoupon = (coupon: AppliedCoupon) => {
+    setAppliedCoupon(coupon);
+    // Persist to sessionStorage for checkout
+    sessionStorage.setItem("appliedCoupon", JSON.stringify(coupon));
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    sessionStorage.removeItem("appliedCoupon");
+  };
+
+  const handleProceedToCheckout = () => {
+    // Coupon is already in sessionStorage
+    navigate("/checkout");
+  };
 
   if (authLoading) {
     return (
@@ -275,19 +315,31 @@ const CartPage = () => {
           <div className="lg:w-80 shrink-0">
             <div className="bg-card rounded-card shadow-card p-6 sticky top-28">
               <h2 className="text-h4 text-foreground mb-4">Order Summary</h2>
-              <CouponInput subtotal={subtotal} />
+              <CouponInput
+                subtotal={subtotal}
+                cartItems={cartItems}
+                appliedCoupon={appliedCoupon}
+                onApply={handleApplyCoupon}
+                onRemove={handleRemoveCoupon}
+              />
               <div className="space-y-3 text-sm mt-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span className="font-semibold text-foreground">MMK {subtotal.toLocaleString()}</span>
                 </div>
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-emerald-600 font-medium">Coupon ({appliedCoupon?.code})</span>
+                    <span className="text-emerald-600 font-medium">-MMK {couponDiscount.toLocaleString()}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
                   <span className="text-muted-foreground text-xs">Calculated at checkout</span>
                 </div>
                 <div className="border-t border-ikon-border pt-3 flex justify-between">
                   <span className="font-bold text-foreground">Total</span>
-                  <span className="font-bold text-foreground text-lg">MMK {subtotal.toLocaleString()}</span>
+                  <span className="font-bold text-foreground text-lg">MMK {displayTotal.toLocaleString()}</span>
                 </div>
               </div>
 
@@ -307,7 +359,7 @@ const CartPage = () => {
                   </button>
                 )}
                 <button
-                  onClick={() => navigate("/checkout")}
+                  onClick={handleProceedToCheckout}
                   disabled={hasUnpricedItems || subtotal === 0}
                   className="w-full bg-accent text-accent-foreground py-3 rounded-button font-semibold hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -323,11 +375,18 @@ const CartPage = () => {
 };
 
 /* Coupon Input Component */
-const CouponInput = ({ subtotal }: { subtotal: number }) => {
+interface CouponInputProps {
+  subtotal: number;
+  cartItems: any[];
+  appliedCoupon: AppliedCoupon | null;
+  onApply: (coupon: AppliedCoupon) => void;
+  onRemove: () => void;
+}
+
+const CouponInput = ({ subtotal, cartItems, appliedCoupon, onApply, onRemove }: CouponInputProps) => {
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState("");
   const [validating, setValidating] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; title: string; discount: number } | null>(null);
   const [error, setError] = useState("");
 
   const handleApply = async () => {
@@ -344,22 +403,76 @@ const CouponInput = ({ subtotal }: { subtotal: number }) => {
 
       if (qErr) throw qErr;
       if (!data) { setError("Invalid or expired promo code"); return; }
-      if (data.max_uses && (data.used_count || 0) >= data.max_uses) { setError("This coupon has been fully redeemed"); return; }
+
+      // Date range validation
+      const now = new Date().toISOString();
+      if (data.start_date && data.start_date > now) {
+        setError("This coupon is not yet active");
+        return;
+      }
+      if (data.end_date && data.end_date < now) {
+        setError("This coupon has expired");
+        return;
+      }
+
+      // Usage limit
+      if (data.max_uses && (data.used_count || 0) >= data.max_uses) {
+        setError("This coupon has been fully redeemed");
+        return;
+      }
+
+      // Min order amount
       if (data.min_order_amount && subtotal < Number(data.min_order_amount)) {
         setError(`Minimum order of MMK ${Number(data.min_order_amount).toLocaleString()} required`);
         return;
       }
 
-      let discount = 0;
-      if (data.type === "percentage") {
-        discount = subtotal * (Number(data.discount_value) / 100);
-        if (data.max_discount_amount) discount = Math.min(discount, Number(data.max_discount_amount));
-      } else if (data.type === "fixed_amount") {
-        discount = Number(data.discount_value);
+      // applies_to + target_ids validation
+      if (data.applies_to === "product" && data.target_ids?.length > 0) {
+        const cartProductIds = cartItems.map((item: any) => item.product_id);
+        const hasEligible = data.target_ids.some((id: string) => cartProductIds.includes(id));
+        if (!hasEligible) {
+          setError("This coupon does not apply to items in your cart");
+          return;
+        }
+      }
+      if (data.applies_to === "category" && data.target_ids?.length > 0) {
+        const cartCategoryIds = cartItems.map((item: any) => item.product?.category_id).filter(Boolean);
+        const hasEligible = data.target_ids.some((id: string) => cartCategoryIds.includes(id));
+        if (!hasEligible) {
+          setError("This coupon does not apply to items in your cart");
+          return;
+        }
+      }
+      if (data.applies_to === "brand" && data.target_ids?.length > 0) {
+        const cartBrandIds = cartItems.map((item: any) => item.product?.brand_id).filter(Boolean);
+        const hasEligible = data.target_ids.some((id: string) => cartBrandIds.includes(id));
+        if (!hasEligible) {
+          setError("This coupon does not apply to items in your cart");
+          return;
+        }
       }
 
-      setAppliedCoupon({ code: data.code, title: data.title, discount });
+      let discount = 0;
+      const discountValue = Number(data.discount_value);
+      if (data.type === "percentage") {
+        discount = subtotal * (discountValue / 100);
+        if (data.max_discount_amount) discount = Math.min(discount, Number(data.max_discount_amount));
+      } else if (data.type === "fixed_amount") {
+        discount = discountValue;
+      }
+      discount = Math.min(discount, subtotal);
+
+      onApply({
+        code: data.code,
+        title: data.title,
+        discount,
+        type: data.type,
+        discount_value: discountValue,
+        max_discount_amount: data.max_discount_amount ? Number(data.max_discount_amount) : null,
+      });
       setCode("");
+      setOpen(false);
     } catch {
       setError("Error validating coupon");
     } finally {
@@ -378,7 +491,7 @@ const CouponInput = ({ subtotal }: { subtotal: number }) => {
               <p className="text-[10px] text-emerald-600">You save MMK {appliedCoupon.discount.toLocaleString()}</p>
             </div>
           </div>
-          <button onClick={() => setAppliedCoupon(null)} className="text-muted-foreground hover:text-destructive">
+          <button onClick={onRemove} className="text-muted-foreground hover:text-destructive">
             <X className="w-4 h-4" />
           </button>
         </div>
