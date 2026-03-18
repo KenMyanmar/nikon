@@ -567,8 +567,7 @@ const ProductDetail = () => {
                       </span>
                     </div>
                   );
-                })()
-                ) : (
+                })() : (
                   <span className="text-lg font-semibold text-primary">Price on Request</span>
                 )}
               </div>
