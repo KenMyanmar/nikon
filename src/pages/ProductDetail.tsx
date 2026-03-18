@@ -535,15 +535,39 @@ const ProductDetail = () => {
                       </span>
                     </div>
                   </div>
-                ) : product.selling_price ? (
-                  <div>
-                    <span className="text-2xl font-bold text-accent">
-                      {product.currency || "MMK"} {Number(activeTier?.unit_price || product.selling_price).toLocaleString()}
-                    </span>
-                    <span className="text-xs text-muted-foreground block mt-0.5">
-                      / {product.unit_of_measure || "per piece"}
-                    </span>
-                  </div>
+                ) : product.selling_price ? (() => {
+                  const basePrice = Number(activeTier?.unit_price || product.selling_price);
+                  let promoPrice: number | null = null;
+                  if (promotion && promotion.type === "percentage" && promotion.discount_value) {
+                    let discounted = basePrice * (1 - promotion.discount_value / 100);
+                    if (promotion.max_discount_amount && promotion.max_discount_amount > 0) {
+                      discounted = Math.max(discounted, basePrice - promotion.max_discount_amount);
+                    }
+                    promoPrice = Math.round(discounted);
+                  } else if (promotion && promotion.type === "fixed_amount" && promotion.discount_value) {
+                    promoPrice = Math.round(basePrice - promotion.discount_value);
+                  }
+                  return (
+                    <div>
+                      <span className="text-2xl font-bold text-accent">
+                        {product.currency || "MMK"} {(promoPrice ?? basePrice).toLocaleString()}
+                      </span>
+                      {promoPrice !== null && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-sm text-muted-foreground line-through">
+                            {product.currency || "MMK"} {basePrice.toLocaleString()}
+                          </span>
+                          <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
+                            {promotion!.type === "percentage" ? `-${promotion!.discount_value}%` : `-${promotion!.discount_value?.toLocaleString()}`}
+                          </span>
+                        </div>
+                      )}
+                      <span className="text-xs text-muted-foreground block mt-0.5">
+                        / {product.unit_of_measure || "per piece"}
+                      </span>
+                    </div>
+                  );
+                })()
                 ) : (
                   <span className="text-lg font-semibold text-primary">Price on Request</span>
                 )}

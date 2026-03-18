@@ -297,7 +297,7 @@ const CartPage = () => {
                       {/* Unit Price */}
                       <div className="text-sm">
                         {price > 0 ? (
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-1.5 flex-wrap">
                             {isFlashDeal && (
                               <>
                                 <span className="inline-flex items-center gap-0.5 bg-destructive/10 text-destructive text-[10px] font-bold px-1.5 py-0.5 rounded">
@@ -306,7 +306,15 @@ const CartPage = () => {
                                 <span className="text-muted-foreground line-through text-xs">{originalPrice.toLocaleString()}</span>
                               </>
                             )}
-                            <span className={`font-medium ${isFlashDeal ? "text-destructive" : "text-foreground"}`}>
+                            {isPromotion && (
+                              <>
+                                <span className="inline-flex items-center gap-0.5 bg-primary/10 text-primary text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                  <Tag className="w-3 h-3" /> {promoTitle || "Promo"}
+                                </span>
+                                <span className="text-muted-foreground line-through text-xs">{originalPrice.toLocaleString()}</span>
+                              </>
+                            )}
+                            <span className={`font-medium ${isFlashDeal ? "text-destructive" : isPromotion ? "text-primary" : "text-foreground"}`}>
                               {product.currency || "MMK"} {price.toLocaleString()}
                             </span>
                           </div>

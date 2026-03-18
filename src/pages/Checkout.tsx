@@ -588,7 +588,7 @@ interface PaymentProps {
   couponCode: string | null;
   codEligible: boolean;
   maxCod: number | null;
-  getEffectivePrice: (productId: string, sellingPrice: number) => { price: number; originalPrice: number; isFlashDeal: boolean };
+  getEffectivePrice: (productId: string, sellingPrice: number, categoryId?: string | null, brandId?: string | null, quantity?: number) => { price: number; originalPrice: number; isFlashDeal: boolean; isPromotion: boolean; promoTitle: string | null };
 }
 
 const StepPayment = ({
