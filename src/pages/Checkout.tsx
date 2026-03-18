@@ -721,9 +721,10 @@ const StepPayment = ({
                       <p className="text-xs text-foreground line-clamp-1">{p.description}</p>
                       <div className="flex items-center gap-1">
                         {isFlashDeal && <Zap className="w-3 h-3 text-destructive" />}
+                        {isPromotion && <Tag className="w-3 h-3 text-primary" />}
                         <p className="text-[10px] text-muted-foreground">
-                          {item.quantity} × {isFlashDeal && <span className="line-through mr-1">{originalPrice.toLocaleString()}</span>}
-                          <span className={isFlashDeal ? "text-destructive font-medium" : ""}>{price.toLocaleString()}</span>
+                          {item.quantity} × {(isFlashDeal || isPromotion) && <span className="line-through mr-1">{originalPrice.toLocaleString()}</span>}
+                          <span className={isFlashDeal ? "text-destructive font-medium" : isPromotion ? "text-primary font-medium" : ""}>{price.toLocaleString()}</span>
                         </p>
                       </div>
                     </div>
