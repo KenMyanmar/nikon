@@ -711,7 +711,7 @@ const StepPayment = ({
               {cartItems.map((item) => {
                 const p = item.product;
                 if (!p) return null;
-                const { price, originalPrice, isFlashDeal } = getEffectivePrice(item.product_id, Number(p.selling_price) || 0);
+                const { price, originalPrice, isFlashDeal, isPromotion, promoTitle } = getEffectivePrice(item.product_id, Number(p.selling_price) || 0, p.category_id, p.brand_id, item.quantity);
                 return (
                   <div key={item.id} className="flex items-center gap-2 text-sm">
                     <div className="w-10 h-10 rounded bg-muted/30 overflow-hidden shrink-0">
