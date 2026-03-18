@@ -95,16 +95,25 @@ const CartPage = () => {
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["cart", customerId] }),
   });
 
+  const getEffectivePrice = (item: any) => {
+    const flashDeal = getFlashDeal(item.product_id);
+    const now = new Date();
+    if (flashDeal && new Date(flashDeal.start_time) <= now && new Date(flashDeal.end_time) >= now && (flashDeal.sold_count ?? 0) < flashDeal.stock_limit) {
+      return { price: flashDeal.flash_price, originalPrice: Number(item.product?.selling_price) || 0, isFlashDeal: true };
+    }
+    return { price: Number(item.product?.selling_price) || 0, originalPrice: 0, isFlashDeal: false };
+  };
+
   const { subtotal, hasUnpricedItems } = useMemo(() => {
     let total = 0;
     let unpriced = false;
     cartItems.forEach((item) => {
-      const price = Number(item.product?.selling_price) || 0;
+      const { price } = getEffectivePrice(item);
       if (price === 0) unpriced = true;
       total += price * item.quantity;
     });
     return { subtotal: total, hasUnpricedItems: unpriced };
-  }, [cartItems]);
+  }, [cartItems, getFlashDeal]);
 
   if (authLoading) {
     return (
