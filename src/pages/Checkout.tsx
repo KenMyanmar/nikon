@@ -338,6 +338,7 @@ const Checkout = () => {
             onBack={() => setStep(1)}
             codEligible={codEligible}
             maxCod={maxCod}
+            getEffectivePrice={getEffectivePrice}
           />
         )}
 
