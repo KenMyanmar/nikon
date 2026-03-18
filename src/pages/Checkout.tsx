@@ -100,7 +100,19 @@ const Checkout = () => {
     },
   });
 
-  const subtotal = useMemo(() => cartItems.reduce((s, i) => s + (Number(i.product?.selling_price) || 0) * i.quantity, 0), [cartItems]);
+  const getEffectivePrice = useCallback((productId: string, sellingPrice: number) => {
+    const flashDeal = getFlashDeal(productId);
+    const now = new Date();
+    if (flashDeal && new Date(flashDeal.start_time) <= now && new Date(flashDeal.end_time) >= now && (flashDeal.sold_count ?? 0) < flashDeal.stock_limit) {
+      return { price: flashDeal.flash_price, originalPrice: sellingPrice, isFlashDeal: true };
+    }
+    return { price: sellingPrice, originalPrice: 0, isFlashDeal: false };
+  }, [getFlashDeal]);
+
+  const subtotal = useMemo(() => cartItems.reduce((s, i) => {
+    const { price } = getEffectivePrice(i.product_id, Number(i.product?.selling_price) || 0);
+    return s + price * i.quantity;
+  }, 0), [cartItems, getEffectivePrice]);
 
   // ── Delivery state
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
