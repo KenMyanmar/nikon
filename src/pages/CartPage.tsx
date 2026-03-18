@@ -232,7 +232,19 @@ const CartPage = () => {
                       {/* Unit Price */}
                       <div className="text-sm">
                         {price > 0 ? (
-                          <span className="text-foreground font-medium">{product.currency || "MMK"} {price.toLocaleString()}</span>
+                          <div className="flex items-center gap-1.5">
+                            {isFlashDeal && (
+                              <>
+                                <span className="inline-flex items-center gap-0.5 bg-destructive/10 text-destructive text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                  <Zap className="w-3 h-3" /> Flash
+                                </span>
+                                <span className="text-muted-foreground line-through text-xs">{originalPrice.toLocaleString()}</span>
+                              </>
+                            )}
+                            <span className={`font-medium ${isFlashDeal ? "text-destructive" : "text-foreground"}`}>
+                              {product.currency || "MMK"} {price.toLocaleString()}
+                            </span>
+                          </div>
                         ) : (
                           <span className="text-primary font-medium">Quote</span>
                         )}
