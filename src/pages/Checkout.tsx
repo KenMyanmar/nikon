@@ -1,13 +1,14 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useMarketingData } from "@/hooks/useMarketingData";
 import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
 import {
   Truck, CreditCard, CheckCircle, Plus, Banknote, Smartphone, Wallet,
-  Upload, X, Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper
+  Upload, X, Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap
 } from "lucide-react";
 
 const TOWNSHIPS = [
