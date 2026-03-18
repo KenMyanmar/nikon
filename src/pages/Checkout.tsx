@@ -564,6 +564,8 @@ interface PaymentProps {
   placing: boolean;
   onPlaceOrder: () => void;
   onBack: () => void;
+  couponDiscount: number;
+  couponCode: string | null;
   codEligible: boolean;
   maxCod: number | null;
   getEffectivePrice: (productId: string, sellingPrice: number) => { price: number; originalPrice: number; isFlashDeal: boolean };
