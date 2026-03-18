@@ -21,7 +21,7 @@ const CartPage = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { getFlashDeal } = useMarketingData();
+  const { getFlashDeal, getPromotion } = useMarketingData();
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
 
   const { data: customerId } = useQuery({
@@ -108,11 +108,36 @@ const CartPage = () => {
   const getEffectivePrice = useCallback((item: any) => {
     const flashDeal = getFlashDeal(item.product_id);
     const now = new Date();
+    const basePrice = Number(item.product?.selling_price) || 0;
+
+    // Flash deal takes priority
     if (flashDeal && new Date(flashDeal.start_time) <= now && new Date(flashDeal.end_time) >= now && (flashDeal.sold_count ?? 0) < flashDeal.stock_limit) {
-      return { price: flashDeal.flash_price, originalPrice: Number(item.product?.selling_price) || 0, isFlashDeal: true };
+      return { price: flashDeal.flash_price, originalPrice: basePrice, isFlashDeal: true, isPromotion: false, promoTitle: null as string | null };
     }
-    return { price: Number(item.product?.selling_price) || 0, originalPrice: 0, isFlashDeal: false };
-  }, [getFlashDeal]);
+
+    // Promotion discount
+    const promotion = getPromotion(item.product_id, item.product?.category_id, item.product?.brand_id);
+    if (promotion && basePrice > 0) {
+      if (promotion.type === "percentage" && promotion.discount_value) {
+        let discounted = basePrice * (1 - promotion.discount_value / 100);
+        if (promotion.max_discount_amount && promotion.max_discount_amount > 0) {
+          discounted = Math.max(discounted, basePrice - promotion.max_discount_amount);
+        }
+        return { price: Math.round(discounted), originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
+      } else if (promotion.type === "fixed_amount" && promotion.discount_value) {
+        return { price: Math.round(basePrice - promotion.discount_value), originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
+      } else if (promotion.type === "buy_x_get_y" && promotion.buy_quantity && promotion.get_quantity) {
+        const groupSize = promotion.buy_quantity + promotion.get_quantity;
+        const freeItems = Math.floor(item.quantity / groupSize) * promotion.get_quantity;
+        const paidQty = item.quantity - freeItems;
+        // Return per-unit effective price adjusted for free items
+        const effectivePerUnit = paidQty > 0 ? Math.round((basePrice * paidQty) / item.quantity) : basePrice;
+        return { price: effectivePerUnit, originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: `Buy ${promotion.buy_quantity} Get ${promotion.get_quantity} Free` };
+      }
+    }
+
+    return { price: basePrice, originalPrice: 0, isFlashDeal: false, isPromotion: false, promoTitle: null as string | null };
+  }, [getFlashDeal, getPromotion]);
 
   const { subtotal, hasUnpricedItems } = useMemo(() => {
     let total = 0;
@@ -225,7 +250,7 @@ const CartPage = () => {
               const product = item.product;
               if (!product) return null;
 
-              const { price, originalPrice, isFlashDeal } = getEffectivePrice(item);
+              const { price, originalPrice, isFlashDeal, isPromotion, promoTitle } = getEffectivePrice(item);
               const moq = product.moq || 1;
               const maxQty = product.onhand_qty || 9999;
               const lineTotal = price * item.quantity;
@@ -272,7 +297,7 @@ const CartPage = () => {
                       {/* Unit Price */}
                       <div className="text-sm">
                         {price > 0 ? (
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-1.5 flex-wrap">
                             {isFlashDeal && (
                               <>
                                 <span className="inline-flex items-center gap-0.5 bg-destructive/10 text-destructive text-[10px] font-bold px-1.5 py-0.5 rounded">
@@ -281,7 +306,15 @@ const CartPage = () => {
                                 <span className="text-muted-foreground line-through text-xs">{originalPrice.toLocaleString()}</span>
                               </>
                             )}
-                            <span className={`font-medium ${isFlashDeal ? "text-destructive" : "text-foreground"}`}>
+                            {isPromotion && (
+                              <>
+                                <span className="inline-flex items-center gap-0.5 bg-primary/10 text-primary text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                  <Tag className="w-3 h-3" /> {promoTitle || "Promo"}
+                                </span>
+                                <span className="text-muted-foreground line-through text-xs">{originalPrice.toLocaleString()}</span>
+                              </>
+                            )}
+                            <span className={`font-medium ${isFlashDeal ? "text-destructive" : isPromotion ? "text-primary" : "text-foreground"}`}>
                               {product.currency || "MMK"} {price.toLocaleString()}
                             </span>
                           </div>

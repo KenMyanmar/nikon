@@ -56,8 +56,30 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
     }
   };
 
-  const displayPrice = flashDeal ? Number(flashDeal.flash_price) : price;
-  const originalPrice = flashDeal ? Number(flashDeal.original_price) : null;
+  // Priority: flash deal > promotion > base price
+  let displayPrice = price;
+  let originalPrice: number | null = null;
+  let isPromotion = false;
+
+  if (flashDeal) {
+    displayPrice = Number(flashDeal.flash_price);
+    originalPrice = Number(flashDeal.original_price);
+  } else if (promotion && price !== null && price > 0) {
+    if (promotion.type === "percentage" && promotion.discount_value) {
+      let discounted = price * (1 - promotion.discount_value / 100);
+      if (promotion.max_discount_amount && promotion.max_discount_amount > 0) {
+        discounted = Math.max(discounted, price - promotion.max_discount_amount);
+      }
+      displayPrice = Math.round(discounted);
+      originalPrice = price;
+      isPromotion = true;
+    } else if (promotion.type === "fixed_amount" && promotion.discount_value) {
+      displayPrice = Math.round(price - promotion.discount_value);
+      originalPrice = price;
+      isPromotion = true;
+    }
+  }
+
   const showUrgency = stockStatus === "low_stock" && onhandQty && onhandQty <= 5;
 
   return (

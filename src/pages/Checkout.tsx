@@ -47,7 +47,7 @@ const Checkout = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { getFlashDeal } = useMarketingData();
+  const { getFlashDeal, getPromotion } = useMarketingData();
   const [step, setStep] = useState(1);
   const placingRef = useRef(false);
 
@@ -109,17 +109,35 @@ const Checkout = () => {
     },
   });
 
-  const getEffectivePrice = useCallback((productId: string, sellingPrice: number) => {
+  const getEffectivePrice = useCallback((productId: string, sellingPrice: number, categoryId?: string | null, brandId?: string | null, quantity?: number) => {
     const flashDeal = getFlashDeal(productId);
     const now = new Date();
     if (flashDeal && new Date(flashDeal.start_time) <= now && new Date(flashDeal.end_time) >= now && (flashDeal.sold_count ?? 0) < flashDeal.stock_limit) {
-      return { price: flashDeal.flash_price, originalPrice: sellingPrice, isFlashDeal: true };
+      return { price: flashDeal.flash_price, originalPrice: sellingPrice, isFlashDeal: true, isPromotion: false, promoTitle: null as string | null };
     }
-    return { price: sellingPrice, originalPrice: 0, isFlashDeal: false };
-  }, [getFlashDeal]);
+    const promotion = getPromotion(productId, categoryId, brandId);
+    if (promotion && sellingPrice > 0) {
+      if (promotion.type === "percentage" && promotion.discount_value) {
+        let discounted = sellingPrice * (1 - promotion.discount_value / 100);
+        if (promotion.max_discount_amount && promotion.max_discount_amount > 0) {
+          discounted = Math.max(discounted, sellingPrice - promotion.max_discount_amount);
+        }
+        return { price: Math.round(discounted), originalPrice: sellingPrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
+      } else if (promotion.type === "fixed_amount" && promotion.discount_value) {
+        return { price: Math.round(sellingPrice - promotion.discount_value), originalPrice: sellingPrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
+      } else if (promotion.type === "buy_x_get_y" && promotion.buy_quantity && promotion.get_quantity && quantity) {
+        const groupSize = promotion.buy_quantity + promotion.get_quantity;
+        const freeItems = Math.floor(quantity / groupSize) * promotion.get_quantity;
+        const paidQty = quantity - freeItems;
+        const effectivePerUnit = paidQty > 0 ? Math.round((sellingPrice * paidQty) / quantity) : sellingPrice;
+        return { price: effectivePerUnit, originalPrice: sellingPrice, isFlashDeal: false, isPromotion: true, promoTitle: `B${promotion.buy_quantity}G${promotion.get_quantity}` };
+      }
+    }
+    return { price: sellingPrice, originalPrice: 0, isFlashDeal: false, isPromotion: false, promoTitle: null as string | null };
+  }, [getFlashDeal, getPromotion]);
 
   const subtotal = useMemo(() => cartItems.reduce((s, i) => {
-    const { price } = getEffectivePrice(i.product_id, Number(i.product?.selling_price) || 0);
+    const { price } = getEffectivePrice(i.product_id, Number(i.product?.selling_price) || 0, i.product?.category_id, i.product?.brand_id, i.quantity);
     return s + price * i.quantity;
   }, 0), [cartItems, getEffectivePrice]);
 
@@ -570,7 +588,7 @@ interface PaymentProps {
   couponCode: string | null;
   codEligible: boolean;
   maxCod: number | null;
-  getEffectivePrice: (productId: string, sellingPrice: number) => { price: number; originalPrice: number; isFlashDeal: boolean };
+  getEffectivePrice: (productId: string, sellingPrice: number, categoryId?: string | null, brandId?: string | null, quantity?: number) => { price: number; originalPrice: number; isFlashDeal: boolean; isPromotion: boolean; promoTitle: string | null };
 }
 
 const StepPayment = ({
@@ -693,7 +711,7 @@ const StepPayment = ({
               {cartItems.map((item) => {
                 const p = item.product;
                 if (!p) return null;
-                const { price, originalPrice, isFlashDeal } = getEffectivePrice(item.product_id, Number(p.selling_price) || 0);
+                const { price, originalPrice, isFlashDeal, isPromotion, promoTitle } = getEffectivePrice(item.product_id, Number(p.selling_price) || 0, p.category_id, p.brand_id, item.quantity);
                 return (
                   <div key={item.id} className="flex items-center gap-2 text-sm">
                     <div className="w-10 h-10 rounded bg-muted/30 overflow-hidden shrink-0">
@@ -703,9 +721,10 @@ const StepPayment = ({
                       <p className="text-xs text-foreground line-clamp-1">{p.description}</p>
                       <div className="flex items-center gap-1">
                         {isFlashDeal && <Zap className="w-3 h-3 text-destructive" />}
+                        {isPromotion && <Tag className="w-3 h-3 text-primary" />}
                         <p className="text-[10px] text-muted-foreground">
-                          {item.quantity} × {isFlashDeal && <span className="line-through mr-1">{originalPrice.toLocaleString()}</span>}
-                          <span className={isFlashDeal ? "text-destructive font-medium" : ""}>{price.toLocaleString()}</span>
+                          {item.quantity} × {(isFlashDeal || isPromotion) && <span className="line-through mr-1">{originalPrice.toLocaleString()}</span>}
+                          <span className={isFlashDeal ? "text-destructive font-medium" : isPromotion ? "text-primary font-medium" : ""}>{price.toLocaleString()}</span>
                         </p>
                       </div>
                     </div>
