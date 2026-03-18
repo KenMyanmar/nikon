@@ -109,14 +109,32 @@ const Checkout = () => {
     },
   });
 
-  const getEffectivePrice = useCallback((productId: string, sellingPrice: number) => {
+  const getEffectivePrice = useCallback((productId: string, sellingPrice: number, categoryId?: string | null, brandId?: string | null, quantity?: number) => {
     const flashDeal = getFlashDeal(productId);
     const now = new Date();
     if (flashDeal && new Date(flashDeal.start_time) <= now && new Date(flashDeal.end_time) >= now && (flashDeal.sold_count ?? 0) < flashDeal.stock_limit) {
-      return { price: flashDeal.flash_price, originalPrice: sellingPrice, isFlashDeal: true };
+      return { price: flashDeal.flash_price, originalPrice: sellingPrice, isFlashDeal: true, isPromotion: false, promoTitle: null as string | null };
     }
-    return { price: sellingPrice, originalPrice: 0, isFlashDeal: false };
-  }, [getFlashDeal]);
+    const promotion = getPromotion(productId, categoryId, brandId);
+    if (promotion && sellingPrice > 0) {
+      if (promotion.type === "percentage" && promotion.discount_value) {
+        let discounted = sellingPrice * (1 - promotion.discount_value / 100);
+        if (promotion.max_discount_amount && promotion.max_discount_amount > 0) {
+          discounted = Math.max(discounted, sellingPrice - promotion.max_discount_amount);
+        }
+        return { price: Math.round(discounted), originalPrice: sellingPrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
+      } else if (promotion.type === "fixed_amount" && promotion.discount_value) {
+        return { price: Math.round(sellingPrice - promotion.discount_value), originalPrice: sellingPrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
+      } else if (promotion.type === "buy_x_get_y" && promotion.buy_quantity && promotion.get_quantity && quantity) {
+        const groupSize = promotion.buy_quantity + promotion.get_quantity;
+        const freeItems = Math.floor(quantity / groupSize) * promotion.get_quantity;
+        const paidQty = quantity - freeItems;
+        const effectivePerUnit = paidQty > 0 ? Math.round((sellingPrice * paidQty) / quantity) : sellingPrice;
+        return { price: effectivePerUnit, originalPrice: sellingPrice, isFlashDeal: false, isPromotion: true, promoTitle: `B${promotion.buy_quantity}G${promotion.get_quantity}` };
+      }
+    }
+    return { price: sellingPrice, originalPrice: 0, isFlashDeal: false, isPromotion: false, promoTitle: null as string | null };
+  }, [getFlashDeal, getPromotion]);
 
   const subtotal = useMemo(() => cartItems.reduce((s, i) => {
     const { price } = getEffectivePrice(i.product_id, Number(i.product?.selling_price) || 0);
