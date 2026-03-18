@@ -493,6 +493,12 @@ const ProductDetail = () => {
                   <p className="text-xs font-semibold text-primary flex items-center gap-1.5">
                     🏷️ {promotion.title}
                   </p>
+                  {promotion.end_date && (() => {
+                    const daysLeft = Math.ceil((new Date(promotion.end_date).getTime() - Date.now()) / 86400000);
+                    return daysLeft <= 7 && daysLeft > 0 ? (
+                      <p className="text-[10px] text-muted-foreground mt-1">Ends in {daysLeft} day{daysLeft > 1 ? "s" : ""}</p>
+                    ) : null;
+                  })()}
                 </div>
               )}
 
