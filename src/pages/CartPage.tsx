@@ -108,11 +108,36 @@ const CartPage = () => {
   const getEffectivePrice = useCallback((item: any) => {
     const flashDeal = getFlashDeal(item.product_id);
     const now = new Date();
+    const basePrice = Number(item.product?.selling_price) || 0;
+
+    // Flash deal takes priority
     if (flashDeal && new Date(flashDeal.start_time) <= now && new Date(flashDeal.end_time) >= now && (flashDeal.sold_count ?? 0) < flashDeal.stock_limit) {
-      return { price: flashDeal.flash_price, originalPrice: Number(item.product?.selling_price) || 0, isFlashDeal: true };
+      return { price: flashDeal.flash_price, originalPrice: basePrice, isFlashDeal: true, isPromotion: false, promoTitle: null as string | null };
     }
-    return { price: Number(item.product?.selling_price) || 0, originalPrice: 0, isFlashDeal: false };
-  }, [getFlashDeal]);
+
+    // Promotion discount
+    const promotion = getPromotion(item.product_id, item.product?.category_id, item.product?.brand_id);
+    if (promotion && basePrice > 0) {
+      if (promotion.type === "percentage" && promotion.discount_value) {
+        let discounted = basePrice * (1 - promotion.discount_value / 100);
+        if (promotion.max_discount_amount && promotion.max_discount_amount > 0) {
+          discounted = Math.max(discounted, basePrice - promotion.max_discount_amount);
+        }
+        return { price: Math.round(discounted), originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
+      } else if (promotion.type === "fixed_amount" && promotion.discount_value) {
+        return { price: Math.round(basePrice - promotion.discount_value), originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
+      } else if (promotion.type === "buy_x_get_y" && promotion.buy_quantity && promotion.get_quantity) {
+        const groupSize = promotion.buy_quantity + promotion.get_quantity;
+        const freeItems = Math.floor(item.quantity / groupSize) * promotion.get_quantity;
+        const paidQty = item.quantity - freeItems;
+        // Return per-unit effective price adjusted for free items
+        const effectivePerUnit = paidQty > 0 ? Math.round((basePrice * paidQty) / item.quantity) : basePrice;
+        return { price: effectivePerUnit, originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: `Buy ${promotion.buy_quantity} Get ${promotion.get_quantity} Free` };
+      }
+    }
+
+    return { price: basePrice, originalPrice: 0, isFlashDeal: false, isPromotion: false, promoTitle: null as string | null };
+  }, [getFlashDeal, getPromotion]);
 
   const { subtotal, hasUnpricedItems } = useMemo(() => {
     let total = 0;
