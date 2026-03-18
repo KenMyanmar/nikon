@@ -370,6 +370,8 @@ const Checkout = () => {
             codEligible={codEligible}
             maxCod={maxCod}
             getEffectivePrice={getEffectivePrice}
+            couponDiscount={couponDiscount}
+            couponCode={appliedCoupon?.code || null}
           />
         )}
 
