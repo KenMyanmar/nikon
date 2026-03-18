@@ -715,6 +715,12 @@ const StepPayment = ({
             <hr className="my-3 border-border" />
             <div className="space-y-2 text-sm">
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span className="text-foreground">{fmt(subtotal)}</span></div>
+              {couponDiscount > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-emerald-600 font-medium flex items-center gap-1"><Tag className="w-3 h-3" />Coupon ({couponCode})</span>
+                  <span className="text-emerald-600 font-medium">-{fmt(couponDiscount)}</span>
+                </div>
+              )}
               <div className="flex justify-between"><span className="text-muted-foreground">Delivery</span><span className={deliveryFee === 0 ? "text-emerald-600 font-medium" : "text-foreground"}>{deliveryFee === 0 ? "FREE" : fmt(deliveryFee)}</span></div>
               <hr className="border-border" />
               <div className="flex justify-between font-bold text-base"><span className="text-foreground">Total</span><span className="text-accent">{fmt(total)}</span></div>
