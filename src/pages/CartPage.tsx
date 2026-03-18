@@ -250,7 +250,7 @@ const CartPage = () => {
               const product = item.product;
               if (!product) return null;
 
-              const { price, originalPrice, isFlashDeal } = getEffectivePrice(item);
+              const { price, originalPrice, isFlashDeal, isPromotion, promoTitle } = getEffectivePrice(item);
               const moq = product.moq || 1;
               const maxQty = product.onhand_qty || 9999;
               const lineTotal = price * item.quantity;
