@@ -8,8 +8,17 @@ import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
 import {
   Truck, CreditCard, CheckCircle, Plus, Banknote, Smartphone, Wallet,
-  Upload, X, Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap
+  Upload, X, Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap, Tag
 } from "lucide-react";
+
+interface AppliedCoupon {
+  code: string;
+  title: string;
+  discount: number;
+  type: string;
+  discount_value: number;
+  max_discount_amount: number | null;
+}
 
 const TOWNSHIPS = [
   "Kamayut", "Hlaing", "Bahan", "Sanchaung", "Kyimyindaing", "Dagon",
