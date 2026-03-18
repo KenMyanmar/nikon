@@ -535,6 +535,7 @@ interface PaymentProps {
   onBack: () => void;
   codEligible: boolean;
   maxCod: number | null;
+  getEffectivePrice: (productId: string, sellingPrice: number) => { price: number; originalPrice: number; isFlashDeal: boolean };
 }
 
 const StepPayment = ({
