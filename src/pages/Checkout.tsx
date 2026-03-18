@@ -279,6 +279,7 @@ const Checkout = () => {
         p_customer_notes: (showNewAddress ? addrForm.delivery_notes : addr?.delivery_notes) || null,
         p_payment_proof_url: paymentProofUrl || null,
         p_payment_reference: paymentRef || null,
+        p_coupon_code: appliedCoupon?.code || null,
       });
 
       if (error) throw error;
