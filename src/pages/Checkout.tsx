@@ -137,7 +137,7 @@ const Checkout = () => {
   }, [getFlashDeal, getPromotion]);
 
   const subtotal = useMemo(() => cartItems.reduce((s, i) => {
-    const { price } = getEffectivePrice(i.product_id, Number(i.product?.selling_price) || 0);
+    const { price } = getEffectivePrice(i.product_id, Number(i.product?.selling_price) || 0, i.product?.category_id, i.product?.brand_id, i.quantity);
     return s + price * i.quantity;
   }, 0), [cartItems, getEffectivePrice]);
 
