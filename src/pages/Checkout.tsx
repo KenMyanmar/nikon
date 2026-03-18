@@ -287,6 +287,7 @@ const Checkout = () => {
       if (data?.success) {
         setOrderResult(data);
         setStep(3);
+        sessionStorage.removeItem("appliedCoupon");
         queryClient.invalidateQueries({ queryKey: ["cart-count"] });
         queryClient.invalidateQueries({ queryKey: ["cart"] });
         queryClient.invalidateQueries({ queryKey: ["cart-checkout"] });
