@@ -577,7 +577,7 @@ const StepPayment = ({
   cartItems, subtotal, deliveryFee, total,
   paymentMethod, setPaymentMethod, paymentProofUrl, setPaymentProofUrl,
   paymentRef, setPaymentRef, uploading, onUpload, placing, onPlaceOrder,
-  onBack, codEligible, maxCod, getEffectivePrice,
+  onBack, codEligible, maxCod, getEffectivePrice, couponDiscount, couponCode,
 }: PaymentProps) => {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const codDisabled = !codEligible || (maxCod !== null && total > maxCod);
