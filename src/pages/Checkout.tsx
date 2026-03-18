@@ -160,7 +160,27 @@ const Checkout = () => {
   const codEligible = feeRow?.cod_eligible !== false;
   const maxCod = feeRow?.max_cod_amount ? Number(feeRow.max_cod_amount) : null;
   const estimatedDays = feeRow?.estimated_days || "2-4 days";
-  const total = subtotal + deliveryFee;
+  // ── Coupon from cart (persisted in sessionStorage)
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(() => {
+    try {
+      const stored = sessionStorage.getItem("appliedCoupon");
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
+  });
+
+  const couponDiscount = useMemo(() => {
+    if (!appliedCoupon) return 0;
+    let discount = 0;
+    if (appliedCoupon.type === "percentage") {
+      discount = subtotal * (appliedCoupon.discount_value / 100);
+      if (appliedCoupon.max_discount_amount) discount = Math.min(discount, appliedCoupon.max_discount_amount);
+    } else {
+      discount = appliedCoupon.discount_value;
+    }
+    return Math.min(discount, subtotal);
+  }, [appliedCoupon, subtotal]);
+
+  const total = subtotal + deliveryFee - couponDiscount;
 
   // ── Payment state
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
