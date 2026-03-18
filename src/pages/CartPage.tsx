@@ -12,6 +12,7 @@ const CartPage = () => {
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { getFlashDeal } = useMarketingData();
 
   const { data: customerId } = useQuery({
     queryKey: ["customer-id", user?.id],
