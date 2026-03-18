@@ -658,7 +658,7 @@ const StepPayment = ({
               {cartItems.map((item) => {
                 const p = item.product;
                 if (!p) return null;
-                const price = Number(p.selling_price) || 0;
+                const { price, originalPrice, isFlashDeal } = getEffectivePrice(item.product_id, Number(p.selling_price) || 0);
                 return (
                   <div key={item.id} className="flex items-center gap-2 text-sm">
                     <div className="w-10 h-10 rounded bg-muted/30 overflow-hidden shrink-0">
@@ -666,7 +666,13 @@ const StepPayment = ({
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-foreground line-clamp-1">{p.description}</p>
-                      <p className="text-[10px] text-muted-foreground">{item.quantity} × {price.toLocaleString()}</p>
+                      <div className="flex items-center gap-1">
+                        {isFlashDeal && <Zap className="w-3 h-3 text-destructive" />}
+                        <p className="text-[10px] text-muted-foreground">
+                          {item.quantity} × {isFlashDeal && <span className="line-through mr-1">{originalPrice.toLocaleString()}</span>}
+                          <span className={isFlashDeal ? "text-destructive font-medium" : ""}>{price.toLocaleString()}</span>
+                        </p>
+                      </div>
                     </div>
                     <span className="text-xs font-semibold text-foreground shrink-0">{(price * item.quantity).toLocaleString()}</span>
                   </div>
