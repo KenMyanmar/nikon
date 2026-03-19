@@ -35,21 +35,6 @@ const CategoryPage = () => {
     enabled: !!slug,
   });
 
-  // Fetch group name for breadcrumbs
-  const { data: groupData } = useQuery({
-    queryKey: ["category-group", category?.group_id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("product_groups")
-        .select("name, code")
-        .eq("id", category!.group_id!)
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!category?.group_id,
-  });
-
   // If this is a sub-category, fetch parent for breadcrumbs
   const { data: parentCategory } = useQuery({
     queryKey: ["parent-category", category?.parent_id],
