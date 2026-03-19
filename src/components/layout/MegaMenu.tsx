@@ -1,8 +1,8 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Menu, X, Zap } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -24,6 +24,17 @@ interface SubCategory {
   parent_id: string | null;
   product_count: number;
 }
+
+const SHORT_NAMES: Record<string, string> = {
+  "Housekeeping Supplies": "Housekeeping",
+  "Laundry Solutions": "Laundry",
+  "F & B Solutions": "F&B",
+  "Bedroom Supplies": "Bedroom",
+  "Buffet & Banquet": "Buffet",
+  "Food Services": "Food Services",
+};
+
+const NAV_LIMIT = 8;
 
 export const useNavData = () => {
   const { data: mainCategories = [] } = useQuery({
@@ -59,7 +70,127 @@ export const useNavData = () => {
   return { mainCategories, subCategories };
 };
 
-// Desktop mega dropdown content
+// ─── All Categories Mega Overlay ─────────────────────────────────────────
+const AllCategoriesOverlay = ({
+  mainCategories,
+  subCategories,
+  onClose,
+}: {
+  mainCategories: MainCategory[];
+  subCategories: SubCategory[];
+  onClose: () => void;
+}) => {
+  const [hoveredId, setHoveredId] = useState<string | null>(
+    mainCategories[0]?.id || null
+  );
+
+  const hoveredSubs = useMemo(
+    () => subCategories.filter((s) => s.parent_id === hoveredId),
+    [subCategories, hoveredId]
+  );
+
+  const hoveredCat = mainCategories.find((c) => c.id === hoveredId);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/30 z-40"
+        onClick={onClose}
+      />
+      {/* Panel */}
+      <div className="absolute left-0 right-0 top-full z-50 bg-card border-t-2 border-primary shadow-2xl">
+        <div className="max-w-[1280px] mx-auto flex min-h-[400px]">
+          {/* Left column — all main categories */}
+          <div className="w-[240px] border-r border-border bg-secondary/50 py-4 shrink-0">
+            {mainCategories.map((cat) => (
+              <button
+                key={cat.id}
+                onMouseEnter={() => setHoveredId(cat.id)}
+                onClick={() => { onClose(); }}
+                className={`w-full flex items-center justify-between px-5 py-2.5 text-sm transition ${
+                  hoveredId === cat.id
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "text-foreground hover:bg-muted"
+                }`}
+              >
+                <Link
+                  to={`/category/${cat.slug}`}
+                  className="flex-1 text-left"
+                  onClick={onClose}
+                >
+                  {cat.name}
+                </Link>
+                <ChevronRight className="w-3.5 h-3.5 opacity-60 shrink-0" />
+              </button>
+            ))}
+            <div className="border-t border-border mt-3 pt-3 px-5">
+              <Link
+                to="/brands"
+                className="text-sm font-medium text-accent hover:underline"
+                onClick={onClose}
+              >
+                Browse Brands →
+              </Link>
+            </div>
+          </div>
+
+          {/* Right area — sub-categories of hovered */}
+          <div className="flex-1 p-6">
+            {hoveredCat && (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-foreground">
+                    {hoveredCat.name}
+                  </h3>
+                  <Link
+                    to={`/category/${hoveredCat.slug}`}
+                    className="text-sm font-semibold text-accent hover:underline"
+                    onClick={onClose}
+                  >
+                    View All →
+                  </Link>
+                </div>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-1">
+                  {hoveredSubs.map((sub) => (
+                    <Link
+                      key={sub.id}
+                      to={`/category/${sub.slug}`}
+                      className="flex items-center gap-2 py-2 text-sm text-muted-foreground hover:text-accent transition group"
+                      onClick={onClose}
+                    >
+                      <span className="group-hover:translate-x-1 transition-transform truncate">
+                        {sub.name}
+                      </span>
+                      <span className="text-xs opacity-60 shrink-0">
+                        ({sub.product_count})
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+                {hoveredSubs.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    No sub-categories yet.
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+// ─── Individual category hover dropdown ──────────────────────────────────
 const MegaMenuDropdown = ({
   mainCategory,
   subCategories,
@@ -87,7 +218,7 @@ const MegaMenuDropdown = ({
                 <Link
                   key={sub.id}
                   to={`/category/${sub.slug}`}
-                  className="flex items-center gap-2 py-1.5 text-sm text-ikon-text-secondary hover:text-accent transition group/item min-w-0"
+                  className="flex items-center gap-2 py-1.5 text-sm text-muted-foreground hover:text-accent transition group/item min-w-0"
                 >
                   <span className="truncate min-w-0 group-hover/item:translate-x-1 transition-transform">
                     {sub.name}
@@ -99,15 +230,14 @@ const MegaMenuDropdown = ({
               ))}
             </div>
           </div>
-
-          <div className="bg-ikon-bg-tertiary rounded-lg p-6 min-w-0">
+          <div className="bg-secondary rounded-lg p-6 min-w-0">
             <h3 className="font-bold text-primary mb-2 break-words">
               Browse {mainCategory.name}
             </h3>
-            <p className="text-sm text-ikon-text-secondary mb-1">
+            <p className="text-sm text-muted-foreground mb-1">
               {subs.length} sub-categories
             </p>
-            <p className="text-sm text-ikon-text-secondary mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               {totalProducts.toLocaleString()} products
             </p>
             <Link
@@ -123,11 +253,76 @@ const MegaMenuDropdown = ({
   );
 };
 
-// Desktop nav bar
+// ─── "More ▾" dropdown ───────────────────────────────────────────────────
+const MoreDropdown = ({
+  categories,
+  subCategories,
+}: {
+  categories: MainCategory[];
+  subCategories: SubCategory[];
+}) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  if (categories.length === 0) return null;
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1 px-4 py-3 text-primary-foreground text-[13px] font-medium hover:bg-[hsl(var(--ikon-navy-light))] transition whitespace-nowrap"
+      >
+        More
+        <ChevronDown className="w-3 h-3 opacity-60" />
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 bg-card border border-border shadow-xl rounded-b-lg min-w-[220px] z-50 py-2">
+          {categories.map((cat) => {
+            const subs = subCategories.filter((s) => s.parent_id === cat.id);
+            return (
+              <div key={cat.id} className="group">
+                <Link
+                  to={`/category/${cat.slug}`}
+                  className="flex items-center justify-between px-4 py-2.5 text-sm text-foreground hover:bg-muted transition"
+                  onClick={() => setOpen(false)}
+                >
+                  {cat.name}
+                  {subs.length > 0 && (
+                    <ChevronRight className="w-3 h-3 opacity-40" />
+                  )}
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── Desktop Nav Bar ─────────────────────────────────────────────────────
 export const DesktopMegaNav = () => {
   const { mainCategories, subCategories } = useNavData();
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [overlayOpen, setOverlayOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Sort by product_count descending
+  const sorted = useMemo(
+    () => [...mainCategories].sort((a, b) => b.product_count - a.product_count),
+    [mainCategories]
+  );
+
+  const navCategories = sorted.slice(0, NAV_LIMIT);
+  const moreCategories = sorted.slice(NAV_LIMIT);
 
   const handleMouseEnter = (id: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -138,48 +333,66 @@ export const DesktopMegaNav = () => {
     timeoutRef.current = setTimeout(() => setActiveId(null), 150);
   };
 
+  const shortName = (name: string) => SHORT_NAMES[name] || name;
+
   return (
     <nav className="hidden lg:block bg-primary relative">
       <div className="container mx-auto px-4">
-        <div className="flex items-center overflow-x-auto scrollbar-hide">
-          {mainCategories.map((cat) => (
+        <div className="flex items-center">
+          {/* ☰ All Categories button */}
+          <button
+            onClick={() => { setOverlayOpen(!overlayOpen); setActiveId(null); }}
+            className={`flex items-center gap-2 px-4 py-3 text-primary-foreground text-[13px] font-semibold transition whitespace-nowrap shrink-0 ${
+              overlayOpen
+                ? "bg-[hsl(var(--ikon-navy-light))]"
+                : "bg-[hsl(var(--ikon-navy-dark))] hover:bg-[hsl(var(--ikon-navy-light))]"
+            }`}
+          >
+            {overlayOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            All Categories
+          </button>
+
+          {/* Divider */}
+          <div className="w-px h-6 bg-primary-foreground/20 shrink-0" />
+
+          {/* Top 8 categories */}
+          {navCategories.map((cat) => (
             <div
               key={cat.id}
-              onMouseEnter={() => handleMouseEnter(cat.id)}
+              onMouseEnter={() => { handleMouseEnter(cat.id); setOverlayOpen(false); }}
               onMouseLeave={handleMouseLeave}
             >
               <Link
                 to={`/category/${cat.slug}`}
-                className={`flex items-center gap-1 px-4 py-3 text-primary-foreground text-sm font-medium transition whitespace-nowrap ${
-                  activeId === cat.id ? "bg-ikon-navy-light" : "hover:bg-ikon-navy-light"
+                className={`flex items-center gap-1 px-3 py-3 text-primary-foreground text-[13px] font-medium transition whitespace-nowrap ${
+                  activeId === cat.id ? "bg-[hsl(var(--ikon-navy-light))]" : "hover:bg-[hsl(var(--ikon-navy-light))]"
                 }`}
               >
-                {cat.name}
+                {shortName(cat.name)}
                 <ChevronDown className="w-3 h-3 opacity-60" />
               </Link>
             </div>
           ))}
-          <Link
-            to="/categories"
-            className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition whitespace-nowrap"
-          >
-            All Categories
-          </Link>
-          <Link
-            to="/brands"
-            className="px-4 py-3 text-primary-foreground text-sm font-medium hover:bg-ikon-navy-light transition whitespace-nowrap"
-          >
-            Brands
-          </Link>
+
+          {/* More dropdown */}
+          <MoreDropdown categories={moreCategories} subCategories={subCategories} />
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Flash Deals */}
           <Link
             to="/flash-deals"
-            className="px-4 py-3 text-white text-sm font-bold bg-red-600 hover:bg-red-700 transition whitespace-nowrap"
+            className="flex items-center gap-1.5 px-4 py-3 text-white text-[13px] font-bold bg-destructive hover:bg-[hsl(var(--ikon-red-dark))] transition whitespace-nowrap shrink-0"
           >
-            ⚡ Flash Deals
+            <Zap className="w-3.5 h-3.5" />
+            Flash Deals
           </Link>
         </div>
       </div>
-      {activeId && (
+
+      {/* Category hover dropdown */}
+      {activeId && !overlayOpen && (
         <div
           onMouseEnter={() => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }}
           onMouseLeave={handleMouseLeave}
@@ -190,11 +403,20 @@ export const DesktopMegaNav = () => {
           />
         </div>
       )}
+
+      {/* All Categories overlay */}
+      {overlayOpen && (
+        <AllCategoriesOverlay
+          mainCategories={[...mainCategories].sort((a, b) => a.name.localeCompare(b.name))}
+          subCategories={subCategories}
+          onClose={() => setOverlayOpen(false)}
+        />
+      )}
     </nav>
   );
 };
 
-// Mobile accordion nav
+// ─── Mobile Accordion Nav ────────────────────────────────────────────────
 export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
   const { mainCategories, subCategories } = useNavData();
 
@@ -223,7 +445,7 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
                     <Link
                       key={sub.id}
                       to={`/category/${sub.slug}`}
-                      className="flex items-center justify-between py-1.5 text-sm text-ikon-text-secondary hover:text-accent transition"
+                      className="flex items-center justify-between py-1.5 text-sm text-muted-foreground hover:text-accent transition"
                       onClick={onClose}
                     >
                       <span className="truncate">{sub.name}</span>
@@ -236,27 +458,29 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
           );
         })}
       </Accordion>
-      <Link
-        to="/categories"
-        className="block py-2.5 px-3 text-sm font-medium text-primary hover:bg-ikon-navy-50 rounded-md mt-1"
-        onClick={onClose}
-      >
-        All Categories →
-      </Link>
-      <Link
-        to="/brands"
-        className="block py-2.5 px-3 text-sm font-medium text-foreground hover:bg-ikon-navy-50 rounded-md"
-        onClick={onClose}
-      >
-        Brands
-      </Link>
-      <Link
-        to="/flash-deals"
-        className="block py-2.5 px-3 text-sm font-bold text-red-600 hover:bg-red-50 rounded-md"
-        onClick={onClose}
-      >
-        ⚡ Flash Deals
-      </Link>
+      <div className="border-t border-border mt-2 pt-2 space-y-1">
+        <Link
+          to="/categories"
+          className="block py-2.5 px-3 text-sm font-medium text-primary hover:bg-muted rounded-md"
+          onClick={onClose}
+        >
+          All Categories →
+        </Link>
+        <Link
+          to="/brands"
+          className="block py-2.5 px-3 text-sm font-medium text-foreground hover:bg-muted rounded-md"
+          onClick={onClose}
+        >
+          Browse Brands
+        </Link>
+        <Link
+          to="/flash-deals"
+          className="block py-2.5 px-3 text-sm font-bold text-destructive hover:bg-destructive/10 rounded-md"
+          onClick={onClose}
+        >
+          ⚡ Flash Deals
+        </Link>
+      </div>
     </div>
   );
 };
