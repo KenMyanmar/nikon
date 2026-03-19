@@ -25,7 +25,7 @@ const CategoryPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("categories")
-        .select("id, name, slug, depth, parent_id, group_id")
+        .select("id, name, slug, depth, parent_id")
         .eq("slug", slug!)
         .eq("is_active", true)
         .single();
