@@ -159,7 +159,7 @@ const CategoryPage = () => {
       segs.push({ label: categoryName });
     }
     return segs;
-  }, [groupData, parentCategory, categoryName, slug, activeSubCategory]);
+  }, [parentCategory, categoryName, slug, activeSubCategory]);
 
   const totalAllProducts = isParentWithSubs
     ? subCategories.reduce((sum, s) => sum + s.product_count, 0)

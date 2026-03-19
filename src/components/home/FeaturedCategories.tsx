@@ -12,8 +12,9 @@ const FeaturedCategories = () => {
         .from("categories")
         .select("name, slug, product_count, image_url")
         .eq("is_active", true)
+        .eq("depth", 0)
         .order("sort_order")
-        .limit(8);
+        .limit(10);
       if (error) throw error;
       return data;
     },
