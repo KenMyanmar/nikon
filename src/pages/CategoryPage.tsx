@@ -149,9 +149,6 @@ const CategoryPage = () => {
   // Build breadcrumbs
   const breadcrumbSegments = useMemo(() => {
     const segs: { label: string; href?: string }[] = [];
-    if (groupData) {
-      segs.push({ label: groupData.name, href: "/categories" });
-    }
     if (parentCategory) {
       segs.push({ label: parentCategory.name, href: `/category/${parentCategory.slug}` });
     }
