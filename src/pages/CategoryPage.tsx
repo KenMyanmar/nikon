@@ -146,16 +146,19 @@ const CategoryPage = () => {
     return result;
   }, [products, selectedBrands, stockFilters, priceRange, sort]);
 
-  // Build breadcrumbs
+  // Build breadcrumbs — avoid duplicate names
   const breadcrumbSegments = useMemo(() => {
     const segs: { label: string; href?: string }[] = [];
     if (parentCategory) {
+      // depth=1 sub-category: Home > Parent > Current
       segs.push({ label: parentCategory.name, href: `/category/${parentCategory.slug}` });
-    }
-    if (activeSubCategory) {
+      segs.push({ label: categoryName });
+    } else if (activeSubCategory) {
+      // depth=0 main category with sub-tab active: Home > Category > Sub
       segs.push({ label: categoryName, href: `/category/${slug}` });
       segs.push({ label: activeSubCategory.name });
     } else {
+      // depth=0 main category, no sub-tab: Home > Category
       segs.push({ label: categoryName });
     }
     return segs;
