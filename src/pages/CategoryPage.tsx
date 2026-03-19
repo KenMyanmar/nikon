@@ -25,7 +25,7 @@ const CategoryPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("categories")
-        .select("id, name, slug, depth, parent_id, group_id")
+        .select("id, name, slug, depth, parent_id")
         .eq("slug", slug!)
         .eq("is_active", true)
         .single();
@@ -33,21 +33,6 @@ const CategoryPage = () => {
       return data;
     },
     enabled: !!slug,
-  });
-
-  // Fetch group name for breadcrumbs
-  const { data: groupData } = useQuery({
-    queryKey: ["category-group", category?.group_id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("product_groups")
-        .select("name, code")
-        .eq("id", category!.group_id!)
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!category?.group_id,
   });
 
   // If this is a sub-category, fetch parent for breadcrumbs
@@ -164,9 +149,6 @@ const CategoryPage = () => {
   // Build breadcrumbs
   const breadcrumbSegments = useMemo(() => {
     const segs: { label: string; href?: string }[] = [];
-    if (groupData) {
-      segs.push({ label: groupData.name, href: "/categories" });
-    }
     if (parentCategory) {
       segs.push({ label: parentCategory.name, href: `/category/${parentCategory.slug}` });
     }
@@ -177,7 +159,7 @@ const CategoryPage = () => {
       segs.push({ label: categoryName });
     }
     return segs;
-  }, [groupData, parentCategory, categoryName, slug, activeSubCategory]);
+  }, [parentCategory, categoryName, slug, activeSubCategory]);
 
   const totalAllProducts = isParentWithSubs
     ? subCategories.reduce((sum, s) => sum + s.product_count, 0)
