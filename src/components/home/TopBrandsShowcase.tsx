@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const TopBrandsShowcase = () => {
-  const { data: brands = [] } = useQuery({
+  const { data: brands = [], isLoading } = useQuery({
     queryKey: ["top-brands-homepage"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -20,6 +20,26 @@ const TopBrandsShowcase = () => {
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  if (isLoading) {
+    return (
+      <section className="container mx-auto px-4 py-6">
+        <div className="flex items-center justify-between mb-4">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+        <div className="flex gap-3 overflow-x-auto pb-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="flex-shrink-0 w-[120px] md:w-[140px] flex flex-col items-center p-3 rounded-lg border border-border bg-card">
+              <Skeleton className="w-12 h-12 rounded-full" />
+              <Skeleton className="h-3 w-16 mt-2" />
+              <Skeleton className="h-2 w-12 mt-1" />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   if (brands.length === 0) return null;
 

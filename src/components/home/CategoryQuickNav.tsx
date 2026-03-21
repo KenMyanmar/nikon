@@ -34,7 +34,7 @@ const SHORT_NAMES: Record<string, string> = {
 };
 
 const CategoryQuickNav = () => {
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [], isLoading } = useQuery({
     queryKey: ["categories-quicknav"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -48,6 +48,21 @@ const CategoryQuickNav = () => {
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  if (isLoading) {
+    return (
+      <section className="container mx-auto px-4 py-4">
+        <div className="grid grid-cols-5 gap-2 md:gap-3">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className="flex flex-col items-center justify-center p-2 md:p-3 rounded-lg border border-border bg-card">
+              <Skeleton className="w-5 h-5 md:w-6 md:h-6 rounded-full" />
+              <Skeleton className="h-3 w-12 mt-1" />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   if (categories.length === 0) return null;
 
