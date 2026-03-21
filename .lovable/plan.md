@@ -1,38 +1,20 @@
 
 
-# Fix Breadcrumb — Remove Deprecated `product_groups` Reference
+# Remove "Group" from Product Detail Specs
 
 ## Problem
-Line 352 of `ProductDetail.tsx` includes `product.group_name` as the first breadcrumb segment, producing "Applied Brands" in the path.
+`group_name` (deprecated `product_groups` reference) appears in two places in `ProductDetail.tsx`:
+- **Line 323**: `infoRows` array (full Specifications tab table)
+- **Line 340**: `keySpecs` array (Quick Specs 2-col grid)
 
-## Fix — `src/pages/ProductDetail.tsx` (line 352)
+## Fix — `src/pages/ProductDetail.tsx`
 
-Remove the `group_name` line from the breadcrumb segments array:
+Delete both lines:
+- **Line 323**: `if (product.group_name) infoRows.push({ label: "Group", value: product.group_name });`
+- **Line 340**: `if (product.group_name) keySpecs.push({ label: "Group", value: product.group_name });`
 
-```tsx
-// BEFORE (line 351-361):
-segments={[
-  ...(product.group_name ? [{ label: product.group_name, href: "/categories" }] : []),  // ← REMOVE
-  ...(product.parent_category_name && product.parent_category_slug
-    ? [{ label: product.parent_category_name, href: `/category/${product.parent_category_slug}` }]
-    : []),
-  ...(product.category_name && product.category_slug
-    ? [{ label: product.category_name, href: `/category/${product.category_slug}` }]
-    : []),
-  { label: product.description || "Product" },
-]}
-
-// AFTER:
-segments={[
-  ...(product.parent_category_name && product.parent_category_slug
-    ? [{ label: product.parent_category_name, href: `/category/${product.parent_category_slug}` }]
-    : []),
-  ...(product.category_name && product.category_slug
-    ? [{ label: product.category_name, href: `/category/${product.category_slug}` }]
-    : []),
-  { label: product.description || "Product" },
-]}
-```
-
-Single line deletion. Result: `Home > Bedroom Supplies > In Room Accessories > Product Name`.
+## Impact
+- No other `.tsx` files reference `group_name` — only `types.ts` (auto-generated, untouched)
+- Both grids rebalance automatically (CSS grid)
+- Two line deletions, no other changes
 
