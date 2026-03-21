@@ -178,7 +178,7 @@ const BrandPage = () => {
               maxPrice={maxPrice}
             />
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {filtered.length === 0 ? (
               <div className="text-center py-16">
                 <p className="text-lg text-muted-foreground">No products available</p>
