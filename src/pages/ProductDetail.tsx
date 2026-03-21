@@ -467,24 +467,29 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {/* Specifications Table */}
-            <div className="border border-border rounded-lg overflow-hidden">
-              <div className="bg-primary px-4 py-2">
-                <h3 className="text-xs font-bold text-primary-foreground uppercase tracking-wider">Key Specifications</h3>
-              </div>
-              <table className="w-full text-sm">
-                <tbody>
-                  {keySpecs.map(({ label, value }, i) => (
-                    <tr key={label} className={i % 2 === 0 ? "bg-muted/30" : "bg-card"}>
-                      <td className="px-4 py-2.5 font-medium text-muted-foreground w-2/5 border-r border-border">{label}</td>
-                      <td className="px-4 py-2.5 text-foreground font-semibold">{value}</td>
-                    </tr>
+            {/* Quick Specs — Compact 2-col grid */}
+            <div className="bg-muted/30 border border-border rounded-lg p-4">
+              <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3">Key Specifications</h3>
+              {keySpecs.length > 0 ? (
+                <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+                  {keySpecs.slice(0, 8).map(({ label, value }) => (
+                    <div key={label} className="flex flex-col">
+                      <span className="text-[11px] text-muted-foreground">{label}</span>
+                      <span className="text-sm font-semibold text-foreground truncate">{value}</span>
+                    </div>
                   ))}
-                  {keySpecs.length === 0 && (
-                    <tr><td colSpan={2} className="px-4 py-4 text-center text-muted-foreground text-xs">No specifications available</td></tr>
-                  )}
-                </tbody>
-              </table>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground text-center py-2">No specifications available</p>
+              )}
+              {keySpecs.length > 0 && (
+                <button
+                  onClick={() => { setActiveTab("specifications"); setTimeout(() => tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100); }}
+                  className="text-xs text-primary hover:underline font-medium mt-3 flex items-center gap-1 lg:hidden"
+                >
+                  See All Specs <ArrowRight className="w-3 h-3" />
+                </button>
+              )}
             </div>
 
             {/* Datasheet */}
