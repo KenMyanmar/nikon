@@ -33,7 +33,7 @@ const BestSellers = () => {
         <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4">
           {isLoading
             ? Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="min-w-[220px] md:min-w-[260px] flex-shrink-0">
+                <div key={i} className="min-w-[220px] md:min-w-[260px] max-w-[260px] flex-shrink-0">
                   <Skeleton className="h-80 rounded-card" />
                 </div>
               ))
