@@ -8,7 +8,7 @@ import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone } from "lucide-react";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
 import { Input } from "@/components/ui/input";
@@ -162,6 +162,28 @@ const ProductDetail = () => {
       return data;
     },
     enabled: !!product?.category_id && !!product?.id,
+  });
+
+  // Care tips for product's main category
+  const { data: careTips } = useQuery({
+    queryKey: ["care-tips", product?.category_id],
+    queryFn: async () => {
+      const { data: subCat } = await supabase
+        .from("categories")
+        .select("id, parent_id, depth")
+        .eq("id", product!.category_id!)
+        .single();
+      const mainCatId = subCat?.depth === 0 ? subCat.id : subCat?.parent_id;
+      if (!mainCatId) return [];
+      const { data } = await supabase
+        .from("category_care_tips")
+        .select("id, title, tip_text, icon, sort_order")
+        .eq("category_id", mainCatId)
+        .eq("is_active", true)
+        .order("sort_order");
+      return data || [];
+    },
+    enabled: !!product?.category_id,
   });
 
   // Review stats
@@ -445,24 +467,29 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {/* Specifications Table */}
-            <div className="border border-border rounded-lg overflow-hidden">
-              <div className="bg-primary px-4 py-2">
-                <h3 className="text-xs font-bold text-primary-foreground uppercase tracking-wider">Key Specifications</h3>
-              </div>
-              <table className="w-full text-sm">
-                <tbody>
-                  {keySpecs.map(({ label, value }, i) => (
-                    <tr key={label} className={i % 2 === 0 ? "bg-muted/30" : "bg-card"}>
-                      <td className="px-4 py-2.5 font-medium text-muted-foreground w-2/5 border-r border-border">{label}</td>
-                      <td className="px-4 py-2.5 text-foreground font-semibold">{value}</td>
-                    </tr>
+            {/* Quick Specs — Compact 2-col grid */}
+            <div className="bg-muted/30 border border-border rounded-lg p-4">
+              <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3">Key Specifications</h3>
+              {keySpecs.length > 0 ? (
+                <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+                  {keySpecs.slice(0, 8).map(({ label, value }) => (
+                    <div key={label} className="flex flex-col">
+                      <span className="text-[11px] text-muted-foreground">{label}</span>
+                      <span className="text-sm font-semibold text-foreground truncate">{value}</span>
+                    </div>
                   ))}
-                  {keySpecs.length === 0 && (
-                    <tr><td colSpan={2} className="px-4 py-4 text-center text-muted-foreground text-xs">No specifications available</td></tr>
-                  )}
-                </tbody>
-              </table>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground text-center py-2">No specifications available</p>
+              )}
+              {keySpecs.length > 0 && (
+                <button
+                  onClick={() => { setActiveTab("specifications"); setTimeout(() => tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100); }}
+                  className="text-xs text-primary hover:underline font-medium mt-3 flex items-center gap-1 lg:hidden"
+                >
+                  See All Specs <ArrowRight className="w-3 h-3" />
+                </button>
+              )}
             </div>
 
             {/* Datasheet */}
@@ -607,6 +634,15 @@ const ProductDetail = () => {
                       );
                     })}
                   </div>
+                </div>
+              )}
+
+              {/* Fallback when no pricing tiers */}
+              {(!pricingTiers || pricingTiers.length === 0) && product.selling_price && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Package className="w-4 h-4 text-primary shrink-0" />
+                  <span>Volume discounts available — </span>
+                  <button onClick={handleRequestQuote} className="text-primary hover:underline font-medium">Request Bulk Quote</button>
                 </div>
               )}
 
@@ -888,34 +924,57 @@ const ProductDetail = () => {
           </Tabs>
         </div>
 
-        {/* ── Related Products ── */}
-        {related && related.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-bold text-foreground mb-6">Related Products</h2>
-            <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4">
-              {related.map((p) => (
-                <div key={p.id} className="min-w-[220px] md:min-w-[260px] flex-shrink-0">
-                  <ProductCard
-                    id={p.id || ""}
-                    image={p.thumbnail_url || "/placeholder.svg"}
-                    title={p.description || ""}
-                    brand={p.brand_name || ""}
-                    specs={p.short_description || undefined}
-                    price={p.selling_price ? Number(p.selling_price) : null}
-                    currency={p.currency || "MMK"}
-                    moq={p.moq || undefined}
-                    stockStatus={(p.stock_status as "in_stock" | "low_stock" | "out_of_stock") || "in_stock"}
-                    sku={p.stock_code || ""}
-                    slug={p.slug || ""}
-                    isFeatured={p.is_featured || false}
-                    onhandQty={p.onhand_qty || undefined}
-                    unitOfMeasure={p.unit_of_measure || undefined}
-                  />
-                </div>
-              ))}
+        {/* ── Related Products + Care Tips ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Care Tips — mobile: above related; desktop: right sidebar */}
+          {careTips && careTips.length > 0 && (
+            <div className="lg:col-start-3 lg:row-start-1">
+              <div className="bg-sky-50 border border-sky-200 rounded-xl p-5">
+                <h3 className="font-bold text-sm text-sky-900 mb-3 flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-sky-600" />
+                  {careTips[0]?.title || "Care Tips"}
+                </h3>
+                <ul className="space-y-2.5">
+                  {careTips.map((tip) => (
+                    <li key={tip.id} className="flex items-start gap-2 text-sm text-sky-800">
+                      <CheckCircle className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                      <span>{tip.tip_text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Related Products */}
+          {related && related.length > 0 && (
+            <div className={careTips && careTips.length > 0 ? "lg:col-span-2" : "lg:col-span-3"}>
+              <h2 className="text-lg font-bold text-foreground mb-6">Related Products</h2>
+              <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4">
+                {related.map((p) => (
+                  <div key={p.id} className="min-w-[220px] md:min-w-[260px] flex-shrink-0">
+                    <ProductCard
+                      id={p.id || ""}
+                      image={p.thumbnail_url || "/placeholder.svg"}
+                      title={p.description || ""}
+                      brand={p.brand_name || ""}
+                      specs={p.short_description || undefined}
+                      price={p.selling_price ? Number(p.selling_price) : null}
+                      currency={p.currency || "MMK"}
+                      moq={p.moq || undefined}
+                      stockStatus={(p.stock_status as "in_stock" | "low_stock" | "out_of_stock") || "in_stock"}
+                      sku={p.stock_code || ""}
+                      slug={p.slug || ""}
+                      isFeatured={p.is_featured || false}
+                      onhandQty={p.onhand_qty || undefined}
+                      unitOfMeasure={p.unit_of_measure || undefined}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </MainLayout>
   );
