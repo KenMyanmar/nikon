@@ -1,60 +1,76 @@
 
 
-# Switch Navigation from Product Groups to Category Hierarchy
+# Product Detail Redesign — Specs Layout + Bulk Pricing + Care Tips
 
-## Summary
-Replace all `product_groups` table queries with the 2-level `categories` hierarchy (depth=0 = main, depth=1 = sub). Four frontend files need changes; no database changes.
+## Current State
+The page already has a solid 3-column layout (Image | Specs | Price Card) with bulk pricing tiers, flash deals, promotions, reviews, and tabs all working. The request asks for three specific improvements.
 
-## Files to Modify
+## What Already Exists vs What's Needed
 
-### 1. `src/components/layout/MegaMenu.tsx` (main change)
+| Feature | Status | Action |
+|---------|--------|--------|
+| Quick Specs (2-col grid) | ❌ Currently a full single-column table in col 2 (lines 448-466) | Redesign to compact 2-col grid |
+| Bulk Pricing | ✅ Already exists in price card (lines 576-611) with interactive tier buttons | Minor: add "Volume discounts available" fallback when no tiers exist |
+| Care Tips | ❌ No query or display | Add query + display section |
+| Full Specs in tab | ✅ Already exists (lines 738-762) | No change needed |
 
-**`useNavData` hook** — Replace `product_groups` query with main categories (depth=0):
+## Changes to `src/pages/ProductDetail.tsx`
+
+### 1. Redesign Key Specs section (lines 448-466) — Compact 2-col grid
+
+Replace the full-height bordered table with a compact grid:
+- 2-column CSS grid (`grid grid-cols-2 gap-x-6 gap-y-1.5`)
+- Each cell: label in muted text, value in semibold, on same line
+- Limit to first 8 specs max
+- Subtle background card with rounded corners, no heavy header bar
+- On mobile: add "See All Specs →" link that activates the Specifications tab
+
+### 2. Add care tips query (new useQuery after related products query ~line 165)
+
 ```typescript
-// REMOVE: supabase.from("product_groups")...
-// REPLACE with:
-const { data: mainCategories = [] } = useQuery({
-  queryKey: ["main-categories-nav"],
+const { data: careTips } = useQuery({
+  queryKey: ["care-tips", product?.category_id],
   queryFn: async () => {
-    const { data } = await supabase
+    const { data: subCat } = await supabase
       .from("categories")
-      .select("id, name, slug, product_count")
-      .eq("depth", 0).eq("is_active", true)
-      .order("name");
+      .select("id, parent_id, depth")
+      .eq("id", product!.category_id!)
+      .single();
+    const mainCatId = subCat?.depth === 0 ? subCat.id : subCat?.parent_id;
+    if (!mainCatId) return [];
+    const { data } = await supabase
+      .from("category_care_tips")
+      .select("id, title, tip_text, icon, sort_order")
+      .eq("category_id", mainCatId)
+      .eq("is_active", true)
+      .order("sort_order");
     return data || [];
   },
-  staleTime: 5 * 60 * 1000,
+  enabled: !!product?.category_id,
 });
 ```
-Keep the sub-categories query (already fetches all categories). Return `{ mainCategories, subCategories }` instead of `{ groups, categories }`.
 
-**`MegaMenuDropdown`** — Receive a main category instead of a `ProductGroup`. Filter sub-categories by `parent_id === mainCategory.id` instead of `group_id === group.id`. Remove `buildCategoryTree` grouping by `group_id`. Sub-categories are flat (depth=1), so just list them directly.
+### 3. Add "Volume discounts available" fallback (after bulk pricing tiers ~line 611)
 
-**`DesktopMegaNav`** — Iterate over `mainCategories` instead of `groups`. Each main category gets a hover dropdown showing its sub-categories.
+When `pricingTiers` is empty or null, show a subtle prompt:
+```
+🏷️ Volume discounts available — Request Bulk Quote
+```
 
-**`MobileMegaNav`** — Same: iterate `mainCategories`, accordion children are sub-categories filtered by `parent_id`.
+### 4. Add Care Tips + Related Products section (lines 891-918)
 
-Remove `ProductGroup` interface entirely. Remove `group_id` from Category interface.
+Replace the current single-row related products with a 2-column layout on desktop:
+- Left (2/3): Related Products (existing horizontal scroll)
+- Right (1/3): Care Tips card (blue-50 background, list of tips with check icons)
+- Mobile: Care Tips full-width card above Related Products
 
-### 2. `src/pages/AllCategoriesPage.tsx`
+### 5. Mobile "See All Specs" link
 
-Remove `product_groups` query. Fetch categories with depth=0 as section headers, depth=1 as children under each (by `parent_id`). Remove `ungrouped` logic. Each main category section shows its sub-categories with product counts.
+Below the compact specs grid, add a button visible only on mobile (`lg:hidden`) that sets `activeTab` to "specifications" and scrolls to the tabs section.
 
-### 3. `src/pages/CategoryPage.tsx`
+## No new files created
+All changes stay in `ProductDetail.tsx` to avoid unnecessary abstraction for what amounts to ~60 lines of UI changes.
 
-Remove the `groupData` query (lines 39-51) that fetches from `product_groups`. For breadcrumbs, if the category has a `parent_id`, fetch the parent category name/slug directly (this query already exists at line 54). Remove `group_id` from the category select. Breadcrumbs become: `Home > Parent Category > Current Category`.
-
-### 4. `src/components/home/FeaturedCategories.tsx`
-
-Add `.eq("depth", 0)` to the query so it only shows the 10 main categories, not sub-categories. Change limit from 8 to 10.
-
-### 5. `src/App.tsx` — No changes needed
-Current `/category/:slug` route already handles both main and sub-categories via `CategoryPage.tsx`.
-
-## No Database Changes
-The category hierarchy already exists. This is purely frontend.
-
-## What is NOT changed
-- `supabase/functions/import-products/index.ts` — Import function still references `product_groups` for backward compat. Can be cleaned up separately.
-- `src/integrations/supabase/types.ts` — Auto-generated, never manually edited.
+## No database changes needed
+Both `pricing_tiers` and `category_care_tips` tables exist with proper RLS policies.
 
