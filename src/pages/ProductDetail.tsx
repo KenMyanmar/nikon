@@ -924,34 +924,57 @@ const ProductDetail = () => {
           </Tabs>
         </div>
 
-        {/* ── Related Products ── */}
-        {related && related.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-bold text-foreground mb-6">Related Products</h2>
-            <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4">
-              {related.map((p) => (
-                <div key={p.id} className="min-w-[220px] md:min-w-[260px] flex-shrink-0">
-                  <ProductCard
-                    id={p.id || ""}
-                    image={p.thumbnail_url || "/placeholder.svg"}
-                    title={p.description || ""}
-                    brand={p.brand_name || ""}
-                    specs={p.short_description || undefined}
-                    price={p.selling_price ? Number(p.selling_price) : null}
-                    currency={p.currency || "MMK"}
-                    moq={p.moq || undefined}
-                    stockStatus={(p.stock_status as "in_stock" | "low_stock" | "out_of_stock") || "in_stock"}
-                    sku={p.stock_code || ""}
-                    slug={p.slug || ""}
-                    isFeatured={p.is_featured || false}
-                    onhandQty={p.onhand_qty || undefined}
-                    unitOfMeasure={p.unit_of_measure || undefined}
-                  />
-                </div>
-              ))}
+        {/* ── Related Products + Care Tips ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Care Tips — mobile: above related; desktop: right sidebar */}
+          {careTips && careTips.length > 0 && (
+            <div className="lg:col-start-3 lg:row-start-1">
+              <div className="bg-sky-50 border border-sky-200 rounded-xl p-5">
+                <h3 className="font-bold text-sm text-sky-900 mb-3 flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-sky-600" />
+                  {careTips[0]?.title || "Care Tips"}
+                </h3>
+                <ul className="space-y-2.5">
+                  {careTips.map((tip) => (
+                    <li key={tip.id} className="flex items-start gap-2 text-sm text-sky-800">
+                      <CheckCircle className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                      <span>{tip.tip_text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Related Products */}
+          {related && related.length > 0 && (
+            <div className={careTips && careTips.length > 0 ? "lg:col-span-2" : "lg:col-span-3"}>
+              <h2 className="text-lg font-bold text-foreground mb-6">Related Products</h2>
+              <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4">
+                {related.map((p) => (
+                  <div key={p.id} className="min-w-[220px] md:min-w-[260px] flex-shrink-0">
+                    <ProductCard
+                      id={p.id || ""}
+                      image={p.thumbnail_url || "/placeholder.svg"}
+                      title={p.description || ""}
+                      brand={p.brand_name || ""}
+                      specs={p.short_description || undefined}
+                      price={p.selling_price ? Number(p.selling_price) : null}
+                      currency={p.currency || "MMK"}
+                      moq={p.moq || undefined}
+                      stockStatus={(p.stock_status as "in_stock" | "low_stock" | "out_of_stock") || "in_stock"}
+                      sku={p.stock_code || ""}
+                      slug={p.slug || ""}
+                      isFeatured={p.is_featured || false}
+                      onhandQty={p.onhand_qty || undefined}
+                      unitOfMeasure={p.unit_of_measure || undefined}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </MainLayout>
   );
