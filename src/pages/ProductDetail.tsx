@@ -349,7 +349,6 @@ const ProductDetail = () => {
         {/* Breadcrumbs */}
         <Breadcrumbs
           segments={[
-            ...(product.group_name ? [{ label: product.group_name, href: "/categories" }] : []),
             ...(product.parent_category_name && product.parent_category_slug
               ? [{ label: product.parent_category_name, href: `/category/${product.parent_category_slug}` }]
               : []),
