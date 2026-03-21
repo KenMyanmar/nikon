@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowRight } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const TopBrandsShowcase = () => {
   const { data: brands = [] } = useQuery({
