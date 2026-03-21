@@ -38,7 +38,8 @@ const HeroBannerCarousel = () => {
   const wrapperProps = banner.link_url ? { to: banner.link_url } : {};
 
   return (
-    <section className="relative w-full h-[200px] md:h-[400px] overflow-hidden">
+  <section className="container mx-auto px-4 pt-2">
+    <div className="relative w-full h-[160px] md:h-[250px] overflow-hidden rounded-lg">
       <Wrapper {...(wrapperProps as any)} className="block relative w-full h-full">
         <img
           src={banner.image_url}
