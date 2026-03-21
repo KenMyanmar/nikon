@@ -79,6 +79,7 @@ const HeroBannerCarousel = () => {
           ))}
         </div>
       )}
+    </div>
     </section>
   );
 };
