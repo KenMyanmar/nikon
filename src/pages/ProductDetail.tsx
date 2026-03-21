@@ -637,6 +637,15 @@ const ProductDetail = () => {
                 </div>
               )}
 
+              {/* Fallback when no pricing tiers */}
+              {(!pricingTiers || pricingTiers.length === 0) && product.selling_price && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Package className="w-4 h-4 text-primary shrink-0" />
+                  <span>Volume discounts available — </span>
+                  <button onClick={handleRequestQuote} className="text-primary hover:underline font-medium">Request Bulk Quote</button>
+                </div>
+              )}
+
               {/* Quantity */}
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Quantity</label>
