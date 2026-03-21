@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   UtensilsCrossed, Settings, ChefHat, SprayCan, Bed,
   Wine, Wrench, Coffee, ConciergeBell, Shirt,
