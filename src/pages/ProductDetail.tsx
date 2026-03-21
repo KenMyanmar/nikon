@@ -337,7 +337,7 @@ const ProductDetail = () => {
   if (product.packing) keySpecs.push({ label: "Packing", value: product.packing });
   if (product.item_type) keySpecs.push({ label: "Type", value: product.item_type });
   if (product.other_code) keySpecs.push({ label: "Alt Code", value: product.other_code });
-  if (product.group_name) keySpecs.push({ label: "Group", value: product.group_name });
+  
   // Add specs from JSONB
   specs.slice(0, 6).forEach(([key, val]) => {
     keySpecs.push({ label: key, value: String(val) });
