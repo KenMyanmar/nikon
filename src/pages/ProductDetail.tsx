@@ -164,6 +164,28 @@ const ProductDetail = () => {
     enabled: !!product?.category_id && !!product?.id,
   });
 
+  // Care tips for product's main category
+  const { data: careTips } = useQuery({
+    queryKey: ["care-tips", product?.category_id],
+    queryFn: async () => {
+      const { data: subCat } = await supabase
+        .from("categories")
+        .select("id, parent_id, depth")
+        .eq("id", product!.category_id!)
+        .single();
+      const mainCatId = subCat?.depth === 0 ? subCat.id : subCat?.parent_id;
+      if (!mainCatId) return [];
+      const { data } = await supabase
+        .from("category_care_tips")
+        .select("id, title, tip_text, icon, sort_order")
+        .eq("category_id", mainCatId)
+        .eq("is_active", true)
+        .order("sort_order");
+      return data || [];
+    },
+    enabled: !!product?.category_id,
+  });
+
   // Review stats
   const { data: reviewStats } = useQuery({
     queryKey: ["review-stats", product?.id],
