@@ -1,32 +1,24 @@
 import MainLayout from "@/components/layout/MainLayout";
+import CategoryQuickNav from "@/components/home/CategoryQuickNav";
 import HeroBannerCarousel from "@/components/home/HeroBannerCarousel";
-import HeroSection from "@/components/home/HeroSection";
-import FeaturedCategories from "@/components/home/FeaturedCategories";
 import FlashDealsRow from "@/components/home/FlashDealsRow";
 import BestSellers from "@/components/home/BestSellers";
-import PromotionsStrip from "@/components/home/PromotionsStrip";
-import BrandCarousel from "@/components/home/BrandCarousel";
-import TrustBadgeBar from "@/components/home/TrustBadgeBar";
-import ShopByBusinessType from "@/components/home/ShopByBusinessType";
-import ClientLogos from "@/components/home/ClientLogos";
-import QuotationCTA from "@/components/home/QuotationCTA";
+import TopBrandsShowcase from "@/components/home/TopBrandsShowcase";
 import NewArrivals from "@/components/home/NewArrivals";
+import TrustBadgeBar from "@/components/home/TrustBadgeBar";
+import QuotationCTA from "@/components/home/QuotationCTA";
 
 const Index = () => {
   return (
     <MainLayout>
+      <CategoryQuickNav />
       <HeroBannerCarousel />
-      <HeroSection />
-      <TrustBadgeBar />
-      <FeaturedCategories />
       <FlashDealsRow />
       <BestSellers />
-      <ShopByBusinessType />
-      <PromotionsStrip />
-      <ClientLogos />
-      <BrandCarousel />
-      <QuotationCTA />
+      <TopBrandsShowcase />
       <NewArrivals />
+      <TrustBadgeBar />
+      <QuotationCTA />
     </MainLayout>
   );
 };

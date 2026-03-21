@@ -1,8 +1,8 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronDown, ChevronRight, Menu, X, Zap } from "lucide-react";
+import { ChevronDown, Zap, Tag } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -25,16 +25,24 @@ interface SubCategory {
   product_count: number;
 }
 
+interface TopBrand {
+  id: string;
+  name: string;
+  slug: string;
+  product_count: number;
+}
+
 const SHORT_NAMES: Record<string, string> = {
   "Housekeeping Supplies": "Housekeeping",
   "Laundry Solutions": "Laundry",
   "F & B Solutions": "F&B",
   "Bedroom Supplies": "Bedroom",
   "Buffet & Banquet": "Buffet",
-  "Food Services": "Food Services",
+  "Kitchen Utensils": "Utensils",
+  "Kitchen Services": "Kitchen Svc",
+  "Food Services": "Food Svc",
+  "Spare Parts": "Spare Parts",
 };
-
-const NAV_LIMIT = 8;
 
 export const useNavData = () => {
   const { data: mainCategories = [] } = useQuery({
@@ -45,7 +53,7 @@ export const useNavData = () => {
         .select("id, name, slug, product_count")
         .eq("depth", 0)
         .eq("is_active", true)
-        .order("name");
+        .order("product_count", { ascending: false });
       if (error) throw error;
       return (data || []) as MainCategory[];
     },
@@ -60,160 +68,57 @@ export const useNavData = () => {
         .select("id, name, slug, parent_id, product_count")
         .eq("depth", 1)
         .eq("is_active", true)
-        .order("name");
+        .order("product_count", { ascending: false });
       if (error) throw error;
       return (data || []) as SubCategory[];
     },
     staleTime: 5 * 60 * 1000,
   });
 
-  return { mainCategories, subCategories };
-};
+  const { data: topBrands = [] } = useQuery({
+    queryKey: ["top-brands-nav"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("brands")
+        .select("id, name, slug, product_count")
+        .eq("is_active", true)
+        .gt("product_count", 0)
+        .order("product_count", { ascending: false })
+        .limit(6);
+      if (error) throw error;
+      return (data || []) as TopBrand[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
-// ─── All Categories Mega Overlay ─────────────────────────────────────────
-const AllCategoriesOverlay = ({
-  mainCategories,
-  subCategories,
-  onClose,
-}: {
-  mainCategories: MainCategory[];
-  subCategories: SubCategory[];
-  onClose: () => void;
-}) => {
-  const [hoveredId, setHoveredId] = useState<string | null>(
-    mainCategories[0]?.id || null
-  );
-
-  const hoveredSubs = useMemo(
-    () => subCategories.filter((s) => s.parent_id === hoveredId),
-    [subCategories, hoveredId]
-  );
-
-  const hoveredCat = mainCategories.find((c) => c.id === hoveredId);
-
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [onClose]);
-
-  return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/30 z-40"
-        onClick={onClose}
-      />
-      {/* Panel */}
-      <div className="absolute left-0 right-0 top-full z-50 bg-card border-t-2 border-primary shadow-2xl">
-        <div className="max-w-[1280px] mx-auto flex min-h-[400px]">
-          {/* Left column — all main categories */}
-          <div className="w-[240px] border-r border-border bg-secondary/50 py-4 shrink-0">
-            {mainCategories.map((cat) => (
-              <button
-                key={cat.id}
-                onMouseEnter={() => setHoveredId(cat.id)}
-                onClick={() => { onClose(); }}
-                className={`w-full flex items-center justify-between px-5 py-2.5 text-sm transition ${
-                  hoveredId === cat.id
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <Link
-                  to={`/category/${cat.slug}`}
-                  className="flex-1 text-left"
-                  onClick={onClose}
-                >
-                  {cat.name}
-                </Link>
-                <ChevronRight className="w-3.5 h-3.5 opacity-60 shrink-0" />
-              </button>
-            ))}
-            <div className="border-t border-border mt-3 pt-3 px-5">
-              <Link
-                to="/brands"
-                className="text-sm font-medium text-accent hover:underline"
-                onClick={onClose}
-              >
-                Browse Brands →
-              </Link>
-            </div>
-          </div>
-
-          {/* Right area — sub-categories of hovered */}
-          <div className="flex-1 p-6">
-            {hoveredCat && (
-              <>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-foreground">
-                    {hoveredCat.name}
-                  </h3>
-                  <Link
-                    to={`/category/${hoveredCat.slug}`}
-                    className="text-sm font-semibold text-accent hover:underline"
-                    onClick={onClose}
-                  >
-                    View All →
-                  </Link>
-                </div>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-1">
-                  {hoveredSubs.map((sub) => (
-                    <Link
-                      key={sub.id}
-                      to={`/category/${sub.slug}`}
-                      className="flex items-center gap-2 py-2 text-sm text-muted-foreground hover:text-accent transition group"
-                      onClick={onClose}
-                    >
-                      <span className="group-hover:translate-x-1 transition-transform truncate">
-                        {sub.name}
-                      </span>
-                      <span className="text-xs opacity-60 shrink-0">
-                        ({sub.product_count})
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-                {hoveredSubs.length === 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    No sub-categories yet.
-                  </p>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </>
-  );
+  return { mainCategories, subCategories, topBrands };
 };
 
 // ─── Individual category hover dropdown ──────────────────────────────────
 const MegaMenuDropdown = ({
   mainCategory,
   subCategories,
+  topBrands,
 }: {
   mainCategory: MainCategory;
   subCategories: SubCategory[];
+  topBrands: TopBrand[];
 }) => {
   const subs = useMemo(
     () => subCategories.filter((s) => s.parent_id === mainCategory.id),
     [subCategories, mainCategory.id]
   );
 
-  const totalProducts = subs.reduce((sum, s) => sum + s.product_count, 0);
-
   return (
-    <div className="absolute left-0 right-0 top-full w-full bg-card border-t-2 border-primary shadow-xl z-50">
+    <div className="absolute left-0 right-0 top-full w-full bg-card border-t-2 border-primary shadow-xl z-50 animate-in fade-in slide-in-from-top-1 duration-200">
       <div className="max-w-[1280px] mx-auto px-8 py-6">
-        <div className="grid grid-cols-[1fr_200px] gap-8">
+        <div className="grid grid-cols-[1fr_220px] gap-8">
+          {/* Left — Sub-categories */}
           <div className="min-w-0">
             <h3 className="text-xs uppercase tracking-[0.05em] font-bold text-primary mb-4">
               {mainCategory.name}
             </h3>
-            <div className={`grid ${subs.length > 6 ? "grid-cols-2" : "grid-cols-1"} gap-x-8 gap-y-0.5`}>
+            <div className={`grid ${subs.length > 6 ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-1 sm:grid-cols-2"} gap-x-8 gap-y-0.5`}>
               {subs.map((sub) => (
                 <Link
                   key={sub.id}
@@ -223,29 +128,52 @@ const MegaMenuDropdown = ({
                   <span className="truncate min-w-0 group-hover/item:translate-x-1 transition-transform">
                     {sub.name}
                   </span>
-                  <span className="text-xs text-muted-foreground shrink-0">
+                  <span className="text-xs text-muted-foreground/60 shrink-0">
                     ({sub.product_count})
                   </span>
                 </Link>
               ))}
             </div>
+            {subs.length === 0 && (
+              <p className="text-sm text-muted-foreground">No sub-categories yet.</p>
+            )}
+            <div className="mt-4 pt-3 border-t border-border">
+              <Link
+                to={`/category/${mainCategory.slug}`}
+                className="text-sm font-semibold text-accent hover:underline"
+              >
+                View All {mainCategory.name} →
+              </Link>
+            </div>
           </div>
-          <div className="bg-secondary rounded-lg p-6 min-w-0">
-            <h3 className="font-bold text-primary mb-2 break-words">
-              Browse {mainCategory.name}
-            </h3>
-            <p className="text-sm text-muted-foreground mb-1">
-              {subs.length} sub-categories
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              {totalProducts.toLocaleString()} products
-            </p>
-            <Link
-              to={`/category/${mainCategory.slug}`}
-              className="text-sm font-semibold text-accent hover:underline"
-            >
-              View All →
-            </Link>
+
+          {/* Right — Popular Brands */}
+          <div className="bg-secondary rounded-lg p-5 min-w-0">
+            <h4 className="text-xs uppercase tracking-[0.05em] font-bold text-primary mb-3">
+              Popular Brands
+            </h4>
+            <div className="space-y-1">
+              {topBrands.slice(0, 4).map((brand) => (
+                <Link
+                  key={brand.id}
+                  to={`/brand/${brand.slug}`}
+                  className="flex items-center justify-between py-1.5 text-sm text-muted-foreground hover:text-accent transition"
+                >
+                  <span className="truncate">{brand.name}</span>
+                  <span className="text-xs text-muted-foreground/60 shrink-0 ml-2">
+                    ({brand.product_count})
+                  </span>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-3 pt-3 border-t border-border">
+              <Link
+                to="/brands"
+                className="text-sm font-semibold text-accent hover:underline"
+              >
+                View All Brands →
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -253,76 +181,13 @@ const MegaMenuDropdown = ({
   );
 };
 
-// ─── "More ▾" dropdown ───────────────────────────────────────────────────
-const MoreDropdown = ({
-  categories,
-  subCategories,
-}: {
-  categories: MainCategory[];
-  subCategories: SubCategory[];
-}) => {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  if (categories.length === 0) return null;
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1 px-4 py-3 text-primary-foreground text-[13px] font-medium hover:bg-[hsl(var(--ikon-navy-light))] transition whitespace-nowrap"
-      >
-        More
-        <ChevronDown className="w-3 h-3 opacity-60" />
-      </button>
-      {open && (
-        <div className="absolute top-full left-0 bg-card border border-border shadow-xl rounded-b-lg min-w-[220px] z-50 py-2">
-          {categories.map((cat) => {
-            const subs = subCategories.filter((s) => s.parent_id === cat.id);
-            return (
-              <div key={cat.id} className="group">
-                <Link
-                  to={`/category/${cat.slug}`}
-                  className="flex items-center justify-between px-4 py-2.5 text-sm text-foreground hover:bg-muted transition"
-                  onClick={() => setOpen(false)}
-                >
-                  {cat.name}
-                  {subs.length > 0 && (
-                    <ChevronRight className="w-3 h-3 opacity-40" />
-                  )}
-                </Link>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
-
 // ─── Desktop Nav Bar ─────────────────────────────────────────────────────
 export const DesktopMegaNav = () => {
-  const { mainCategories, subCategories } = useNavData();
+  const { mainCategories, subCategories, topBrands } = useNavData();
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [overlayOpen, setOverlayOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sort by product_count descending
-  const sorted = useMemo(
-    () => [...mainCategories].sort((a, b) => b.product_count - a.product_count),
-    [mainCategories]
-  );
-
-  const navCategories = sorted.slice(0, NAV_LIMIT);
-  const moreCategories = sorted.slice(NAV_LIMIT);
+  const shortName = (name: string) => SHORT_NAMES[name] || name;
 
   const handleMouseEnter = (id: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -333,33 +198,15 @@ export const DesktopMegaNav = () => {
     timeoutRef.current = setTimeout(() => setActiveId(null), 150);
   };
 
-  const shortName = (name: string) => SHORT_NAMES[name] || name;
-
   return (
     <nav className="hidden lg:block bg-primary relative">
       <div className="container mx-auto px-4">
         <div className="flex items-center">
-          {/* ☰ All Categories button */}
-          <button
-            onClick={() => { setOverlayOpen(!overlayOpen); setActiveId(null); }}
-            className={`flex items-center gap-2 px-4 py-3 text-primary-foreground text-[13px] font-semibold transition whitespace-nowrap shrink-0 ${
-              overlayOpen
-                ? "bg-[hsl(var(--ikon-navy-light))]"
-                : "bg-[hsl(var(--ikon-navy-dark))] hover:bg-[hsl(var(--ikon-navy-light))]"
-            }`}
-          >
-            {overlayOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            All Categories
-          </button>
-
-          {/* Divider */}
-          <div className="w-px h-6 bg-primary-foreground/20 shrink-0" />
-
-          {/* Top 8 categories */}
-          {navCategories.map((cat) => (
+          {/* All 10 categories */}
+          {mainCategories.map((cat) => (
             <div
               key={cat.id}
-              onMouseEnter={() => { handleMouseEnter(cat.id); setOverlayOpen(false); }}
+              onMouseEnter={() => handleMouseEnter(cat.id)}
               onMouseLeave={handleMouseLeave}
             >
               <Link
@@ -374,8 +221,17 @@ export const DesktopMegaNav = () => {
             </div>
           ))}
 
-          {/* More dropdown */}
-          <MoreDropdown categories={moreCategories} subCategories={subCategories} />
+          {/* Divider */}
+          <div className="w-px h-6 bg-primary-foreground/20 shrink-0 mx-1" />
+
+          {/* Brands standalone link */}
+          <Link
+            to="/brands"
+            className="flex items-center gap-1.5 px-3 py-3 text-primary-foreground text-[13px] font-medium hover:bg-[hsl(var(--ikon-navy-light))] transition whitespace-nowrap"
+          >
+            <Tag className="w-3.5 h-3.5 opacity-70" />
+            Brands
+          </Link>
 
           {/* Spacer */}
           <div className="flex-1" />
@@ -392,7 +248,7 @@ export const DesktopMegaNav = () => {
       </div>
 
       {/* Category hover dropdown */}
-      {activeId && !overlayOpen && (
+      {activeId && (
         <div
           onMouseEnter={() => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }}
           onMouseLeave={handleMouseLeave}
@@ -400,17 +256,9 @@ export const DesktopMegaNav = () => {
           <MegaMenuDropdown
             mainCategory={mainCategories.find((c) => c.id === activeId)!}
             subCategories={subCategories}
+            topBrands={topBrands}
           />
         </div>
-      )}
-
-      {/* All Categories overlay */}
-      {overlayOpen && (
-        <AllCategoriesOverlay
-          mainCategories={[...mainCategories].sort((a, b) => a.name.localeCompare(b.name))}
-          subCategories={subCategories}
-          onClose={() => setOverlayOpen(false)}
-        />
       )}
     </nav>
   );
@@ -420,20 +268,48 @@ export const DesktopMegaNav = () => {
 export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
   const { mainCategories, subCategories } = useNavData();
 
+  // Sort by product_count DESC (already sorted from query)
+  const sorted = mainCategories;
+
   return (
     <div className="px-4 py-3">
-      <Accordion type="multiple" className="space-y-1">
-        {mainCategories.map((cat) => {
+      {/* Prominent buttons at top */}
+      <div className="flex gap-2 mb-4">
+        <Link
+          to="/flash-deals"
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg bg-destructive text-white font-bold text-sm transition hover:opacity-90"
+          onClick={onClose}
+        >
+          <Zap className="w-4 h-4" />
+          Flash Deals
+        </Link>
+        <Link
+          to="/brands"
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg bg-primary text-primary-foreground font-bold text-sm transition hover:opacity-90"
+          onClick={onClose}
+        >
+          <Tag className="w-4 h-4" />
+          Browse Brands
+        </Link>
+      </div>
+
+      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 px-1">
+        Categories
+      </p>
+
+      <Accordion type="multiple" className="space-y-0.5">
+        {sorted.map((cat) => {
           const subs = subCategories.filter((s) => s.parent_id === cat.id);
           return (
             <AccordionItem key={cat.id} value={cat.id} className="border-none">
               <div className="flex items-center">
                 <Link
                   to={`/category/${cat.slug}`}
-                  className="flex-1 py-2.5 px-3 text-sm font-medium text-foreground hover:text-accent transition truncate"
+                  className="flex-1 flex items-center justify-between py-2.5 px-3 text-sm font-medium text-foreground hover:text-accent transition"
                   onClick={onClose}
                 >
-                  {cat.name}
+                  <span className="truncate">{cat.name}</span>
+                  <span className="text-xs text-muted-foreground ml-2">({cat.product_count})</span>
                 </Link>
                 {subs.length > 0 && (
                   <AccordionTrigger className="py-2 px-2 hover:no-underline [&>svg]:w-3 [&>svg]:h-3" />
@@ -449,7 +325,7 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
                       onClick={onClose}
                     >
                       <span className="truncate">{sub.name}</span>
-                      <span className="text-xs text-muted-foreground ml-2">({sub.product_count})</span>
+                      <span className="text-xs text-muted-foreground/60 ml-2">({sub.product_count})</span>
                     </Link>
                   ))}
                 </AccordionContent>
@@ -458,29 +334,6 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
           );
         })}
       </Accordion>
-      <div className="border-t border-border mt-2 pt-2 space-y-1">
-        <Link
-          to="/categories"
-          className="block py-2.5 px-3 text-sm font-medium text-primary hover:bg-muted rounded-md"
-          onClick={onClose}
-        >
-          All Categories →
-        </Link>
-        <Link
-          to="/brands"
-          className="block py-2.5 px-3 text-sm font-medium text-foreground hover:bg-muted rounded-md"
-          onClick={onClose}
-        >
-          Browse Brands
-        </Link>
-        <Link
-          to="/flash-deals"
-          className="block py-2.5 px-3 text-sm font-bold text-destructive hover:bg-destructive/10 rounded-md"
-          onClick={onClose}
-        >
-          ⚡ Flash Deals
-        </Link>
-      </div>
     </div>
   );
 };
