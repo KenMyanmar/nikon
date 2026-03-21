@@ -320,7 +320,7 @@ const ProductDetail = () => {
   const infoRows: { label: string; value: string }[] = [];
   if (product.brand_name) infoRows.push({ label: "Brand", value: product.brand_name });
   if (product.category_name) infoRows.push({ label: "Category", value: product.category_name });
-  if (product.group_name) infoRows.push({ label: "Group", value: product.group_name });
+  
   if (product.stock_code) infoRows.push({ label: "SKU / Stock Code", value: product.stock_code });
   if (product.other_code) infoRows.push({ label: "Alt Code", value: product.other_code });
   if (product.unit_of_measure) infoRows.push({ label: "Unit of Measure", value: product.unit_of_measure });
