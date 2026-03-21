@@ -1,19 +1,51 @@
 
 
-# Fix Related Products Card Sizing
+# All Brands Page — Discovery-First Redesign
 
-## Root Cause
-Each card wrapper has `min-w-[220px]` but no `max-w` constraint. In a `flex` container without explicit growth limits, if there are only 1-3 related products, the cards expand to fill the full `lg:col-span-2` width (~600px each instead of ~220-260px).
+## Current State
+`AllBrandsPage.tsx` is a simple A-Z alphabetical grid. No search, no featured section, no category grouping. Brand cards link to `/brand/{slug}` (BrandPage exists). 0 brands have logos — all use letter placeholders.
 
-## Fix in `src/pages/ProductDetail.tsx` (line 955)
+## Changes — Single File: `src/pages/AllBrandsPage.tsx`
 
-Add `max-w-[260px]` to each card wrapper to cap card width:
+### Data Queries (3 total, all with `staleTime: 5 * 60 * 1000`)
 
+1. **All brands** — existing query, keep as-is
+2. **Brand-category mapping** — new query:
+```sql
+SELECT b.id, parent.id as cat_id, parent.name as cat_name,
+       COUNT(p.id) as products_in_category
+FROM products p
+JOIN brands b ON p.brand_id = b.id
+JOIN categories c ON p.category_id = c.id
+JOIN categories parent ON (
+  CASE WHEN c.depth = 0 THEN c.id ELSE c.parent_id END
+) = parent.id AND parent.depth = 0
+WHERE b.is_active = true AND b.product_count > 0
+GROUP BY b.id, parent.id, parent.name
 ```
-min-w-[220px] md:min-w-[260px] max-w-[260px] flex-shrink-0
-```
+This handles products on both main (depth=0) and sub (depth=1) categories.
 
-This ensures cards stay compact regardless of how many related products exist. The horizontal scroll still works when there are many products, and cards stay card-sized when there are few.
+### Layout (top to bottom)
 
-Single line change, no other files affected.
+1. **Header + Search Bar** — "Explore Our Brands" + real-time filter input. When searching, hide featured/category sections, show flat filtered grid only.
+
+2. **Top Brands Row** — Horizontal scroll of featured brands. Featured = `is_featured === true`, with fallback: if fewer than 6 featured, fill remaining slots from top brands by `product_count DESC`. Larger cards with amber left border accent.
+
+3. **Browse by Category** — For each main category that has brands, a collapsible section with category name header + grid of brand cards (showing brand name + product count in that category). Categories sorted by total brand count descending.
+
+4. **Sticky A-Z Bar** — Horizontal letter bar, sticky on scroll. Disabled letters for missing initials. Clicks scroll to A-Z section.
+
+5. **All Brands A-Z** — Existing alphabetical grid, kept as secondary section with improved hover effects.
+
+### Brand Card Design
+- White bg, subtle border, rounded-lg, hover shadow
+- Logo if `logo_url` exists, else navy circle with white initial letter
+- Brand name + product count
+- All cards link to `/brand/${brand.slug}` (existing route)
+- Consistent across all 3 sections (featured, category, A-Z)
+
+### Technical Notes
+- All 3 queries use `staleTime: 5 * 60 * 1000` (5-minute cache)
+- No new files — all in `AllBrandsPage.tsx`
+- No database changes needed
 
