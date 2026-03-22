@@ -273,9 +273,9 @@ const Footer = () => {
             <AccordionSection title="About IKON" open={openSection === "about"} onToggle={() => toggle("about")}>
               <FooterLinks links={ABOUT_LINKS} />
               <div className="mt-3 space-y-1 text-xs text-[#9ca3af]">
-                <p>No. 328-A, Pyay Rd., Sanchaung, Yangon</p>
-                <p>📞 01-534216, 01-527705</p>
-                <p>📧 sales@ikonmart.com</p>
+                <p>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</p>
+                <p>📞 09 89009 0301</p>
+                <p>📧 ikonmartecommerce@gmail.com</p>
               </div>
             </AccordionSection>
 
