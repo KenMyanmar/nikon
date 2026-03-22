@@ -255,13 +255,13 @@ const Footer = () => {
               </div>
               <div className="space-y-1.5 text-xs text-[#9ca3af]">
                 <div className="flex items-center gap-1.5">
-                  <MapPin className="h-3 w-3 shrink-0" /> Sanchaung, Yangon
+                  <MapPin className="h-3 w-3 shrink-0" /> Mingalardon, Yangon
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Phone className="h-3 w-3 shrink-0" /> 01-534216
+                  <Phone className="h-3 w-3 shrink-0" /> 09 89009 0301
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Clock className="h-3 w-3 shrink-0" /> Mon–Sat: 8:30 AM – 5:30 PM
+                  <Clock className="h-3 w-3 shrink-0" /> Mon–Sat: 9:00 AM – 5:00 PM
                 </div>
                 <p className="mt-2 text-[#6b7280]">CCI France Myanmar Member</p>
               </div>
