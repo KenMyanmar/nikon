@@ -1,78 +1,367 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, Facebook } from "lucide-react";
-import ikonLogo from "@/assets/ikon-logo.png";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  MapPin, Phone, Mail, Clock, Facebook, Instagram,
+  MessageCircle, MessageSquare, ChevronDown,
+  Sparkles, ShieldCheck, Handshake, Zap,
+} from "lucide-react";
 
-const Footer = () => {
+const SHORT_NAMES: Record<string, string> = {
+  "Housekeeping Supplies": "Housekeeping",
+  "Laundry Solutions": "Laundry",
+  "Bedroom Supplies": "Bedroom",
+  "F & B Solutions": "F&B",
+  "Kitchen Services": "Kitchen Svc",
+  "Food Services": "Food Svc",
+  "Buffet & Banquet": "Buffet",
+  "Kitchen Utensils": "Utensils",
+};
+
+const ABOUT_LINKS = [
+  { label: "Our Story", href: "/about" },
+  { label: "Why IKON", href: "/about#why-ikon" },
+  { label: "Our Brands", href: "/brands" },
+  { label: "Our Projects", href: "/about#projects" },
+  { label: "Showrooms", href: "/about#showrooms" },
+  { label: "Careers", href: "/careers" },
+];
+
+const SERVICE_LINKS = [
+  { label: "My Account", href: "/account" },
+  { label: "Order Tracking", href: "/orders" },
+  { label: "Shipping & Delivery", href: "/delivery-info" },
+  { label: "Bulk Orders / Get a Quote", href: "/bulk-orders" },
+  { label: "Contact Us", href: "/contact" },
+];
+
+const RESOURCE_LINKS = [
+  { label: "Blog & Articles", href: "/articles" },
+  { label: "Kitchen Equipment Guides", href: "/articles?tag=kitchen" },
+  { label: "Hospitality Trends", href: "/articles?tag=insights" },
+  { label: "Brand Spotlights", href: "/articles?tag=brands" },
+  { label: "Care & Maintenance", href: "/articles?tag=care" },
+  { label: "Buyer's Guides", href: "/articles?tag=guides" },
+];
+
+const SOCIALS = [
+  { icon: Facebook, href: "https://facebook.com/ikonmart", label: "Facebook" },
+  { icon: Instagram, href: "https://instagram.com/ikonmart", label: "Instagram" },
+  { icon: MessageCircle, href: "https://m.me/ikonmart", label: "Messenger" },
+  { icon: MessageSquare, href: "https://wa.me/95XXXXXXXXX", label: "WhatsApp" },
+  { icon: Mail, href: "mailto:sales@ikonmart.com", label: "Email" },
+];
+
+const PILLARS = [
+  { icon: Sparkles, title: "Luxury", tagline: "Products that exceed expectations" },
+  { icon: ShieldCheck, title: "Quality", tagline: "Carefully selected for lasting value" },
+  { icon: Handshake, title: "Reliability", tagline: "Your dependable partner since 1995" },
+];
+
+const PAYMENTS = ["KBZ Pay", "Wave", "CB Pay", "Bank Transfer", "COD"];
+
+const LEGAL_LINKS = [
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Service", href: "/terms" },
+  { label: "Returns Policy", href: "/returns-policy" },
+  { label: "Cookie Policy", href: "/cookies" },
+];
+
+/* ─── Accordion Section (mobile only) ─── */
+function AccordionSection({
+  title,
+  children,
+  open,
+  onToggle,
+}: {
+  title: string;
+  children: React.ReactNode;
+  open: boolean;
+  onToggle: () => void;
+}) {
   return (
-    <footer className="bg-ikon-navy-dark text-primary-foreground">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* About */}
-          <div>
-            <img src={ikonLogo} alt="IKON" className="h-10 mb-4 brightness-0 invert" />
-            <p className="text-sm text-primary-foreground/70 mb-4">
-              Myanmar's trusted marketplace for kitchen, hotel, restaurant & commercial supplies. 23+ years of expertise.
-            </p>
-            <div className="space-y-2 text-sm text-primary-foreground/70">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 shrink-0" />
-                <span>No. 328-A, Pyay Rd., Sanchaung, Yangon</span>
+    <div className="border-b border-[#1f2937] md:hidden">
+      <button
+        onClick={onToggle}
+        className="flex w-full items-center justify-between py-3 text-sm font-semibold uppercase tracking-wider text-white"
+      >
+        {title}
+        <ChevronDown
+          className={`h-4 w-4 text-[#9ca3af] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 ${open ? "max-h-96 pb-4" : "max-h-0"}`}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Link list renderer ─── */
+function FooterLinks({ links }: { links: { label: string; href: string }[] }) {
+  return (
+    <ul className="space-y-2">
+      {links.map((l) => (
+        <li key={l.href}>
+          <Link
+            to={l.href}
+            className="text-sm text-[#d1d5db] transition-colors hover:text-[#f59e0b]"
+          >
+            {l.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/* ─── Footer ─── */
+const Footer = () => {
+  const [openSection, setOpenSection] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["footer-categories"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("categories")
+        .select("id, name, slug, product_count")
+        .eq("is_active", true)
+        .eq("depth", 0)
+        .order("product_count", { ascending: false });
+      return data || [];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const categoryLinks = [
+    ...categories.slice(0, 10).map((c) => ({
+      label: SHORT_NAMES[c.name] || c.name,
+      href: `/category/${c.slug}`,
+    })),
+  ];
+
+  const toggle = (s: string) => setOpenSection(openSection === s ? null : s);
+
+  const handleSubscribe = () => {
+    if (email) {
+      window.location.href = `mailto:sales@ikonmart.com?subject=Newsletter%20Signup&body=Please add ${encodeURIComponent(email)} to the newsletter.`;
+    }
+  };
+
+  return (
+    <footer>
+      {/* ──── ZONE 1: Newsletter ──── */}
+      <div className="bg-[#1a1f36]">
+        <div className="container mx-auto flex flex-col gap-4 px-4 py-6 md:flex-row md:items-center md:justify-between">
+          <p className="text-sm font-medium text-white">
+            📩 Stay updated with new products & HoReCa insights
+          </p>
+          <div className="flex w-full gap-2 md:w-auto">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Your email address"
+              className="h-9 flex-1 rounded-md border border-[#374151] bg-[#0f1729] px-3 text-sm text-white placeholder:text-[#6b7280] focus:border-[#f59e0b] focus:outline-none md:w-64"
+            />
+            <button
+              onClick={handleSubscribe}
+              className="h-9 whitespace-nowrap rounded-md bg-[#f59e0b] px-4 text-sm font-semibold text-[#1a1f36] transition-colors hover:bg-[#d97706]"
+            >
+              Subscribe
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ──── ZONE 2: Main Grid ──── */}
+      <div className="bg-[#0f1729]">
+        <div className="container mx-auto px-4 py-10">
+          {/* Desktop grid */}
+          <div className="hidden gap-8 md:grid md:grid-cols-3 lg:grid-cols-5">
+            {/* Col 1 — About */}
+            <div>
+              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white">
+                About IKON
+              </h4>
+              <FooterLinks links={ABOUT_LINKS} />
+              <div className="mt-5 space-y-1.5 text-xs text-[#9ca3af]">
+                <div className="flex items-start gap-1.5">
+                  <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
+                  <span>No. 328-A, Pyay Rd., Sanchaung, Yangon</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Phone className="h-3 w-3 shrink-0" />
+                  <span>01-534216, 01-527705</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Mail className="h-3 w-3 shrink-0" />
+                  <span>sales@ikonmart.com</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 shrink-0" />
-                <span>01-534216, 01-527705</span>
+            </div>
+
+            {/* Col 2 — Categories (dynamic) */}
+            <div>
+              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white">
+                Shop by Category
+              </h4>
+              <FooterLinks links={categoryLinks} />
+              <Link
+                to="/flash-deals"
+                className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-[#f59e0b] transition-colors hover:text-[#fbbf24]"
+              >
+                <Zap className="h-3.5 w-3.5" /> Flash Deals
+              </Link>
+            </div>
+
+            {/* Col 3 — Customer Service */}
+            <div>
+              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white">
+                Customer Service
+              </h4>
+              <FooterLinks links={SERVICE_LINKS} />
+            </div>
+
+            {/* Col 4 — Resources */}
+            <div>
+              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white">
+                Resources ⭐
+              </h4>
+              <FooterLinks links={RESOURCE_LINKS} />
+            </div>
+
+            {/* Col 5 — Connect */}
+            <div>
+              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white">
+                Connect
+              </h4>
+              <div className="mb-4 flex gap-3">
+                {SOCIALS.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.label}
+                    className="text-[#9ca3af] transition-colors hover:text-white"
+                  >
+                    <s.icon className="h-5 w-5" />
+                  </a>
+                ))}
               </div>
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 shrink-0" />
-                <span>sales@ikonmart.com</span>
+              <div className="space-y-1.5 text-xs text-[#9ca3af]">
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="h-3 w-3 shrink-0" /> Sanchaung, Yangon
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Phone className="h-3 w-3 shrink-0" /> 01-534216
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Clock className="h-3 w-3 shrink-0" /> Mon–Sat: 8:30 AM – 5:30 PM
+                </div>
+                <p className="mt-2 text-[#6b7280]">CCI France Myanmar Member</p>
               </div>
             </div>
           </div>
 
-          {/* Products */}
-          <div>
-            <h3 className="font-semibold text-base mb-4">Products</h3>
-            <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li><Link to="/category/cooking-equipment" className="hover:text-primary-foreground transition">Kitchen Equipment</Link></li>
-              <li><Link to="/category/tableware" className="hover:text-primary-foreground transition">Tableware & Display</Link></li>
-              <li><Link to="/category/housekeeping" className="hover:text-primary-foreground transition">Housekeeping</Link></li>
-              <li><Link to="/category/linen" className="hover:text-primary-foreground transition">Linen & Amenities</Link></li>
-              <li><Link to="/category/food-beverage" className="hover:text-primary-foreground transition">Food & Beverage</Link></li>
-              <li><Link to="/category/banquet" className="hover:text-primary-foreground transition">Banquet Equipment</Link></li>
-            </ul>
-          </div>
+          {/* Mobile accordion */}
+          <div className="md:hidden">
+            <AccordionSection title="About IKON" open={openSection === "about"} onToggle={() => toggle("about")}>
+              <FooterLinks links={ABOUT_LINKS} />
+              <div className="mt-3 space-y-1 text-xs text-[#9ca3af]">
+                <p>No. 328-A, Pyay Rd., Sanchaung, Yangon</p>
+                <p>📞 01-534216, 01-527705</p>
+                <p>📧 sales@ikonmart.com</p>
+              </div>
+            </AccordionSection>
 
-          {/* Support */}
-          <div>
-            <h3 className="font-semibold text-base mb-4">Support</h3>
-            <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li><Link to="/support" className="hover:text-primary-foreground transition">Help Center</Link></li>
-              <li><Link to="/support#faq" className="hover:text-primary-foreground transition">FAQ</Link></li>
-              <li><Link to="/support#shipping" className="hover:text-primary-foreground transition">Shipping & Delivery</Link></li>
-              <li><Link to="/support#returns" className="hover:text-primary-foreground transition">Returns & Refunds</Link></li>
-              <li><Link to="/bulk-orders" className="hover:text-primary-foreground transition">Bulk Orders</Link></li>
-              <li><Link to="/support#warranty" className="hover:text-primary-foreground transition">Warranty</Link></li>
-            </ul>
-          </div>
+            <AccordionSection title="Shop by Category" open={openSection === "category"} onToggle={() => toggle("category")}>
+              <FooterLinks links={categoryLinks} />
+              <Link to="/flash-deals" className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-[#f59e0b]">
+                <Zap className="h-3.5 w-3.5" /> Flash Deals
+              </Link>
+            </AccordionSection>
 
-          {/* Connect */}
-          <div>
-            <h3 className="font-semibold text-base mb-4">Connect</h3>
-            <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li><a href="tel:01534216" className="hover:text-primary-foreground transition">📞 01-534216</a></li>
-              <li><a href="https://wa.me/959XXXXXXXXX" className="hover:text-primary-foreground transition">💬 WhatsApp</a></li>
-              <li><a href="mailto:sales@ikonmart.com" className="hover:text-primary-foreground transition">📧 Email Us</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition flex items-center gap-1"><Facebook className="w-4 h-4" /> Facebook</a></li>
-            </ul>
-            <div className="mt-6 text-xs text-primary-foreground/50">
-              <p>Mon–Sat: 8:30 AM – 5:30 PM</p>
-              <p>CCI France Myanmar Member</p>
+            <AccordionSection title="Customer Service" open={openSection === "service"} onToggle={() => toggle("service")}>
+              <FooterLinks links={SERVICE_LINKS} />
+            </AccordionSection>
+
+            <AccordionSection title="Resources ⭐" open={openSection === "resources"} onToggle={() => toggle("resources")}>
+              <FooterLinks links={RESOURCE_LINKS} />
+            </AccordionSection>
+
+            {/* Connect — always visible on mobile */}
+            <div className="border-t border-[#1f2937] pt-4">
+              <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">
+                Connect With Us
+              </h4>
+              <div className="mb-3 flex gap-4">
+                {SOCIALS.map((s) => (
+                  <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} className="text-[#9ca3af] hover:text-white">
+                    <s.icon className="h-5 w-5" />
+                  </a>
+                ))}
+              </div>
+              <div className="space-y-1 text-xs text-[#9ca3af]">
+                <p>📍 Sanchaung, Yangon</p>
+                <p>📞 01-534216</p>
+                <p>🕐 Mon–Sat: 8:30 AM – 5:30 PM</p>
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="border-t border-primary-foreground/10 mt-8 pt-6 text-center text-xs text-primary-foreground/50">
-          © 2026 IKON Trading Co., Ltd. All rights reserved.
+      {/* ──── ZONE 3A: Brand Pillars ──── */}
+      <div className="bg-[#111827]">
+        <div className="container mx-auto flex flex-col gap-4 px-4 py-5 md:flex-row md:justify-around">
+          {PILLARS.map((p) => (
+            <div key={p.title} className="flex items-center gap-3">
+              <p.icon className="h-6 w-6 shrink-0 text-[#f59e0b]" />
+              <div>
+                <p className="text-sm font-semibold text-white">{p.title}</p>
+                <p className="text-xs text-[#9ca3af]">{p.tagline}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ──── ZONE 3B: Payment Methods ──── */}
+      <div className="bg-[#0a0e1a]">
+        <div className="container mx-auto flex flex-wrap items-center justify-center gap-2 px-4 py-4">
+          {PAYMENTS.map((p) => (
+            <span
+              key={p}
+              className="rounded-full border border-[#374151] px-3 py-1 text-xs text-[#9ca3af]"
+            >
+              {p}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ──── ZONE 3C: Copyright & Legal ──── */}
+      <div className="bg-[#0a0e1a] border-t border-[#1f2937]">
+        <div className="container mx-auto px-4 py-4 text-center">
+          <p className="text-xs text-[#6b7280]">
+            © {new Date().getFullYear()} IKON Trading Co., Ltd. All rights reserved.
+          </p>
+          <div className="mt-1.5 flex flex-wrap justify-center gap-x-3 gap-y-1">
+            {LEGAL_LINKS.map((l, i) => (
+              <Link key={l.href} to={l.href} className="text-xs text-[#6b7280] transition-colors hover:text-[#f59e0b]">
+                {l.label}
+              </Link>
+            ))}
+          </div>
+          <p className="mt-1.5 text-xs italic text-[#9ca3af]">
+            Myanmar's Trusted HoReCa Supplier Since 1995
+          </p>
         </div>
       </div>
     </footer>
