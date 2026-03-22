@@ -147,7 +147,7 @@ const Footer = () => {
 
   const handleSubscribe = () => {
     if (email) {
-      window.location.href = `mailto:sales@ikonmart.com?subject=Newsletter%20Signup&body=Please add ${encodeURIComponent(email)} to the newsletter.`;
+      window.location.href = `mailto:ikonmartecommerce@gmail.com?subject=Newsletter%20Signup&body=Please add ${encodeURIComponent(email)} to the newsletter.`;
     }
   };
 
