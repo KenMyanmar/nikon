@@ -191,15 +191,15 @@ const Footer = () => {
               <div className="mt-5 space-y-1.5 text-xs text-[#9ca3af]">
                 <div className="flex items-start gap-1.5">
                   <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
-                  <span>No. 328-A, Pyay Rd., Sanchaung, Yangon</span>
+                  <span>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Phone className="h-3 w-3 shrink-0" />
-                  <span>01-534216, 01-527705</span>
+                  <span>09 89009 0301</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Mail className="h-3 w-3 shrink-0" />
-                  <span>sales@ikonmart.com</span>
+                  <span>ikonmartecommerce@gmail.com</span>
                 </div>
               </div>
             </div>
