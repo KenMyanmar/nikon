@@ -307,9 +307,9 @@ const Footer = () => {
                 ))}
               </div>
               <div className="space-y-1 text-xs text-[#9ca3af]">
-                <p>📍 Sanchaung, Yangon</p>
-                <p>📞 01-534216</p>
-                <p>🕐 Mon–Sat: 8:30 AM – 5:30 PM</p>
+                <p>📍 Mingalardon, Yangon</p>
+                <p>📞 09 89009 0301</p>
+                <p>🕐 Mon–Sat: 9:00 AM – 5:00 PM</p>
               </div>
             </div>
           </div>
