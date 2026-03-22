@@ -49,7 +49,7 @@ const SOCIALS = [
   { icon: Instagram, href: "https://instagram.com/ikonmart", label: "Instagram" },
   { icon: MessageCircle, href: "https://m.me/ikonmart", label: "Messenger" },
   { icon: MessageSquare, href: "https://wa.me/95XXXXXXXXX", label: "WhatsApp" },
-  { icon: Mail, href: "mailto:sales@ikonmart.com", label: "Email" },
+  { icon: Mail, href: "mailto:ikonmartecommerce@gmail.com", label: "Email" },
 ];
 
 const PILLARS = [
@@ -147,7 +147,7 @@ const Footer = () => {
 
   const handleSubscribe = () => {
     if (email) {
-      window.location.href = `mailto:sales@ikonmart.com?subject=Newsletter%20Signup&body=Please add ${encodeURIComponent(email)} to the newsletter.`;
+      window.location.href = `mailto:ikonmartecommerce@gmail.com?subject=Newsletter%20Signup&body=Please add ${encodeURIComponent(email)} to the newsletter.`;
     }
   };
 
@@ -191,15 +191,15 @@ const Footer = () => {
               <div className="mt-5 space-y-1.5 text-xs text-[#9ca3af]">
                 <div className="flex items-start gap-1.5">
                   <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
-                  <span>No. 328-A, Pyay Rd., Sanchaung, Yangon</span>
+                  <span>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Phone className="h-3 w-3 shrink-0" />
-                  <span>01-534216, 01-527705</span>
+                  <span>09 89009 0301</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Mail className="h-3 w-3 shrink-0" />
-                  <span>sales@ikonmart.com</span>
+                  <span>ikonmartecommerce@gmail.com</span>
                 </div>
               </div>
             </div>
@@ -255,13 +255,13 @@ const Footer = () => {
               </div>
               <div className="space-y-1.5 text-xs text-[#9ca3af]">
                 <div className="flex items-center gap-1.5">
-                  <MapPin className="h-3 w-3 shrink-0" /> Sanchaung, Yangon
+                  <MapPin className="h-3 w-3 shrink-0" /> Mingalardon, Yangon
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Phone className="h-3 w-3 shrink-0" /> 01-534216
+                  <Phone className="h-3 w-3 shrink-0" /> 09 89009 0301
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Clock className="h-3 w-3 shrink-0" /> Mon–Sat: 8:30 AM – 5:30 PM
+                  <Clock className="h-3 w-3 shrink-0" /> Mon–Sat: 9:00 AM – 5:00 PM
                 </div>
                 <p className="mt-2 text-[#6b7280]">CCI France Myanmar Member</p>
               </div>
@@ -273,9 +273,9 @@ const Footer = () => {
             <AccordionSection title="About IKON" open={openSection === "about"} onToggle={() => toggle("about")}>
               <FooterLinks links={ABOUT_LINKS} />
               <div className="mt-3 space-y-1 text-xs text-[#9ca3af]">
-                <p>No. 328-A, Pyay Rd., Sanchaung, Yangon</p>
-                <p>📞 01-534216, 01-527705</p>
-                <p>📧 sales@ikonmart.com</p>
+                <p>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</p>
+                <p>📞 09 89009 0301</p>
+                <p>📧 ikonmartecommerce@gmail.com</p>
               </div>
             </AccordionSection>
 
@@ -307,9 +307,9 @@ const Footer = () => {
                 ))}
               </div>
               <div className="space-y-1 text-xs text-[#9ca3af]">
-                <p>📍 Sanchaung, Yangon</p>
-                <p>📞 01-534216</p>
-                <p>🕐 Mon–Sat: 8:30 AM – 5:30 PM</p>
+                <p>📍 Mingalardon, Yangon</p>
+                <p>📞 09 89009 0301</p>
+                <p>🕐 Mon–Sat: 9:00 AM – 5:00 PM</p>
               </div>
             </div>
           </div>
