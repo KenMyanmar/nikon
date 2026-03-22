@@ -37,7 +37,6 @@ const SERVICE_LINKS = [
 ];
 
 const RESOURCE_LINKS = [
-  { label: "Blog & Articles", href: "/articles" },
   { label: "Kitchen Equipment Guides", href: "/articles?tag=kitchen" },
   { label: "Hospitality Trends", href: "/articles?tag=insights" },
   { label: "Brand Spotlights", href: "/articles?tag=brands" },
