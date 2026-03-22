@@ -49,7 +49,7 @@ const SOCIALS = [
   { icon: Instagram, href: "https://instagram.com/ikonmart", label: "Instagram" },
   { icon: MessageCircle, href: "https://m.me/ikonmart", label: "Messenger" },
   { icon: MessageSquare, href: "https://wa.me/95XXXXXXXXX", label: "WhatsApp" },
-  { icon: Mail, href: "mailto:sales@ikonmart.com", label: "Email" },
+  { icon: Mail, href: "mailto:ikonmartecommerce@gmail.com", label: "Email" },
 ];
 
 const PILLARS = [
