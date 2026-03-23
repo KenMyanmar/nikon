@@ -1,30 +1,25 @@
 
 
-# Add HoReCa Resources Section to Homepage
+# Fix: Remove Hardcoded Import Secret from AdminImport.tsx
 
-## What
-New component `src/components/home/HoReCaResources.tsx` displaying 3 latest published articles in a card grid, placed between `QuotationCTA` and the end of `MainLayout`.
+## Problem
+Line 20 has `useState("ikon-import-2026")` — the import API key is visible in the client bundle. Security scan flagged this as a hardcoded credential.
 
-## Changes
+## Important Note
+Using `VITE_` prefixed env vars does NOT truly hide the secret — Vite inlines them into the client bundle at build time, so they're still visible in browser DevTools. However, it's still better than a hardcoded default because:
+- The value isn't committed to source code
+- It can be rotated without code changes
 
-### 1. Create `src/components/home/HoReCaResources.tsx`
-- Query `articles` table (cast as `any` since not in generated types): status=published, order by is_featured DESC then published_at DESC, limit 3
-- Return `null` if no articles
-- Header: "HoReCa Resources" centered + subtitle + "View All Articles →" link to `/articles`
-- 3-column grid (`grid-cols-1 md:grid-cols-3 gap-6`), each card wrapped in `<Link to={/articles/${slug}}>`:
-  - Image with aspect-[16/9], gradient placeholder fallback
-  - First tag as pill badge
-  - Title (line-clamp-2), excerpt (line-clamp-2)
-  - "Read More →" with ArrowRight icon
-  - Hover shadow lift
-- `staleTime: 5 * 60 * 1000`
+## Change — `src/pages/AdminImport.tsx`
 
-### 2. Update `src/pages/Index.tsx`
-Add `<HoReCaResources />` after `<QuotationCTA />`:
-```
-<QuotationCTA />
-<HoReCaResources />
+**Line 20**: Replace hardcoded default with empty string, and read from env var as a pre-fill hint:
+
+```tsx
+const [apiKey, setApiKey] = useState(import.meta.env.VITE_IMPORT_SECRET || "");
 ```
 
-Two files, no database changes.
+This single line change removes the hardcoded credential. The input field still lets the admin paste/type the key manually if the env var isn't set.
+
+## Environment Variable
+The user should set `VITE_IMPORT_SECRET` in the project's `.env` file or Lovable environment settings with a strong random value, and rotate the corresponding `IMPORT_SECRET` in Supabase Edge Function secrets to match.
 
