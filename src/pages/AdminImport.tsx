@@ -17,7 +17,7 @@ const SECTIONS = [
 ] as const;
 
 export default function AdminImport() {
-  const [apiKey, setApiKey] = useState("ikon-import-2026");
+  const [apiKey, setApiKey] = useState(import.meta.env.VITE_IMPORT_SECRET || "");
   const [files, setFiles] = useState<Record<string, File | null>>({});
   const [statuses, setStatuses] = useState<Record<string, ImportStatus>>({});
 
