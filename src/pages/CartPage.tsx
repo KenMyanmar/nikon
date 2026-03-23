@@ -259,7 +259,7 @@ const CartPage = () => {
               return (
                 <div key={item.id} className="bg-card rounded-card shadow-card p-4 flex gap-4">
                   {/* Image */}
-                  <div className="w-20 h-20 rounded bg-muted/30 overflow-hidden shrink-0">
+                  <Link to={`/products/${product.id}`} className="w-20 h-20 rounded bg-muted/30 overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
                     {product.thumbnail_url ? (
                       <img src={product.thumbnail_url} alt={product.description || ""} className="w-full h-full object-contain p-1" />
                     ) : (
@@ -267,7 +267,7 @@ const CartPage = () => {
                         <span className="text-2xl font-bold text-primary">{brandInitial}</span>
                       </div>
                     )}
-                  </div>
+                  </Link>
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
