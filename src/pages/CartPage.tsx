@@ -259,7 +259,7 @@ const CartPage = () => {
               return (
                 <div key={item.id} className="bg-card rounded-card shadow-card p-4 flex gap-4">
                   {/* Image */}
-                  <Link to={`/products/${product.id}`} className="w-20 h-20 rounded bg-muted/30 overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
+                  <Link to={`/product/${product.slug || product.id}`} className="w-20 h-20 rounded bg-muted/30 overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
                     {product.thumbnail_url ? (
                       <img src={product.thumbnail_url} alt={product.description || ""} className="w-full h-full object-contain p-1" />
                     ) : (
