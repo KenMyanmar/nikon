@@ -259,7 +259,7 @@ const CartPage = () => {
               return (
                 <div key={item.id} className="bg-card rounded-card shadow-card p-4 flex gap-4">
                   {/* Image */}
-                  <Link to={`/products/${product.id}`} className="w-20 h-20 rounded bg-muted/30 overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
+                  <Link to={`/product/${product.slug || product.id}`} className="w-20 h-20 rounded bg-muted/30 overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
                     {product.thumbnail_url ? (
                       <img src={product.thumbnail_url} alt={product.description || ""} className="w-full h-full object-contain p-1" />
                     ) : (
@@ -272,7 +272,7 @@ const CartPage = () => {
                   {/* Details */}
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-muted-foreground uppercase tracking-wide">{product.brand_name}</p>
-                    <Link to={`/products/${product.id}`} className="text-sm font-semibold text-foreground line-clamp-2 hover:text-[#F97316] hover:underline transition-colors">{product.description}</Link>
+                    <Link to={`/product/${product.slug || product.id}`} className="text-sm font-semibold text-foreground line-clamp-2 hover:text-[#F97316] hover:underline transition-colors">{product.description}</Link>
 
                     <div className="flex items-center gap-4 mt-3">
                       {/* Qty Selector */}
