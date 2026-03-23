@@ -41,11 +41,7 @@ const relativeTime = (dateStr: string) => {
   return `${Math.floor(months / 12)}y ago`;
 };
 
-const stockConfig = {
-  in_stock: { label: "In Stock", dotClass: "bg-emerald-500", textClass: "text-emerald-700", bgClass: "bg-emerald-50" },
-  low_stock: { label: "Low Stock", dotClass: "bg-amber-500", textClass: "text-amber-700", bgClass: "bg-amber-50" },
-  out_of_stock: { label: "Out of Stock", dotClass: "bg-red-500", textClass: "text-red-700", bgClass: "bg-red-50" },
-};
+// stockConfig removed — now using STOCK_STATE_CONFIG from analytics.ts
 
 const formatCountdown = (ms: number) => {
   if (ms <= 0) return "00:00:00";
