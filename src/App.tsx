@@ -23,6 +23,7 @@ import MyOrders from "./pages/MyOrders";
 import Articles from "./pages/Articles";
 import ArticleDetail from "./pages/ArticleDetail";
 import About from "./pages/About";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
