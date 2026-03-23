@@ -282,7 +282,8 @@ const ProductDetail = () => {
     );
   }
 
-  const stock = stockConfig[(product.stock_status as keyof typeof stockConfig) || "in_stock"];
+  const stockState = getStockState(product);
+  const stock = STOCK_STATE_CONFIG[stockState];
   const specs = product.specifications && typeof product.specifications === "object" && !Array.isArray(product.specifications)
     ? Object.entries(product.specifications as Record<string, string>)
     : [];
