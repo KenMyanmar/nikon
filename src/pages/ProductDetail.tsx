@@ -8,12 +8,13 @@ import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone, Bell, MessageCircle } from "lucide-react";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { getStockState, STOCK_STATE_CONFIG, trackEvent } from "@/lib/analytics";
 
 const renderStars = (rating: number, size = 4) => {
   const rounded = Math.round(rating);
@@ -40,11 +41,7 @@ const relativeTime = (dateStr: string) => {
   return `${Math.floor(months / 12)}y ago`;
 };
 
-const stockConfig = {
-  in_stock: { label: "In Stock", dotClass: "bg-emerald-500", textClass: "text-emerald-700", bgClass: "bg-emerald-50" },
-  low_stock: { label: "Low Stock", dotClass: "bg-amber-500", textClass: "text-amber-700", bgClass: "bg-amber-50" },
-  out_of_stock: { label: "Out of Stock", dotClass: "bg-red-500", textClass: "text-red-700", bgClass: "bg-red-50" },
-};
+// stockConfig removed — now using STOCK_STATE_CONFIG from analytics.ts
 
 const formatCountdown = (ms: number) => {
   if (ms <= 0) return "00:00:00";
@@ -83,7 +80,15 @@ const ProductDetail = () => {
     return () => clearInterval(t);
   }, []);
 
-  const handleRequestQuote = () => {
+  // Analytics: track product detail view
+  useEffect(() => {
+    if (product?.id) {
+      const state = getStockState(product);
+      trackEvent({ event: 'product_detail_viewed', product_id: product.id, stock_state: state, properties: { price: product.selling_price, category_id: product.category_id } });
+    }
+  }, [product?.id]);
+
+
     if (!user) { openAuthModal(); return; }
     if (product?.id) navigate(`/request-quote?product=${product.id}`);
   };
@@ -285,7 +290,8 @@ const ProductDetail = () => {
     );
   }
 
-  const stock = stockConfig[(product.stock_status as keyof typeof stockConfig) || "in_stock"];
+  const stockState = getStockState(product);
+  const stock = STOCK_STATE_CONFIG[stockState];
   const specs = product.specifications && typeof product.specifications === "object" && !Array.isArray(product.specifications)
     ? Object.entries(product.specifications as Record<string, string>)
     : [];
@@ -510,7 +516,9 @@ const ProductDetail = () => {
               {/* Stock Badge */}
               <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${stock.textClass} ${stock.bgClass} px-3 py-1 rounded-full`}>
                 <span className={`w-2 h-2 ${stock.dotClass} rounded-full`}></span>
-                {stock.label}{product.onhand_qty != null && product.onhand_qty > 0 ? ` — ${product.onhand_qty} available` : ""}
+                {stock.label}
+                {stockState === 'low_stock' && product.onhand_qty ? ` — Only ${product.onhand_qty} left` : ''}
+                {stockState === 'in_stock' && product.onhand_qty ? ` — ${product.onhand_qty} available` : ''}
               </span>
 
               {/* Promotion banner */}
@@ -638,45 +646,85 @@ const ProductDetail = () => {
 
               {/* Fallback when no pricing tiers */}
               {(!pricingTiers || pricingTiers.length === 0) && product.selling_price && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Package className="w-4 h-4 text-primary shrink-0" />
-                  <span>Volume discounts available — </span>
-                  <button onClick={handleRequestQuote} className="text-primary hover:underline font-medium">Request Bulk Quote</button>
+                  <span>📦 Bulk pricing available — request a quote below</span>
                 </div>
               )}
 
-              {/* Quantity */}
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Quantity</label>
-                <div className="flex items-center border border-border rounded-lg overflow-hidden w-full">
-                  <button onClick={() => setQty(Math.max(moq, qty - 1))} className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted transition">
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="flex-1 py-2.5 text-sm font-semibold text-foreground text-center border-x border-border">{qty}</span>
-                  <button onClick={() => setQty(qty + 1)} className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted transition">
-                    <Plus className="w-4 h-4" />
-                  </button>
+              {/* Quantity — hidden for out_of_stock */}
+              {stockState !== 'out_of_stock' && (
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Quantity</label>
+                  <div className="flex items-center border border-border rounded-lg overflow-hidden w-full">
+                    <button onClick={() => setQty(Math.max(moq, qty - 1))} className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted transition">
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <span className="flex-1 py-2.5 text-sm font-semibold text-foreground text-center border-x border-border">{qty}</span>
+                    <button
+                      onClick={() => {
+                        const maxQty = stockState === 'low_stock' ? (product.onhand_qty || moq) : Infinity;
+                        const newQty = Math.min(qty + 1, maxQty);
+                        if (newQty !== qty) {
+                          trackEvent({ event: 'quantity_changed', product_id: product.id, stock_state: stockState, properties: { old_qty: qty, new_qty: newQty } });
+                          setQty(newQty);
+                        }
+                      }}
+                      className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted transition"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {moq > 1 && <p className="text-[10px] text-muted-foreground mt-1">Min order: {moq}</p>}
+                  {stockState === 'low_stock' && <p className="text-[10px] text-amber-600 mt-1">Max: {product.onhand_qty} available</p>}
                 </div>
-                {moq > 1 && <p className="text-[10px] text-muted-foreground mt-1">Min order: {moq}</p>}
-              </div>
+              )}
 
-              {/* CTAs */}
-              <button
-                onClick={() => product.id && addToCart(product.id, qty, product.description || "")}
-                disabled={isAdding || product.stock_status === "out_of_stock"}
-                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 disabled:opacity-60 text-base shadow-md hover:shadow-lg active:scale-[0.98]"
-              >
-                {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
-                Add to Cart
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {/* Primary CTA — dynamic per stock state */}
+              {stockState === 'out_of_stock' ? (
+                <button
+                  onClick={() => {
+                    trackEvent({ event: 'notify_me_clicked', product_id: product.id, stock_state: stockState });
+                    toast({ title: "We'll notify you!", description: "You'll be notified when this product is back in stock." });
+                  }}
+                  className={`w-full ${stock.primaryCtaClass} font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 text-base shadow-md hover:shadow-lg active:scale-[0.98]`}
+                >
+                  <Bell className="w-5 h-5" />
+                  {stock.primaryCta}
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    trackEvent({ event: stockState === 'backorder' ? 'backorder_clicked' : stockState === 'preorder' ? 'preorder_clicked' : 'add_to_cart_clicked', product_id: product.id, stock_state: stockState, properties: { quantity: qty, price: product.selling_price } });
+                    if (product.id) addToCart(product.id, qty, product.description || "");
+                    if (stockState === 'low_stock') {
+                      toast({ title: "Added to cart!", description: `Only ${product.onhand_qty} left in stock.` });
+                    }
+                  }}
+                  disabled={isAdding}
+                  className={`w-full ${stock.primaryCtaClass} font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 disabled:opacity-60 text-base shadow-md hover:shadow-lg active:scale-[0.98]`}
+                >
+                  {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
+                  {stock.primaryCta}
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
 
+              {/* Secondary CTA — single Bulk Quote button */}
               <button
-                onClick={handleRequestQuote}
+                onClick={() => {
+                  trackEvent({ event: 'bulk_quote_clicked', product_id: product.id, stock_state: stockState, properties: { source: 'product_detail' } });
+                  handleRequestQuote();
+                }}
                 className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 rounded-button transition-all flex items-center justify-center gap-2 text-sm"
               >
                 <FileText className="w-4 h-4" /> Request Bulk Quote
               </button>
+
+              {/* Reassurance for backorder/preorder */}
+              {(stockState === 'backorder' || stockState === 'preorder') && (
+                <p className="text-xs text-muted-foreground text-center">You won't be charged until item ships</p>
+              )}
 
               {/* Payment Methods */}
               <div className="pt-2 border-t border-border">
@@ -692,11 +740,18 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {/* Trust */}
+              {/* Trust / Shipping — dynamic per state */}
               <div className="space-y-2 text-xs text-muted-foreground pt-2 border-t border-border">
-                <span className="flex items-center gap-1.5">
-                  <Truck className="w-4 h-4 text-primary" /> Ships in 1–2 business days
-                </span>
+                {stock.shippingMessage && (
+                  <span className="flex items-center gap-1.5">
+                    <Truck className="w-4 h-4 text-primary" /> {stock.shippingMessage}
+                  </span>
+                )}
+                {stockState === 'out_of_stock' && (
+                  <a href="/contact" className="flex items-center gap-1.5 text-primary hover:underline">
+                    <MessageCircle className="w-4 h-4" /> Contact us for availability
+                  </a>
+                )}
                 <span className="flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-primary" /> Trusted by 1,000+ buyers
                 </span>
