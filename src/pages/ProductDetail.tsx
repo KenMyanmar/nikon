@@ -14,6 +14,7 @@ import { useMarketingData } from "@/hooks/useMarketingData";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { getStockState, STOCK_STATE_CONFIG, trackEvent } from "@/lib/analytics";
 
 const renderStars = (rating: number, size = 4) => {
   const rounded = Math.round(rating);
