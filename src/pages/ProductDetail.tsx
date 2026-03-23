@@ -80,6 +80,10 @@ const ProductDetail = () => {
     return () => clearInterval(t);
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
+
   const handleRequestQuote = () => {
     if (!user) { openAuthModal(); return; }
     if (product?.id) navigate(`/request-quote?product=${product.id}`);
