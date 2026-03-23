@@ -1,25 +1,28 @@
 
 
-# Fix: Remove Hardcoded Import Secret from AdminImport.tsx
+# Fix: Auto Scroll to Top on Page Navigation
 
 ## Problem
-Line 20 has `useState("ikon-import-2026")` — the import API key is visible in the client bundle. Security scan flagged this as a hardcoded credential.
+No scroll reset on route changes — users land mid-page when navigating between pages.
 
-## Important Note
-Using `VITE_` prefixed env vars does NOT truly hide the secret — Vite inlines them into the client bundle at build time, so they're still visible in browser DevTools. However, it's still better than a hardcoded default because:
-- The value isn't committed to source code
-- It can be rotated without code changes
+## Changes
 
-## Change — `src/pages/AdminImport.tsx`
+### 1. Create `src/components/ScrollToTop.tsx`
+- Uses `useLocation().pathname` in a `useEffect` to call `window.scrollTo(0, 0)`
+- Returns `null` (render-less component)
 
-**Line 20**: Replace hardcoded default with empty string, and read from env var as a pre-fill hint:
+### 2. Modify `src/App.tsx`
+- Import `ScrollToTop`
+- Place `<ScrollToTop />` as first child inside `<BrowserRouter>`, before `<AuthProvider>`:
 
-```tsx
-const [apiKey, setApiKey] = useState(import.meta.env.VITE_IMPORT_SECRET || "");
+```
+<BrowserRouter>
+  <ScrollToTop />
+  <AuthProvider>
+    <Routes>...</Routes>
+  </AuthProvider>
+</BrowserRouter>
 ```
 
-This single line change removes the hardcoded credential. The input field still lets the admin paste/type the key manually if the env var isn't set.
-
-## Environment Variable
-The user should set `VITE_IMPORT_SECRET` in the project's `.env` file or Lovable environment settings with a strong random value, and rotate the corresponding `IMPORT_SECRET` in Supabase Edge Function secrets to match.
+Two files, no database changes.
 
