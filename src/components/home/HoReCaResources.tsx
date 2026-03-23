@@ -31,7 +31,7 @@ const HoReCaResources = () => {
         .order("is_featured", { ascending: false })
         .order("published_at", { ascending: false })
         .limit(3);
-      return (data as Article[]) || [];
+      return (data as unknown as Article[]) || [];
     },
     staleTime: 5 * 60 * 1000,
   });
