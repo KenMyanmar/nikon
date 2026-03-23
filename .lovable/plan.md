@@ -1,28 +1,33 @@
 
 
-# Fix: Auto Scroll to Top on Page Navigation
-
-## Problem
-No scroll reset on route changes — users land mid-page when navigating between pages.
+# Improve Scroll-to-Top: Location Key + Product Detail Safety Net
 
 ## Changes
 
-### 1. Create `src/components/ScrollToTop.tsx`
-- Uses `useLocation().pathname` in a `useEffect` to call `window.scrollTo(0, 0)`
-- Returns `null` (render-less component)
+### 1. `src/components/ScrollToTop.tsx`
+- Use `location.key` instead of `pathname` as the `useEffect` dependency — this ensures scroll resets even when navigating to the same pathname (e.g., related product clicks)
+- Wrap `window.scrollTo(0, 0)` in `requestAnimationFrame` so the new page content renders before scrolling
 
-### 2. Modify `src/App.tsx`
-- Import `ScrollToTop`
-- Place `<ScrollToTop />` as first child inside `<BrowserRouter>`, before `<AuthProvider>`:
-
+```tsx
+const ScrollToTop = () => {
+  const location = useLocation();
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+    });
+  }, [location.key]);
+  return null;
+};
 ```
-<BrowserRouter>
-  <ScrollToTop />
-  <AuthProvider>
-    <Routes>...</Routes>
-  </AuthProvider>
-</BrowserRouter>
+
+### 2. `src/pages/ProductDetail.tsx`
+- Add a `useEffect` keyed on `slug` that scrolls to top — catches the case where React reuses the ProductDetail component for related product navigation
+
+```tsx
+useEffect(() => {
+  window.scrollTo(0, 0);
+}, [slug]);
 ```
 
-Two files, no database changes.
+Insert after the existing `useEffect` block (around line 78-81). Two files, minimal changes.
 
