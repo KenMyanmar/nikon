@@ -1,31 +1,16 @@
 
 
-# Fix: Make Cart Product Names and Images Clickable
+# Fix: Cart Product Links Use Wrong URL
 
 ## Problem
-On `/cart`, product thumbnails and names are plain elements — not links to the product detail page.
+Cart links use `/products/${product.id}` but the actual route is `/product/:slug` (singular, uses slug not ID). This produces 404s.
 
 ## Fix — `src/pages/CartPage.tsx`
 
-### 1. Wrap the image container (lines 262-270) in a Link
-```tsx
-<Link to={`/products/${product.id}`} className="w-20 h-20 rounded bg-muted/30 overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
-  {product.thumbnail_url ? (
-    <img src={product.thumbnail_url} alt={product.description || ""} className="w-full h-full object-contain p-1" />
-  ) : (
-    <div className="w-full h-full flex items-center justify-center bg-primary/10">
-      <span className="text-2xl font-bold text-primary">{brandInitial}</span>
-    </div>
-  )}
-</Link>
-```
+Change both Link `to` props from `/products/${product.id}` to `/product/${product.slug || product.id}`:
 
-### 2. Change product name (line 275) from `<p>` to `<Link>`
-```tsx
-<Link to={`/products/${product.id}`} className="text-sm font-semibold text-foreground line-clamp-2 hover:text-[#F97316] hover:underline transition-colors">
-  {product.description}
-</Link>
-```
+- **Line 262**: Image link — change to `` `/product/${product.slug || product.id}` ``
+- **Line 275**: Product name link — change to `` `/product/${product.slug || product.id}` ``
 
-Two element changes in one file. `Link` is already imported on line 2.
+Two occurrences, same fix. The `product` object comes from `products_public` which has a `slug` column. Fallback to `id` if slug is somehow null.
 
