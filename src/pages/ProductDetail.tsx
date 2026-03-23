@@ -80,13 +80,6 @@ const ProductDetail = () => {
     return () => clearInterval(t);
   }, []);
 
-  // Analytics: track product detail view
-  useEffect(() => {
-    if (product?.id) {
-      const state = getStockState(product);
-      trackEvent({ event: 'product_detail_viewed', product_id: product.id, stock_state: state, properties: { price: product.selling_price, category_id: product.category_id } });
-    }
-  }, [product?.id]);
   const handleRequestQuote = () => {
     if (!user) { openAuthModal(); return; }
     if (product?.id) navigate(`/request-quote?product=${product.id}`);
