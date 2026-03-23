@@ -272,7 +272,7 @@ const CartPage = () => {
                   {/* Details */}
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-muted-foreground uppercase tracking-wide">{product.brand_name}</p>
-                    <Link to={`/products/${product.id}`} className="text-sm font-semibold text-foreground line-clamp-2 hover:text-[#F97316] hover:underline transition-colors">{product.description}</Link>
+                    <Link to={`/product/${product.slug || product.id}`} className="text-sm font-semibold text-foreground line-clamp-2 hover:text-[#F97316] hover:underline transition-colors">{product.description}</Link>
 
                     <div className="flex items-center gap-4 mt-3">
                       {/* Qty Selector */}
