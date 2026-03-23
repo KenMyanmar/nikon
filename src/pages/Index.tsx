@@ -7,6 +7,7 @@ import TopBrandsShowcase from "@/components/home/TopBrandsShowcase";
 import NewArrivals from "@/components/home/NewArrivals";
 import TrustBadgeBar from "@/components/home/TrustBadgeBar";
 import QuotationCTA from "@/components/home/QuotationCTA";
+import HoReCaResources from "@/components/home/HoReCaResources";
 
 const Index = () => {
   return (
@@ -19,6 +20,7 @@ const Index = () => {
       <NewArrivals />
       <TrustBadgeBar />
       <QuotationCTA />
+      <HoReCaResources />
     </MainLayout>
   );
 };
