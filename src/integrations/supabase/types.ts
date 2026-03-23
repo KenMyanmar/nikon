@@ -2815,16 +2815,21 @@ export type Database = {
       }
       get_automation_stats: { Args: { p_hours?: number }; Returns: Json }
       get_category_path: { Args: { cat_id: string }; Returns: string }
+      get_customer_id: { Args: never; Returns: string }
       get_customer_id_for_user: { Args: { _user_id: string }; Returns: string }
       get_live_kpis: { Args: never; Returns: Json }
       get_staff_department: { Args: never; Returns: string }
-      get_staff_role: { Args: { _user_id: string }; Returns: string }
+      get_staff_role:
+        | { Args: never; Returns: string }
+        | { Args: { _user_id: string }; Returns: string }
       get_staff_role_level: { Args: never; Returns: number }
       increment_article_views: {
         Args: { article_id: string }
         Returns: undefined
       }
-      is_staff: { Args: { _user_id: string }; Returns: boolean }
+      is_staff:
+        | { Args: never; Returns: boolean }
+        | { Args: { _user_id: string }; Returns: boolean }
       place_order: {
         Args: {
           p_contact_name: string
