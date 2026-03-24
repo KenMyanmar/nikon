@@ -1,33 +1,41 @@
 
 
-# Improve Scroll-to-Top: Location Key + Product Detail Safety Net
+# Fix: "Proceed to Checkout" Redirects Back to Cart on First Click
 
-## Changes
+## Root Cause Found
 
-### 1. `src/components/ScrollToTop.tsx`
-- Use `location.key` instead of `pathname` as the `useEffect` dependency — this ensures scroll resets even when navigating to the same pathname (e.g., related product clicks)
-- Wrap `window.scrollTo(0, 0)` in `requestAnimationFrame` so the new page content renders before scrolling
-
-```tsx
-const ScrollToTop = () => {
-  const location = useLocation();
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      window.scrollTo(0, 0);
-    });
-  }, [location.key]);
-  return null;
-};
-```
-
-### 2. `src/pages/ProductDetail.tsx`
-- Add a `useEffect` keyed on `slug` that scrolls to top — catches the case where React reuses the ProductDetail component for related product navigation
+In `src/pages/Checkout.tsx`, lines 218-220:
 
 ```tsx
 useEffect(() => {
-  window.scrollTo(0, 0);
-}, [slug]);
+  if (customerId && cartItems.length === 0 && step < 3) navigate("/cart");
+}, [customerId, cartItems, step, navigate]);
 ```
 
-Insert after the existing `useEffect` block (around line 78-81). Two files, minimal changes.
+`cartItems` defaults to `[]` (line 77: `data: cartItems = []`). On first navigation to `/checkout`, the cart query hasn't loaded yet, so `cartItems.length === 0` is true. Combined with `customerId` being available (cached from the cart page), this useEffect fires immediately and redirects back to `/cart` before the cart data loads.
+
+On the second click, React Query has cached the cart data, so `cartItems` is already populated and the redirect doesn't trigger.
+
+## Fix — `src/pages/Checkout.tsx`
+
+Add a loading guard to the empty-cart redirect. The cart query's loading state must be checked so we only redirect when we *know* the cart is truly empty, not when data is still loading.
+
+**Change lines 218-220** from:
+```tsx
+useEffect(() => {
+  if (customerId && cartItems.length === 0 && step < 3) navigate("/cart");
+}, [customerId, cartItems, step, navigate]);
+```
+
+To:
+```tsx
+const { data: cartItems = [], isLoading: cartCheckoutLoading } = useQuery({ ... });
+
+// Then in the useEffect:
+useEffect(() => {
+  if (customerId && !cartCheckoutLoading && cartItems.length === 0 && step < 3) navigate("/cart");
+}, [customerId, cartCheckoutLoading, cartItems, step, navigate]);
+```
+
+This requires destructuring `isLoading` (renamed to `cartCheckoutLoading`) from the existing cart query on line 77, then adding `!cartCheckoutLoading` as a guard condition. One file, two small edits.
 
