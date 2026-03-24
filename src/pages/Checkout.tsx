@@ -74,7 +74,7 @@ const Checkout = () => {
   });
 
   // ── Cart items
-  const { data: cartItems = [] } = useQuery({
+  const { data: cartItems = [], isLoading: cartCheckoutLoading } = useQuery({
     queryKey: ["cart-checkout", customerId],
     queryFn: async () => {
       const { data: items, error } = await supabase.from("cart_items").select("*").eq("customer_id", customerId!);
@@ -216,8 +216,8 @@ const Checkout = () => {
   }, [authLoading, user, navigate]);
 
   useEffect(() => {
-    if (customerId && cartItems.length === 0 && step < 3) navigate("/cart");
-  }, [customerId, cartItems, step, navigate]);
+    if (customerId && !cartCheckoutLoading && cartItems.length === 0 && step < 3) navigate("/cart");
+  }, [customerId, cartCheckoutLoading, cartItems, step, navigate]);
 
   // ── Handlers
   const handleSaveAddress = async () => {
