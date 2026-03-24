@@ -74,7 +74,7 @@ const Checkout = () => {
   });
 
   // ── Cart items
-  const { data: cartItems = [] } = useQuery({
+  const { data: cartItems = [], isLoading: cartCheckoutLoading } = useQuery({
     queryKey: ["cart-checkout", customerId],
     queryFn: async () => {
       const { data: items, error } = await supabase.from("cart_items").select("*").eq("customer_id", customerId!);
