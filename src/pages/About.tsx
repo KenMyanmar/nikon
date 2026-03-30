@@ -228,7 +228,7 @@ const About = () => {
               <div className="space-y-3 text-sm text-gray-600">
                 <div className="flex items-start gap-2">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#f59e0b]" />
-                  <span>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon, Myanmar</span>
+                  <span>No. 11, Swel Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon, Myanmar</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 shrink-0 text-[#f59e0b]" />
