@@ -253,7 +253,7 @@ const About = () => {
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <a
-                  href="https://maps.google.com/?q=No.+11+Swal+Taw+Street+Mingalardon+Yangon"
+                  href="https://www.google.com/maps/dir/?api=1&destination=16.8985072,96.1415933&destination_place_id=ChIJeaFTOwCVwTARa2mL9CfSOuQ"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-lg bg-[#f59e0b] px-5 py-2.5 text-sm font-semibold text-[#1a1f36] transition-colors hover:bg-[#d97706]"
