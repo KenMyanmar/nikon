@@ -214,7 +214,7 @@ const About = () => {
             <div className="flex items-center justify-center rounded-xl bg-gray-100">
               <iframe
                 title="IKON Mart Showroom"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3818.0!2d96.15!3d16.95!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTbCsDU3JzAwLjAiTiA5NsKwMDknMDAuMCJF!5e0!3m2!1sen!2smm!4v1"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1000!2d96.1415933!3d16.8985072!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30c5149b3b53a179%3A0xe43ad227f49b696b!2sIKON+Mart+Showroom!5e0!3m2!1sen!2smm!4v1"
                 className="h-64 w-full rounded-xl md:h-full md:min-h-[280px]"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -228,7 +228,7 @@ const About = () => {
               <div className="space-y-3 text-sm text-gray-600">
                 <div className="flex items-start gap-2">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#f59e0b]" />
-                  <span>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon, Myanmar</span>
+                  <span>No. 11, Swel Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon, Myanmar</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 shrink-0 text-[#f59e0b]" />
@@ -253,7 +253,7 @@ const About = () => {
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <a
-                  href="https://maps.google.com/?q=No.+11+Swal+Taw+Street+Mingalardon+Yangon"
+                  href="https://www.google.com/maps/dir/?api=1&destination=16.8985072,96.1415933&destination_place_id=ChIJeaFTOwCVwTARa2mL9CfSOuQ"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-lg bg-[#f59e0b] px-5 py-2.5 text-sm font-semibold text-[#1a1f36] transition-colors hover:bg-[#d97706]"
