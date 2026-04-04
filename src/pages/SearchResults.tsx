@@ -42,7 +42,7 @@ const SearchResults = () => {
 
   const filtered = useMemo(() => {
     if (!results) return [];
-    return results.filter((r: any) => {
+    const list = results.filter((r: any) => {
       if (selectedBrands.length && !selectedBrands.includes(r.brand_name)) return false;
       if (stockFilters.length && !stockFilters.includes(r.stock_status)) return false;
       if (priceRange[1] > 0) {
@@ -51,6 +51,14 @@ const SearchResults = () => {
       }
       return true;
     });
+    // Products with images first
+    list.sort((a: any, b: any) => {
+      const aHas = a.thumbnail_url ? 0 : 1;
+      const bHas = b.thumbnail_url ? 0 : 1;
+      if (aHas !== bHas) return aHas - bHas;
+      return 0;
+    });
+    return list;
   }, [results, selectedBrands, stockFilters, priceRange]);
 
   return (

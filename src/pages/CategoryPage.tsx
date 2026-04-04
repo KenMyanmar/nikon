@@ -82,7 +82,7 @@ const CategoryPage = () => {
         // Specific sub-category
         const { data, error } = await supabase
           .from("products_public")
-          .select("id, slug, description, short_description, brand_name, selling_price, currency, stock_status, stock_code, moq, thumbnail_url, created_at, category_name")
+          .select("id, slug, description, short_description, brand_name, brand_logo, selling_price, currency, stock_status, stock_code, moq, thumbnail_url, created_at, category_name")
           .eq("is_active", true)
           .eq("category_id", activeSubCategory.id)
           .limit(200);
@@ -93,7 +93,7 @@ const CategoryPage = () => {
         const allCatIds = [category!.id, ...subCategories.map((s) => s.id)];
         const { data, error } = await supabase
           .from("products_public")
-          .select("id, slug, description, short_description, brand_name, selling_price, currency, stock_status, stock_code, moq, thumbnail_url, created_at, category_name")
+          .select("id, slug, description, short_description, brand_name, brand_logo, selling_price, currency, stock_status, stock_code, moq, thumbnail_url, created_at, category_name")
           .eq("is_active", true)
           .in("category_id", allCatIds)
           .limit(200);
@@ -103,7 +103,7 @@ const CategoryPage = () => {
         // Leaf category or category without subs
         const { data, error } = await supabase
           .from("products_public")
-          .select("id, slug, description, short_description, brand_name, selling_price, currency, stock_status, stock_code, moq, thumbnail_url, created_at, category_name")
+          .select("id, slug, description, short_description, brand_name, brand_logo, selling_price, currency, stock_status, stock_code, moq, thumbnail_url, created_at, category_name")
           .eq("is_active", true)
           .eq("category_id", category!.id)
           .limit(200);
@@ -142,6 +142,14 @@ const CategoryPage = () => {
     if (sort === "newest") result.sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""));
     else if (sort === "price_asc") result.sort((a, b) => (Number(a.selling_price) || 0) - (Number(b.selling_price) || 0));
     else if (sort === "price_desc") result.sort((a, b) => (Number(b.selling_price) || 0) - (Number(a.selling_price) || 0));
+
+    // Secondary stable sort: products with images first
+    result.sort((a, b) => {
+      const aHas = a.thumbnail_url ? 0 : 1;
+      const bHas = b.thumbnail_url ? 0 : 1;
+      if (aHas !== bHas) return aHas - bHas;
+      return 0;
+    });
 
     return result;
   }, [products, selectedBrands, stockFilters, priceRange, sort]);

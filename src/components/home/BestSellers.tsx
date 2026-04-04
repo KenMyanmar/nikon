@@ -11,11 +11,13 @@ const BestSellers = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products_public")
-        .select("id, slug, description, short_description, brand_name, selling_price, currency, stock_status, stock_code, moq, onhand_qty, thumbnail_url, is_featured")
+        .select("id, slug, description, short_description, brand_name, brand_logo, selling_price, currency, stock_status, stock_code, moq, onhand_qty, thumbnail_url, is_featured")
         .eq("is_active", true)
         .eq("is_featured", true)
+        .not("thumbnail_url", "is", null)
+        .neq("thumbnail_url", "")
         .order("onhand_qty", { ascending: false })
-        .limit(12);
+        .limit(16);
       if (error) throw error;
       return data;
     },
@@ -51,6 +53,7 @@ const BestSellers = () => {
                     stockStatus={(p.stock_status as "in_stock" | "low_stock" | "out_of_stock") || "in_stock"}
                     sku={p.stock_code || ""}
                     slug={p.slug || ""}
+                    brandLogo={p.brand_logo || null}
                   />
                 </div>
               ))}

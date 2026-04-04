@@ -13,6 +13,7 @@ interface Product {
   moq?: number | null;
   thumbnail_url?: string | null;
   category_name?: string | null;
+  brand_logo?: string | null;
 }
 
 interface ProductGridProps {
@@ -37,6 +38,7 @@ const ProductGrid = ({ products }: ProductGridProps) => {
           sku={p.stock_code || ""}
           slug={p.slug}
           categoryName={p.category_name || undefined}
+          brandLogo={p.brand_logo || null}
         />
       ))}
     </div>
