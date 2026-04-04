@@ -82,7 +82,7 @@ const CategoryPage = () => {
         // Specific sub-category
         const { data, error } = await supabase
           .from("products_public")
-          .select("id, slug, description, short_description, brand_name, selling_price, currency, stock_status, stock_code, moq, thumbnail_url, created_at, category_name")
+          .select("id, slug, description, short_description, brand_name, brand_logo, selling_price, currency, stock_status, stock_code, moq, thumbnail_url, created_at, category_name")
           .eq("is_active", true)
           .eq("category_id", activeSubCategory.id)
           .limit(200);
