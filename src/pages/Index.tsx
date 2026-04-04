@@ -1,6 +1,7 @@
 import MainLayout from "@/components/layout/MainLayout";
 import CategoryQuickNav from "@/components/home/CategoryQuickNav";
 import HeroBannerCarousel from "@/components/home/HeroBannerCarousel";
+import PromotionsBanner from "@/components/home/PromotionsBanner";
 import FlashDealsRow from "@/components/home/FlashDealsRow";
 import BestSellers from "@/components/home/BestSellers";
 import TopBrandsShowcase from "@/components/home/TopBrandsShowcase";
