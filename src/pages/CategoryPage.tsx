@@ -143,6 +143,14 @@ const CategoryPage = () => {
     else if (sort === "price_asc") result.sort((a, b) => (Number(a.selling_price) || 0) - (Number(b.selling_price) || 0));
     else if (sort === "price_desc") result.sort((a, b) => (Number(b.selling_price) || 0) - (Number(a.selling_price) || 0));
 
+    // Secondary stable sort: products with images first
+    result.sort((a, b) => {
+      const aHas = a.thumbnail_url ? 0 : 1;
+      const bHas = b.thumbnail_url ? 0 : 1;
+      if (aHas !== bHas) return aHas - bHas;
+      return 0;
+    });
+
     return result;
   }, [products, selectedBrands, stockFilters, priceRange, sort]);
 

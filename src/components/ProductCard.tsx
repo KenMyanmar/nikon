@@ -1,4 +1,4 @@
-import { Heart, ShoppingCart, Loader2, Zap, Star, AlertTriangle, Package } from "lucide-react";
+import { Heart, ShoppingCart, Loader2, Zap, Star, AlertTriangle, Package, ImageOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAddToCart } from "@/hooks/useCart";
 import { useAuthContext } from "@/contexts/AuthContext";
@@ -22,6 +22,7 @@ interface ProductCardProps {
   onhandQty?: number;
   unitOfMeasure?: string;
   categoryName?: string;
+  brandLogo?: string | null;
 }
 
 const stockConfig = {
@@ -30,7 +31,7 @@ const stockConfig = {
   out_of_stock: { label: "Out of Stock", dotClass: "bg-red-500", textClass: "text-red-700", bgClass: "bg-red-50" },
 };
 
-const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug, categoryId, brandId, isFeatured, onhandQty, unitOfMeasure, categoryName }: ProductCardProps) => {
+const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", moq, stockStatus, sku, slug, categoryId, brandId, isFeatured, onhandQty, unitOfMeasure, categoryName, brandLogo }: ProductCardProps) => {
   const stock = stockConfig[stockStatus] || stockConfig.in_stock;
   const isPlaceholder = !image || image === "/placeholder.svg";
   const { addToCart, isAdding } = useAddToCart();
@@ -83,13 +84,17 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
   const showUrgency = stockStatus === "low_stock" && onhandQty && onhandQty <= 5;
 
   return (
-    <Link to={`/product/${slug}`} className="bg-card rounded-card shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-250 overflow-hidden group cursor-pointer block flex flex-col">
+    <Link to={`/product/${slug}`} className="bg-card rounded-card shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-250 overflow-hidden group cursor-pointer block flex flex-col h-full">
       {/* Image */}
-      <div className="relative aspect-square bg-muted/30 overflow-hidden">
+      <div className="relative aspect-square bg-[#F8F9FA] overflow-hidden rounded-t-card">
         {isPlaceholder ? (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-muted text-muted-foreground">
-            <span className="text-4xl font-bold opacity-60">{brand?.charAt(0) || "?"}</span>
-            <span className="text-xs font-medium opacity-50 px-4 text-center line-clamp-2">{brand}</span>
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2 border border-dashed border-[#DEE2E6] rounded-t-card">
+            {brandLogo ? (
+              <img src={brandLogo} alt={brand} className="w-[40%] h-[40%] object-contain opacity-60" />
+            ) : (
+              <ImageOff className="w-10 h-10 text-[#ADB5BD] opacity-50" />
+            )}
+            <span className="text-[#ADB5BD] text-xs font-medium">Image Coming Soon</span>
           </div>
         ) : (
           <img src={image} alt={title} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300" loading="lazy" />
@@ -97,15 +102,12 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
 
         {/* Top-left badges stack */}
         <div className="absolute top-2 left-2 flex flex-col gap-1.5">
-          {/* Flash Deal Badge */}
           {flashDeal && (
             <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 w-fit">
               <Zap className="w-3 h-3 fill-current" />
               -{flashDeal.discount_percentage || Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100)}%
             </span>
           )}
-
-          {/* Promotion Badge */}
           {!flashDeal && promotion && (
             <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full w-fit">
               {promotion.type === "percentage" && promotion.discount_value
@@ -115,15 +117,11 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
                 : promotion.title}
             </span>
           )}
-
-          {/* Best Seller Badge */}
           {isFeatured && (
             <span className="bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 w-fit">
               <Star className="w-3 h-3 fill-current" /> Best Seller
             </span>
           )}
-
-          {/* Bulk Order Badge */}
           {moq && moq > 1 && (
             <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 w-fit">
               <Package className="w-3 h-3" /> Bulk Order
@@ -131,14 +129,11 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
           )}
         </div>
 
-        {/* Category badge */}
         {categoryName && !showUrgency && (
           <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full">
             {categoryName}
           </div>
         )}
-
-        {/* Urgency label */}
         {showUrgency && (
           <div className="absolute bottom-2 left-2 bg-amber-500/90 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
             <AlertTriangle className="w-3 h-3" /> Only {onhandQty} left!
@@ -150,27 +145,27 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
         </button>
       </div>
 
-      {/* Content */}
-      <div className="p-4 space-y-2 flex flex-col flex-1">
-        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{brand}</p>
-        <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-snug">{title}</h3>
-        {specs && <p className="text-xs text-muted-foreground line-clamp-1">{specs}</p>}
+      {/* Content — fixed vertical rhythm */}
+      <div className="p-4 flex flex-col flex-1">
+        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide min-h-[20px]">{brand}</p>
+        <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-snug min-h-[40px] mt-1">{title}</h3>
+        <p className="text-xs text-muted-foreground line-clamp-1 min-h-[20px] mt-1">{specs || "\u00A0"}</p>
 
         {flashDeal && (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full w-fit">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full w-fit mt-1">
             <Zap className="w-3 h-3" /> Flash Deal
           </span>
         )}
 
-        <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${stock.textClass} ${stock.bgClass} px-2 py-0.5 rounded-full w-fit`}>
+        <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${stock.textClass} ${stock.bgClass} px-2 py-0.5 rounded-full w-fit mt-2`}>
           <span className={`w-1.5 h-1.5 ${stock.dotClass} rounded-full`}></span>
           {stock.label}
         </span>
 
-        <div className="mt-auto pt-2">
+        <div className="mt-auto pt-3">
           {displayPrice !== null && displayPrice !== undefined ? (
             <div className="flex items-baseline gap-2 flex-wrap">
-              <span className={`text-lg font-bold text-accent`}>
+              <span className="text-lg font-bold text-accent">
                 {currency} {displayPrice.toLocaleString()}
               </span>
               {originalPrice && (
@@ -193,7 +188,7 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
         </div>
 
         {moq && moq > 1 && (
-          <p className="text-xs text-muted-foreground uppercase tracking-wide">MOQ: {moq} units</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide mt-1">MOQ: {moq} units</p>
         )}
 
         <button
