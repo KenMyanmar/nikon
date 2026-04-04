@@ -1,84 +1,39 @@
 
 
-# Product Card Consistency & Image Placeholder Fix
-
-## Summary
-Standardize product card vertical rhythm, replace the broken brand-initial fallback with a premium placeholder using brand logos from `products_public.brand_logo`, filter imageless products from homepage featured sections, and sort images-first in listings.
+# Homepage Category Section — World-Class Redesign
 
 ## Changes
 
-### 1. `src/components/ProductCard.tsx` — Redesign card structure
-
-**Add `brandLogo` prop** to the interface (optional `string | null`).
-
-**Premium placeholder** (lines 89-93): Replace the brand-initial fallback with:
-- Same `aspect-square` frame
-- Background `#F8F9FA`, border `1px dashed #DEE2E6`
-- Center the **brand logo** (`brandLogo` prop → `<img>` at ~40% size) if available
-- If no brand logo, show IKON logo (`/lovable-uploads/...` or a small SVG) at reduced opacity
-- Below: "Image Coming Soon" in `text-[#ADB5BD] text-xs`
-
-**Fixed vertical rhythm** in the content area (lines 154-207):
-- Brand name: add `min-h-[20px]` (line 155)
-- Title: add `min-h-[48px]` to the existing `line-clamp-2` heading (line 156)
-- Specs: **always render** the element even when `specs` is falsy, with `min-h-[24px]` and `line-clamp-1` (line 157 — change conditional to always-rendered with empty fallback)
-- Footer (price + button): already uses `mt-auto` — no change needed
-
-**Image frame**: Add `bg-[#F8F9FA]` and ensure `rounded-lg` on the image container (line 88).
-
-### 2. `src/components/home/BestSellers.tsx` — Filter imageless products
-
-Add to query (after line 16 `.eq("is_featured", true)`):
+### 1. `src/pages/Index.tsx` — Swap render order
+Move `<CategoryQuickNav />` below `<HeroBannerCarousel />`:
 ```
-.not("thumbnail_url", "is", null)
-.neq("thumbnail_url", "")
+HeroBannerCarousel → CategoryQuickNav → FlashDealsRow → ...
 ```
 
-Increase `.limit(12)` to `.limit(16)` to compensate for any filtered-out products, ensuring the row still shows ~12 cards.
+### 2. `src/components/home/CategoryQuickNav.tsx` — Full rewrite
 
-### 3. `src/components/home/NewArrivals.tsx` — Filter imageless products
+**Data source**: Switch from `categories` table to `product_groups` table, ordered by `sort_order`, excluding code `MKM`.
 
-Same two filters added to the query (after line 15 `.eq("is_active", true)`):
-```
-.not("thumbnail_url", "is", null)
-.neq("thumbnail_url", "")
-```
+**Color/icon map**: Hardcode a `categoryConfig` map keyed by group code (TWD, SPS, KUT, etc.) with accent color, Lucide icon component, display name, slug, and hardcoded item count. Since `product_groups` has no slug column, the slug mapping is hardcoded (e.g., TWD → "tableware").
 
-Increase `.limit(12)` to `.limit(16)`.
+**Card component**: Each card is a `<Link>` with:
+- Fixed height `h-28` (112px), `rounded-[14px]`, `p-5`, flex-row layout
+- Left: 48×48 icon frame with `rounded-xl`, background at 15% opacity of accent color, centered Lucide icon at accent color
+- Right: category name (semibold, sm, gray-900, line-clamp-1) + item count (xs, gray-500, "{n} items")
+- Card background: accent color at 6% opacity, border at 15% opacity
+- Hover: `translateY(-2px)`, `shadow-md`, border at 40% opacity, 200ms transition
 
-### 4. `src/pages/CategoryPage.tsx` — Images-first sort
+**Desktop**: `grid-cols-5`, gap-4, two rows of 5 = 10 cards, `py-6`
 
-In the `filtered` useMemo (lines 130-147), after existing sort logic (line 144), add a stable secondary sort that pushes imageless products to the end:
+**Tablet (md)**: `grid-cols-3`, shows 9–10 cards in grid
 
-```ts
-result.sort((a, b) => {
-  const aHas = a.thumbnail_url ? 0 : 1;
-  const bHas = b.thumbnail_url ? 0 : 1;
-  if (aHas !== bHas) return aHas - bHas;
-  // preserve existing sort order for ties
-  return 0;
-});
-```
+**Mobile (below md)**: Horizontal scroll rail with `overflow-x-auto`, `scroll-snap-type: x mandatory`, `min-w-[200px]` per card, `scroll-snap-align: start`, hidden scrollbar via CSS utility class. Cards peek from the right edge to signal scrollability.
 
-This must run **after** the primary sort so it only breaks ties.
+**No section header** — the cards are self-explanatory navigation.
 
-Also update the three query `.select()` calls (lines 85, 96, 106) to include `brand_logo` so the ProductCard can receive it.
+### Files modified
+1. `src/pages/Index.tsx` — swap component order (1 line move)
+2. `src/components/home/CategoryQuickNav.tsx` — full rewrite with new design
 
-### 5. `src/pages/SearchResults.tsx` — Images-first sort
-
-In the `filtered` useMemo (lines 43-54), add the same images-first stable sort after filtering.
-
-### 6. All callers of `<ProductCard>` — Pass `brandLogo` prop
-
-Update ProductCard invocations in:
-- `BestSellers.tsx` — add `brand_logo` to select, pass as `brandLogo={p.brand_logo}`
-- `NewArrivals.tsx` — same
-- `CategoryPage.tsx` — same (already adding to select in step 4)
-- `SearchResults.tsx` — check if `search_products` RPC returns `brand_logo`; if not, the placeholder falls back to IKON logo (acceptable)
-
-## Key data point
-`products_public` view already has a `brand_logo` column (confirmed in types.ts line 2706), so no joins or DB changes are needed — just add it to `.select()` strings.
-
-## No database changes required
-All changes are frontend-only. Six files modified.
+No database changes needed. Item counts are hardcoded for now (they change slowly); can be replaced with a DB function later.
 
