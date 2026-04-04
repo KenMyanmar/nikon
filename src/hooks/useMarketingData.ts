@@ -38,10 +38,13 @@ export const useFlashDeals = () => {
   return useQuery({
     queryKey: ["flash-deals-active"],
     queryFn: async () => {
+      const now = new Date().toISOString();
       const { data, error } = await supabase
         .from("flash_deals")
         .select("*")
         .eq("is_active", true)
+        .lte("start_time", now)
+        .gte("end_time", now)
         .order("sort_order");
       if (error) throw error;
       return (data || []) as FlashDeal[];
