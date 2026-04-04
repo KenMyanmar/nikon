@@ -38,10 +38,13 @@ export const useFlashDeals = () => {
   return useQuery({
     queryKey: ["flash-deals-active"],
     queryFn: async () => {
+      const now = new Date().toISOString();
       const { data, error } = await supabase
         .from("flash_deals")
         .select("*")
         .eq("is_active", true)
+        .lte("start_time", now)
+        .gte("end_time", now)
         .order("sort_order");
       if (error) throw error;
       return (data || []) as FlashDeal[];
@@ -54,10 +57,13 @@ export const usePromotions = () => {
   return useQuery({
     queryKey: ["promotions-active"],
     queryFn: async () => {
+      const now = new Date().toISOString();
       const { data, error } = await supabase
         .from("promotions")
         .select("*")
         .eq("is_active", true)
+        .lte("start_date", now)
+        .gte("end_date", now)
         .order("priority", { ascending: false });
       if (error) throw error;
       return (data || []) as Promotion[];
