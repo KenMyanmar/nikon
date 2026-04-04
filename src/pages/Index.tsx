@@ -12,8 +12,8 @@ import HoReCaResources from "@/components/home/HoReCaResources";
 const Index = () => {
   return (
     <MainLayout>
-      <CategoryQuickNav />
       <HeroBannerCarousel />
+      <CategoryQuickNav />
       <FlashDealsRow />
       <BestSellers />
       <TopBrandsShowcase />
