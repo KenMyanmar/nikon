@@ -57,10 +57,13 @@ export const usePromotions = () => {
   return useQuery({
     queryKey: ["promotions-active"],
     queryFn: async () => {
+      const now = new Date().toISOString();
       const { data, error } = await supabase
         .from("promotions")
         .select("*")
         .eq("is_active", true)
+        .lte("start_date", now)
+        .gte("end_date", now)
         .order("priority", { ascending: false });
       if (error) throw error;
       return (data || []) as Promotion[];

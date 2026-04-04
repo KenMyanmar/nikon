@@ -31,6 +31,8 @@ const Header = () => {
       <div className="bg-accent text-accent-foreground text-center py-2 text-sm font-medium">
         🚚 Free delivery on orders over MMK 500,000 in Yangon Metro
         <Link to="/flash-deals" className="underline ml-2 font-bold">Shop Deals →</Link>
+        <span className="mx-2">|</span>
+        <Link to="/promotions" className="underline font-bold">🔥 Promotions</Link>
       </div>
 
       {/* Main Header */}

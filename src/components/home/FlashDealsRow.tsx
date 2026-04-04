@@ -25,10 +25,13 @@ const FlashDealsRow = () => {
   const { data: deals = [] } = useQuery({
     queryKey: ["flash-deals-homepage"],
     queryFn: async () => {
+      const now = new Date().toISOString();
       const { data: fd, error } = await supabase
         .from("flash_deals")
         .select("*")
         .eq("is_active", true)
+        .lte("start_time", now)
+        .gte("end_time", now)
         .order("sort_order")
         .limit(8);
       if (error) throw error;
