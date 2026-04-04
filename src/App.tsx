@@ -23,6 +23,8 @@ import MyOrders from "./pages/MyOrders";
 import Articles from "./pages/Articles";
 import ArticleDetail from "./pages/ArticleDetail";
 import About from "./pages/About";
+import Promotions from "./pages/Promotions";
+import PromotionDetail from "./pages/PromotionDetail";
 import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
