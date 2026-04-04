@@ -1,92 +1,122 @@
 import { Link } from "react-router-dom";
+import {
+  UtensilsCrossed, Settings, ChefHat, SprayCan, Bed,
+  Coffee, Flame, Soup, Armchair, WashingMachine,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  UtensilsCrossed, Settings, ChefHat, SprayCan, Bed,
-  Wine, Wrench, Coffee, ConciergeBell, Shirt,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  "Tableware": UtensilsCrossed,
-  "Spare Parts": Settings,
-  "Kitchen Utensils": ChefHat,
-  "Housekeeping Supplies": SprayCan,
-  "Bedroom Supplies": Bed,
-  "F & B Solutions": Wine,
-  "Kitchen Services": Wrench,
-  "Food Services": Coffee,
-  "Buffet & Banquet": ConciergeBell,
-  "Laundry Solutions": Shirt,
-};
+interface CategoryConfig {
+  color: string;
+  icon: LucideIcon;
+  name: string;
+  slug: string;
+  count: number;
+}
 
-const SHORT_NAMES: Record<string, string> = {
-  "Housekeeping Supplies": "Housekeeping",
-  "Laundry Solutions": "Laundry",
-  "F & B Solutions": "F&B",
-  "Bedroom Supplies": "Bedroom",
-  "Buffet & Banquet": "Buffet",
-  "Kitchen Services": "Kitchen Svc",
-  "Food Services": "Food Svc",
-  "Kitchen Utensils": "Utensils",
-  "Spare Parts": "Parts",
+const categoryConfig: Record<string, CategoryConfig> = {
+  TWD: { color: "#6366F1", icon: UtensilsCrossed, name: "Tableware", slug: "tableware", count: 1006 },
+  SPS: { color: "#8B5CF6", icon: Settings, name: "Spare Parts", slug: "spare-parts", count: 723 },
+  KUT: { color: "#EC4899", icon: ChefHat, name: "Kitchen Utensils", slug: "kitchen-utensils", count: 453 },
+  HKG: { color: "#14B8A6", icon: SprayCan, name: "Housekeeping", slug: "housekeeping-supplies", count: 410 },
+  ABL: { color: "#F59E0B", icon: Bed, name: "Bedroom", slug: "bedroom-supplies", count: 219 },
+  FBS: { color: "#EF4444", icon: Coffee, name: "F&B Solutions", slug: "f-b-solutions", count: 51 },
+  KSR: { color: "#F97316", icon: Flame, name: "Kitchen Services", slug: "kitchen-services", count: 184 },
+  FSR: { color: "#10B981", icon: Soup, name: "Food Services", slug: "food-services", count: 261 },
+  BQE: { color: "#3B82F6", icon: Armchair, name: "Buffet & Banquet", slug: "buffet-banquet", count: 24 },
+  LPR: { color: "#06B6D4", icon: WashingMachine, name: "Laundry", slug: "laundry-solutions", count: 12 },
 };
 
 const CategoryQuickNav = () => {
-  const { data: categories = [], isLoading } = useQuery({
-    queryKey: ["categories-quicknav"],
+  const { data: groups = [], isLoading } = useQuery({
+    queryKey: ["product-groups-nav"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("categories")
-        .select("id, name, slug, product_count")
-        .eq("depth", 0)
-        .eq("is_active", true)
-        .order("product_count", { ascending: false });
+        .from("product_groups")
+        .select("id, code, name, sort_order")
+        .neq("code", "MKM")
+        .order("sort_order", { ascending: true });
       if (error) throw error;
       return data || [];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000,
   });
 
   if (isLoading) {
     return (
-      <section className="container mx-auto px-4 py-4">
-        <div className="grid grid-cols-5 gap-2 md:gap-3">
+      <section className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="flex flex-col items-center justify-center p-2 md:p-3 rounded-lg border border-border bg-card">
-              <Skeleton className="w-5 h-5 md:w-6 md:h-6 rounded-full" />
-              <Skeleton className="h-3 w-12 mt-1" />
-            </div>
+            <Skeleton key={i} className="h-28 rounded-[14px]" />
           ))}
         </div>
       </section>
     );
   }
 
-  if (categories.length === 0) return null;
+  const cards = groups
+    .map((g) => ({ group: g, config: categoryConfig[g.code] }))
+    .filter((c) => c.config);
+
+  if (cards.length === 0) return null;
 
   return (
-    <section className="container mx-auto px-4 py-4">
-      <div className="grid grid-cols-5 gap-2 md:gap-3">
-        {categories.slice(0, 10).map((cat) => {
-          const Icon = CATEGORY_ICONS[cat.name] || UtensilsCrossed;
-          const shortName = SHORT_NAMES[cat.name] || cat.name;
-          return (
-            <Link
-              key={cat.id}
-              to={`/category/${cat.slug}`}
-              className="flex flex-col items-center justify-center p-2 md:p-3 rounded-lg border border-border bg-card hover:shadow-md hover:border-primary/30 transition-all group"
-            >
-              <Icon className="w-5 h-5 md:w-6 md:h-6 text-primary group-hover:scale-110 transition-transform" />
-              <span className="text-[10px] md:text-xs font-medium text-foreground mt-1 text-center leading-tight truncate w-full">
-                {shortName}
-              </span>
-            </Link>
-          );
-        })}
+    <section className="container mx-auto px-4 py-6">
+      {/* Desktop / Tablet grid */}
+      <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {cards.map(({ group, config }) => (
+          <CategoryCard key={group.id} config={config} />
+        ))}
+      </div>
+
+      {/* Mobile horizontal scroll */}
+      <div className="flex md:hidden gap-3 overflow-x-auto scroll-snap-x-mandatory pb-2 no-scrollbar">
+        {cards.map(({ group, config }) => (
+          <CategoryCard key={group.id} config={config} mobile />
+        ))}
       </div>
     </section>
+  );
+};
+
+const CategoryCard = ({ config, mobile }: { config: CategoryConfig; mobile?: boolean }) => {
+  const Icon = config.icon;
+  const bg6 = `${config.color}0F`;   // 6% opacity
+  const bg15 = `${config.color}26`;  // 15% opacity
+  const bg40 = `${config.color}66`;  // 40% opacity
+
+  return (
+    <Link
+      to={`/category/${config.slug}`}
+      className={`
+        flex items-center h-28 rounded-[14px] p-5 border transition-all duration-200
+        hover:-translate-y-0.5 hover:shadow-md group
+        ${mobile ? "min-w-[200px] snap-start flex-shrink-0" : ""}
+      `}
+      style={{
+        backgroundColor: bg6,
+        borderColor: bg15,
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget.style.borderColor = bg40);
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget.style.borderColor = bg15);
+      }}
+    >
+      <div
+        className="flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0"
+        style={{ backgroundColor: bg15 }}
+      >
+        <Icon size={24} style={{ color: config.color }} />
+      </div>
+      <div className="ml-4 min-w-0">
+        <p className="font-semibold text-sm text-foreground line-clamp-1">{config.name}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{config.count.toLocaleString()} items</p>
+      </div>
+    </Link>
   );
 };
 
