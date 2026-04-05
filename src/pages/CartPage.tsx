@@ -117,8 +117,8 @@ const CartPage = () => {
 
     // Promotion discount
     const promotion = getPromotion(item.product_id, item.product?.category_id, item.product?.brand_id);
-    if (promotion && basePrice > 0) {
-      if (promotion.type === "percentage" && promotion.discount_value) {
+    if (promotion && (basePrice > 0 || promotion.type === "fixed_amount")) {
+      if (promotion.type === "percentage" && promotion.discount_value && basePrice > 0) {
         let discounted = basePrice * (1 - promotion.discount_value / 100);
         if (promotion.max_discount_amount && promotion.max_discount_amount > 0) {
           discounted = Math.max(discounted, basePrice - promotion.max_discount_amount);

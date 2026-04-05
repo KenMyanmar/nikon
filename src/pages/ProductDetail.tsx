@@ -109,10 +109,13 @@ const ProductDetail = () => {
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", slug],
     queryFn: async () => {
+      // Support both slug and UUID lookups (promotions link by UUID)
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug!);
+      const column = isUUID ? "id" : "slug";
       const { data, error } = await supabase
         .from("products_public")
         .select("*")
-        .eq("slug", slug!)
+        .eq(column, slug!)
         .eq("is_active", true)
         .single();
       if (error) throw error;
