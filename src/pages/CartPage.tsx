@@ -151,17 +151,34 @@ const CartPage = () => {
     return { subtotal: total, hasUnpricedItems: unpriced };
   }, [cartItems, getEffectivePrice]);
 
+  const { fullPriceSubtotal, discountedSubtotal, hasDiscountedItems } = useMemo(() => {
+    let fullPrice = 0;
+    let discounted = 0;
+    let hasDisc = false;
+    cartItems.forEach((item) => {
+      const { price, isFlashDeal, isPromotion } = getEffectivePrice(item);
+      const lineTotal = price * item.quantity;
+      if (isFlashDeal || isPromotion) {
+        discounted += lineTotal;
+        hasDisc = true;
+      } else {
+        fullPrice += lineTotal;
+      }
+    });
+    return { fullPriceSubtotal: fullPrice, discountedSubtotal: discounted, hasDiscountedItems: hasDisc };
+  }, [cartItems, getEffectivePrice]);
+
   const couponDiscount = useMemo(() => {
-    if (!appliedCoupon) return 0;
+    if (!appliedCoupon || fullPriceSubtotal === 0) return 0;
     let discount = 0;
     if (appliedCoupon.type === "percentage") {
-      discount = subtotal * (appliedCoupon.discount_value / 100);
+      discount = fullPriceSubtotal * (appliedCoupon.discount_value / 100);
       if (appliedCoupon.max_discount_amount) discount = Math.min(discount, appliedCoupon.max_discount_amount);
     } else {
       discount = appliedCoupon.discount_value;
     }
-    return Math.min(discount, subtotal);
-  }, [appliedCoupon, subtotal]);
+    return Math.min(discount, fullPriceSubtotal);
+  }, [appliedCoupon, fullPriceSubtotal]);
 
   const displayTotal = subtotal - couponDiscount;
 
@@ -362,10 +379,17 @@ const CartPage = () => {
                   <span className="font-semibold text-foreground">MMK {subtotal.toLocaleString()}</span>
                 </div>
                 {couponDiscount > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-emerald-600 font-medium">Coupon ({appliedCoupon?.code})</span>
-                    <span className="text-emerald-600 font-medium">-MMK {couponDiscount.toLocaleString()}</span>
-                  </div>
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-emerald-600 font-medium">Coupon ({appliedCoupon?.code})</span>
+                      <span className="text-emerald-600 font-medium">-MMK {couponDiscount.toLocaleString()}</span>
+                    </div>
+                    {hasDiscountedItems && (
+                      <p className="text-xs text-muted-foreground italic">
+                        Coupon applied to full-price items only. Promotional items already have the best price.
+                      </p>
+                    )}
+                  </>
                 )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
