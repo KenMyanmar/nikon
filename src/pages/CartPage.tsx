@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -182,6 +182,14 @@ const CartPage = () => {
   }, [appliedCoupon, fullPriceSubtotal]);
 
   const displayTotal = subtotal - couponDiscount;
+
+  // Clear coupon when no full-price items remain
+  useEffect(() => {
+    if (fullPriceSubtotal === 0 && appliedCoupon) {
+      setAppliedCoupon(null);
+      sessionStorage.removeItem("appliedCoupon");
+    }
+  }, [fullPriceSubtotal, appliedCoupon]);
 
   const handleApplyCoupon = (coupon: AppliedCoupon) => {
     setAppliedCoupon(coupon);
@@ -370,13 +378,15 @@ const CartPage = () => {
           <div className="lg:w-80 shrink-0">
             <div className="bg-card rounded-card shadow-card p-6 sticky top-28">
               <h2 className="text-h4 text-foreground mb-4">Order Summary</h2>
-              <CouponInput
-                subtotal={subtotal}
-                cartItems={cartItems}
-                appliedCoupon={appliedCoupon}
-                onApply={handleApplyCoupon}
-                onRemove={handleRemoveCoupon}
-              />
+              {fullPriceSubtotal > 0 && (
+                <CouponInput
+                  subtotal={subtotal}
+                  cartItems={cartItems}
+                  appliedCoupon={appliedCoupon}
+                  onApply={handleApplyCoupon}
+                  onRemove={handleRemoveCoupon}
+                />
+              )}
               <div className="space-y-3 text-sm mt-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>

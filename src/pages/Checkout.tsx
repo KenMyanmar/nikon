@@ -212,6 +212,14 @@ const Checkout = () => {
 
   const total = subtotal + deliveryFee - couponDiscount;
 
+  // Clear coupon when no full-price items remain
+  useEffect(() => {
+    if (fullPriceSubtotal === 0 && appliedCoupon) {
+      setAppliedCoupon(null);
+      sessionStorage.removeItem("appliedCoupon");
+    }
+  }, [fullPriceSubtotal, appliedCoupon]);
+
   // ── Payment state
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const [paymentProofUrl, setPaymentProofUrl] = useState<string | null>(null);
