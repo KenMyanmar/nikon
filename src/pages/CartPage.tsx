@@ -117,15 +117,16 @@ const CartPage = () => {
 
     // Promotion discount
     const promotion = getPromotion(item.product_id, item.product?.category_id, item.product?.brand_id);
-    if (promotion && basePrice > 0) {
-      if (promotion.type === "percentage" && promotion.discount_value) {
+    if (promotion && (basePrice > 0 || promotion.type === "fixed_amount")) {
+      if (promotion.type === "percentage" && promotion.discount_value && basePrice > 0) {
         let discounted = basePrice * (1 - promotion.discount_value / 100);
         if (promotion.max_discount_amount && promotion.max_discount_amount > 0) {
           discounted = Math.max(discounted, basePrice - promotion.max_discount_amount);
         }
         return { price: Math.round(discounted), originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
       } else if (promotion.type === "fixed_amount" && promotion.discount_value) {
-        return { price: Math.round(basePrice - promotion.discount_value), originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
+        const effectivePrice = basePrice > 0 ? Math.round(basePrice - promotion.discount_value) : Math.round(promotion.discount_value);
+        return { price: Math.max(effectivePrice, 0), originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
       } else if (promotion.type === "buy_x_get_y" && promotion.buy_quantity && promotion.get_quantity) {
         const groupSize = promotion.buy_quantity + promotion.get_quantity;
         const freeItems = Math.floor(item.quantity / groupSize) * promotion.get_quantity;
