@@ -379,10 +379,17 @@ const CartPage = () => {
                   <span className="font-semibold text-foreground">MMK {subtotal.toLocaleString()}</span>
                 </div>
                 {couponDiscount > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-emerald-600 font-medium">Coupon ({appliedCoupon?.code})</span>
-                    <span className="text-emerald-600 font-medium">-MMK {couponDiscount.toLocaleString()}</span>
-                  </div>
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-emerald-600 font-medium">Coupon ({appliedCoupon?.code})</span>
+                      <span className="text-emerald-600 font-medium">-MMK {couponDiscount.toLocaleString()}</span>
+                    </div>
+                    {hasDiscountedItems && (
+                      <p className="text-xs text-muted-foreground italic">
+                        Coupon applied to full-price items only. Promotional items already have the best price.
+                      </p>
+                    )}
+                  </>
                 )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
