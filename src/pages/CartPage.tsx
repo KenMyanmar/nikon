@@ -183,6 +183,14 @@ const CartPage = () => {
 
   const displayTotal = subtotal - couponDiscount;
 
+  // Clear coupon when no full-price items remain
+  useEffect(() => {
+    if (fullPriceSubtotal === 0 && appliedCoupon) {
+      setAppliedCoupon(null);
+      sessionStorage.removeItem("appliedCoupon");
+    }
+  }, [fullPriceSubtotal, appliedCoupon]);
+
   const handleApplyCoupon = (coupon: AppliedCoupon) => {
     setAppliedCoupon(coupon);
     // Persist to sessionStorage for checkout
