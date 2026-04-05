@@ -361,23 +361,26 @@ const Checkout = () => {
         </div>
 
         {step === 1 && (
-          <StepDelivery
-            addresses={addresses}
-            selectedAddressId={selectedAddressId}
-            setSelectedAddressId={setSelectedAddressId}
-            showNewAddress={showNewAddress}
-            setShowNewAddress={setShowNewAddress}
-            addrForm={addrForm}
-            setAddrForm={setAddrForm}
-            deliveryFee={deliveryFee}
-            freeThreshold={freeThreshold}
-            subtotal={subtotal}
-            estimatedDays={estimatedDays}
-            codEligible={codEligible}
-            maxCod={maxCod}
-            total={total}
-            onContinue={handleContinueToPayment}
-          />
+          <>
+            <StepDelivery
+              addresses={addresses}
+              selectedAddressId={selectedAddressId}
+              setSelectedAddressId={setSelectedAddressId}
+              showNewAddress={showNewAddress}
+              setShowNewAddress={setShowNewAddress}
+              addrForm={addrForm}
+              setAddrForm={setAddrForm}
+              deliveryFee={deliveryFee}
+              freeThreshold={freeThreshold}
+              subtotal={subtotal}
+              estimatedDays={estimatedDays}
+              codEligible={codEligible}
+              maxCod={maxCod}
+              total={total}
+              onContinue={handleContinueToPayment}
+            />
+            <RecommendedProducts cartItems={cartItems} />
+          </>
         )}
 
         {step === 2 && (

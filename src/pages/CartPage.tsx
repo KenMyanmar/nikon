@@ -361,6 +361,9 @@ const CartPage = () => {
                 </div>
               );
             })}
+
+            {/* Recommendations */}
+            <RecommendedProducts cartItems={cartItems} />
           </div>
 
           {/* Summary Sidebar */}
