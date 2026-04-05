@@ -7,6 +7,7 @@ import { useMarketingData } from "@/hooks/useMarketingData";
 import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
 import { Minus, Plus, Trash2, ShoppingCart, LogIn, Tag, X, Loader2, ChevronDown, Zap } from "lucide-react";
+import RecommendedProducts from "@/components/RecommendedProducts";
 
 interface AppliedCoupon {
   code: string;
