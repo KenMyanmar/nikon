@@ -125,7 +125,8 @@ const CartPage = () => {
         }
         return { price: Math.round(discounted), originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
       } else if (promotion.type === "fixed_amount" && promotion.discount_value) {
-        return { price: Math.round(basePrice - promotion.discount_value), originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
+        const effectivePrice = basePrice > 0 ? Math.round(basePrice - promotion.discount_value) : Math.round(promotion.discount_value);
+        return { price: Math.max(effectivePrice, 0), originalPrice: basePrice, isFlashDeal: false, isPromotion: true, promoTitle: promotion.title };
       } else if (promotion.type === "buy_x_get_y" && promotion.buy_quantity && promotion.get_quantity) {
         const groupSize = promotion.buy_quantity + promotion.get_quantity;
         const freeItems = Math.floor(item.quantity / groupSize) * promotion.get_quantity;
