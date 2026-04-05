@@ -10,6 +10,7 @@ import {
   Truck, CreditCard, CheckCircle, Plus, Banknote, Smartphone, Wallet,
   Upload, X, Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap, Tag
 } from "lucide-react";
+import RecommendedProducts from "@/components/RecommendedProducts";
 
 interface AppliedCoupon {
   code: string;
