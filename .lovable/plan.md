@@ -1,20 +1,19 @@
 
 
-# Move Promotions Below Category Grid
+# Hide Promo Code Section When No Full-Price Items
 
-## Change
+## Summary
+Conditionally hide the `CouponInput` component when all cart items already have flash deal or promotion discounts, since coupons only apply to full-price items anyway.
 
-### `src/pages/Index.tsx` — Swap lines 17-18
+## Changes
 
-Swap `<PromotionsBanner />` and `<CategoryQuickNav />` so the order becomes:
+### 1. `src/pages/CartPage.tsx`
+- Wrap the `<CouponInput />` render (around line 373) with `{fullPriceSubtotal > 0 && <CouponInput ... />}`
+- Also: when `fullPriceSubtotal` drops to 0 and a coupon was already applied, clear it (call `setAppliedCoupon(null)`) — add a `useEffect` watching `fullPriceSubtotal`
 
-```
-<HeroBannerCarousel />
-<CategoryQuickNav />
-<PromotionsBanner />
-<FlashDealsRow />
-...
-```
+### 2. `src/pages/Checkout.tsx`
+- The coupon is loaded from `sessionStorage` — if `fullPriceSubtotal === 0`, the `couponDiscount` already resolves to 0, so the display is correct
+- If there's any coupon UI rendered in Checkout (coupon badge/display in order summary), wrap it with the same `fullPriceSubtotal > 0` guard
 
-One file, two lines swapped, no other changes.
+Two files, minimal conditional wraps. No new components.
 
