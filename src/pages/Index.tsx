@@ -14,8 +14,8 @@ const Index = () => {
   return (
     <MainLayout>
       <HeroBannerCarousel />
-      <PromotionsBanner />
       <CategoryQuickNav />
+      <PromotionsBanner />
       <FlashDealsRow />
       <BestSellers />
       <TopBrandsShowcase />
