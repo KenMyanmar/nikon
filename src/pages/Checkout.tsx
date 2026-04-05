@@ -186,17 +186,28 @@ const Checkout = () => {
     } catch { return null; }
   });
 
+  const fullPriceSubtotal = useMemo(() => {
+    let fullPrice = 0;
+    cartItems.forEach((i) => {
+      const { price, isFlashDeal, isPromotion } = getEffectivePrice(i.product_id, Number(i.product?.selling_price) || 0, i.product?.category_id, i.product?.brand_id, i.quantity);
+      if (!isFlashDeal && !isPromotion) {
+        fullPrice += price * i.quantity;
+      }
+    });
+    return fullPrice;
+  }, [cartItems, getEffectivePrice]);
+
   const couponDiscount = useMemo(() => {
-    if (!appliedCoupon) return 0;
+    if (!appliedCoupon || fullPriceSubtotal === 0) return 0;
     let discount = 0;
     if (appliedCoupon.type === "percentage") {
-      discount = subtotal * (appliedCoupon.discount_value / 100);
+      discount = fullPriceSubtotal * (appliedCoupon.discount_value / 100);
       if (appliedCoupon.max_discount_amount) discount = Math.min(discount, appliedCoupon.max_discount_amount);
     } else {
       discount = appliedCoupon.discount_value;
     }
-    return Math.min(discount, subtotal);
-  }, [appliedCoupon, subtotal]);
+    return Math.min(discount, fullPriceSubtotal);
+  }, [appliedCoupon, fullPriceSubtotal]);
 
   const total = subtotal + deliveryFee - couponDiscount;
 
