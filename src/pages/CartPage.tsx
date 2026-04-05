@@ -378,13 +378,15 @@ const CartPage = () => {
           <div className="lg:w-80 shrink-0">
             <div className="bg-card rounded-card shadow-card p-6 sticky top-28">
               <h2 className="text-h4 text-foreground mb-4">Order Summary</h2>
-              <CouponInput
-                subtotal={subtotal}
-                cartItems={cartItems}
-                appliedCoupon={appliedCoupon}
-                onApply={handleApplyCoupon}
-                onRemove={handleRemoveCoupon}
-              />
+              {fullPriceSubtotal > 0 && (
+                <CouponInput
+                  subtotal={subtotal}
+                  cartItems={cartItems}
+                  appliedCoupon={appliedCoupon}
+                  onApply={handleApplyCoupon}
+                  onRemove={handleRemoveCoupon}
+                />
+              )}
               <div className="space-y-3 text-sm mt-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
