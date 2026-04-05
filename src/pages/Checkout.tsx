@@ -10,6 +10,7 @@ import {
   Truck, CreditCard, CheckCircle, Plus, Banknote, Smartphone, Wallet,
   Upload, X, Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap, Tag
 } from "lucide-react";
+import RecommendedProducts from "@/components/RecommendedProducts";
 
 interface AppliedCoupon {
   code: string;
@@ -360,23 +361,26 @@ const Checkout = () => {
         </div>
 
         {step === 1 && (
-          <StepDelivery
-            addresses={addresses}
-            selectedAddressId={selectedAddressId}
-            setSelectedAddressId={setSelectedAddressId}
-            showNewAddress={showNewAddress}
-            setShowNewAddress={setShowNewAddress}
-            addrForm={addrForm}
-            setAddrForm={setAddrForm}
-            deliveryFee={deliveryFee}
-            freeThreshold={freeThreshold}
-            subtotal={subtotal}
-            estimatedDays={estimatedDays}
-            codEligible={codEligible}
-            maxCod={maxCod}
-            total={total}
-            onContinue={handleContinueToPayment}
-          />
+          <>
+            <StepDelivery
+              addresses={addresses}
+              selectedAddressId={selectedAddressId}
+              setSelectedAddressId={setSelectedAddressId}
+              showNewAddress={showNewAddress}
+              setShowNewAddress={setShowNewAddress}
+              addrForm={addrForm}
+              setAddrForm={setAddrForm}
+              deliveryFee={deliveryFee}
+              freeThreshold={freeThreshold}
+              subtotal={subtotal}
+              estimatedDays={estimatedDays}
+              codEligible={codEligible}
+              maxCod={maxCod}
+              total={total}
+              onContinue={handleContinueToPayment}
+            />
+            <RecommendedProducts cartItems={cartItems} />
+          </>
         )}
 
         {step === 2 && (
