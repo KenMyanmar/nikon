@@ -744,6 +744,7 @@ const StepPayment = ({
   onBack, codEligible, maxCod, getEffectivePrice, couponDiscount, couponCode,
   dingerEmail, setDingerEmail, billingSameAsDelivery, setBillingSameAsDelivery,
   billingAddress, setBillingAddress, billingCity, setBillingCity,
+  hasUnpricedItems, allUnpriced, unpricedCount,
 }: PaymentProps) => {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const codDisabled = !codEligible || (maxCod !== null && total > maxCod);
