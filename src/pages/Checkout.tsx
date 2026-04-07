@@ -733,6 +733,9 @@ interface PaymentProps {
   setBillingAddress: (v: string) => void;
   billingCity: string;
   setBillingCity: (v: string) => void;
+  hasUnpricedItems: boolean;
+  allUnpriced: boolean;
+  unpricedCount: number;
 }
 
 const StepPayment = ({
