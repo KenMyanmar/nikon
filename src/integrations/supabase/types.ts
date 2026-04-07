@@ -1147,6 +1147,66 @@ export type Database = {
           },
         ]
       }
+      dingar_config: {
+        Row: {
+          api_key: string
+          base_url: string
+          callback_key: string | null
+          callback_url: string | null
+          client_id: string | null
+          created_at: string | null
+          environment: string
+          fail_return_url: string | null
+          id: string
+          is_active: boolean | null
+          merchant_name: string
+          prebuilt_base_url: string
+          project_name: string
+          public_key: string
+          return_url: string | null
+          secret_key: string
+          updated_at: string | null
+        }
+        Insert: {
+          api_key: string
+          base_url?: string
+          callback_key?: string | null
+          callback_url?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          environment?: string
+          fail_return_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          merchant_name: string
+          prebuilt_base_url?: string
+          project_name: string
+          public_key: string
+          return_url?: string | null
+          secret_key: string
+          updated_at?: string | null
+        }
+        Update: {
+          api_key?: string
+          base_url?: string
+          callback_key?: string | null
+          callback_url?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          environment?: string
+          fail_return_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          merchant_name?: string
+          prebuilt_base_url?: string
+          project_name?: string
+          public_key?: string
+          return_url?: string | null
+          secret_key?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       discount_requests: {
         Row: {
           approved_at: string | null
@@ -1607,6 +1667,7 @@ export type Database = {
           delivery_address_id: string | null
           delivery_method: string | null
           delivery_zone: string | null
+          dingar_transaction_id: string | null
           discount: number
           estimated_delivery: string | null
           id: string
@@ -1614,8 +1675,10 @@ export type Database = {
           internal_notes: string | null
           order_number: string
           packed_at: string | null
+          payment_channel: string | null
           payment_method: string | null
           payment_proof_url: string | null
+          payment_provider: string | null
           payment_reference: string | null
           payment_rejection_reason: string | null
           payment_status: string
@@ -1654,6 +1717,7 @@ export type Database = {
           delivery_address_id?: string | null
           delivery_method?: string | null
           delivery_zone?: string | null
+          dingar_transaction_id?: string | null
           discount?: number
           estimated_delivery?: string | null
           id?: string
@@ -1661,8 +1725,10 @@ export type Database = {
           internal_notes?: string | null
           order_number?: string
           packed_at?: string | null
+          payment_channel?: string | null
           payment_method?: string | null
           payment_proof_url?: string | null
+          payment_provider?: string | null
           payment_reference?: string | null
           payment_rejection_reason?: string | null
           payment_status?: string
@@ -1701,6 +1767,7 @@ export type Database = {
           delivery_address_id?: string | null
           delivery_method?: string | null
           delivery_zone?: string | null
+          dingar_transaction_id?: string | null
           discount?: number
           estimated_delivery?: string | null
           id?: string
@@ -1708,8 +1775,10 @@ export type Database = {
           internal_notes?: string | null
           order_number?: string
           packed_at?: string | null
+          payment_channel?: string | null
           payment_method?: string | null
           payment_proof_url?: string | null
+          payment_provider?: string | null
           payment_reference?: string | null
           payment_rejection_reason?: string | null
           payment_status?: string
@@ -1775,10 +1844,142 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "orders_dingar_transaction_id_fkey"
+            columns: ["dingar_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_transactions"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "orders_payment_verified_by_fkey"
             columns: ["payment_verified_by"]
             isOneToOne: false
             referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_providers: {
+        Row: {
+          channel: string
+          code: string
+          created_at: string | null
+          dingar_method_name: string
+          dingar_provider_name: string
+          display_name: string
+          icon_name: string | null
+          id: string
+          is_active: boolean | null
+          max_amount: number | null
+          min_amount: number | null
+          requires_billing_address: boolean | null
+          requires_email: boolean | null
+          requires_phone: boolean | null
+          sort_order: number | null
+        }
+        Insert: {
+          channel: string
+          code: string
+          created_at?: string | null
+          dingar_method_name: string
+          dingar_provider_name: string
+          display_name: string
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_amount?: number | null
+          min_amount?: number | null
+          requires_billing_address?: boolean | null
+          requires_email?: boolean | null
+          requires_phone?: boolean | null
+          sort_order?: number | null
+        }
+        Update: {
+          channel?: string
+          code?: string
+          created_at?: string | null
+          dingar_method_name?: string
+          dingar_provider_name?: string
+          display_name?: string
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_amount?: number | null
+          min_amount?: number | null
+          requires_billing_address?: boolean | null
+          requires_email?: boolean | null
+          requires_phone?: boolean | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      payment_transactions: {
+        Row: {
+          amount: number
+          callback_payload: Json | null
+          completed_at: string | null
+          created_at: string | null
+          currency: string | null
+          dingar_merch_order_id: string | null
+          dingar_transaction_no: string | null
+          error_code: string | null
+          error_message: string | null
+          form_token: string | null
+          id: string
+          initiated_at: string | null
+          method_name: string
+          order_id: string
+          provider_name: string
+          redirect_url: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          callback_payload?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          currency?: string | null
+          dingar_merch_order_id?: string | null
+          dingar_transaction_no?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          form_token?: string | null
+          id?: string
+          initiated_at?: string | null
+          method_name: string
+          order_id: string
+          provider_name: string
+          redirect_url?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          callback_payload?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          currency?: string | null
+          dingar_merch_order_id?: string | null
+          dingar_transaction_no?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          form_token?: string | null
+          id?: string
+          initiated_at?: string | null
+          method_name?: string
+          order_id?: string
+          provider_name?: string
+          redirect_url?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
         ]
@@ -2823,6 +3024,14 @@ export type Database = {
         | { Args: never; Returns: string }
         | { Args: { _user_id: string }; Returns: string }
       get_staff_role_level: { Args: never; Returns: number }
+      handle_dingar_callback: {
+        Args: {
+          p_callback_payload?: Json
+          p_dingar_transaction_no: string
+          p_status: string
+        }
+        Returns: Json
+      }
       increment_article_views: {
         Args: { article_id: string }
         Returns: undefined
