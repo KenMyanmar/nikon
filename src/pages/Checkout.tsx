@@ -853,7 +853,7 @@ const StepPayment = ({
 
                   <button
                     onClick={onDingerCheckout}
-                    disabled={placing || !dingerEmail}
+                    disabled={placing || !dingerEmail || allUnpriced}
                     className="w-full bg-amber-500 hover:bg-amber-600 text-white py-3.5 rounded-lg font-bold text-base transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {placing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Lock className="w-4 h-4" />}
