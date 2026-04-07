@@ -529,6 +529,9 @@ const Checkout = () => {
             setBillingAddress={setBillingAddress}
             billingCity={billingCity}
             setBillingCity={setBillingCity}
+            hasUnpricedItems={hasUnpricedItems}
+            allUnpriced={allUnpriced}
+            unpricedCount={unpricedItems.length}
           />
         )}
 
