@@ -766,6 +766,26 @@ const StepPayment = ({
         <button onClick={onBack} className="text-sm text-primary hover:underline">← Back to Delivery</button>
         <h2 className="text-xl font-bold text-foreground">Payment Method</h2>
 
+        {/* Unpriced items warning banners */}
+        {allUnpriced && (
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-destructive/10 border border-destructive/30">
+            <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-destructive">All items in your cart require a quote</p>
+              <p className="text-xs text-destructive/80 mt-1">Please contact us for pricing before placing an order.</p>
+            </div>
+          </div>
+        )}
+        {hasUnpricedItems && !allUnpriced && (
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800">
+            <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">{unpricedCount} item{unpricedCount > 1 ? "s" : ""} won't be included in this order</p>
+              <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">Items without prices require a quote and will be excluded. Contact us for pricing on those items.</p>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-3">
           {methods.map((m) => (
             <div key={m.id}>
