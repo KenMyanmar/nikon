@@ -879,7 +879,7 @@ const StepPayment = ({
         {paymentMethod === "cod" && (
           <button
             onClick={onPlaceOrder}
-            disabled={placing}
+            disabled={placing || allUnpriced}
             className="w-full bg-accent text-accent-foreground py-3.5 rounded-lg font-bold text-base hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {placing ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
