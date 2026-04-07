@@ -137,10 +137,22 @@ const Checkout = () => {
     return { price: sellingPrice, originalPrice: 0, isFlashDeal: false, isPromotion: false, promoTitle: null as string | null };
   }, [getFlashDeal, getPromotion]);
 
-  const subtotal = useMemo(() => cartItems.reduce((s, i) => {
+  // ── Unpriced vs priced item detection
+  const unpricedItems = useMemo(() => cartItems.filter(
+    (i) => !i.product?.selling_price || Number(i.product.selling_price) === 0
+  ), [cartItems]);
+
+  const pricedItems = useMemo(() => cartItems.filter(
+    (i) => i.product?.selling_price && Number(i.product.selling_price) > 0
+  ), [cartItems]);
+
+  const hasUnpricedItems = unpricedItems.length > 0;
+  const allUnpriced = pricedItems.length === 0 && cartItems.length > 0;
+
+  const subtotal = useMemo(() => pricedItems.reduce((s, i) => {
     const { price } = getEffectivePrice(i.product_id, Number(i.product?.selling_price) || 0, i.product?.category_id, i.product?.brand_id, i.quantity);
     return s + price * i.quantity;
-  }, 0), [cartItems, getEffectivePrice]);
+  }, 0), [pricedItems, getEffectivePrice]);
 
   // ── Delivery state
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
