@@ -137,10 +137,22 @@ const Checkout = () => {
     return { price: sellingPrice, originalPrice: 0, isFlashDeal: false, isPromotion: false, promoTitle: null as string | null };
   }, [getFlashDeal, getPromotion]);
 
-  const subtotal = useMemo(() => cartItems.reduce((s, i) => {
+  // ── Unpriced vs priced item detection
+  const unpricedItems = useMemo(() => cartItems.filter(
+    (i) => !i.product?.selling_price || Number(i.product.selling_price) === 0
+  ), [cartItems]);
+
+  const pricedItems = useMemo(() => cartItems.filter(
+    (i) => i.product?.selling_price && Number(i.product.selling_price) > 0
+  ), [cartItems]);
+
+  const hasUnpricedItems = unpricedItems.length > 0;
+  const allUnpriced = pricedItems.length === 0 && cartItems.length > 0;
+
+  const subtotal = useMemo(() => pricedItems.reduce((s, i) => {
     const { price } = getEffectivePrice(i.product_id, Number(i.product?.selling_price) || 0, i.product?.category_id, i.product?.brand_id, i.quantity);
     return s + price * i.quantity;
-  }, 0), [cartItems, getEffectivePrice]);
+  }, 0), [pricedItems, getEffectivePrice]);
 
   // ── Delivery state
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
@@ -517,6 +529,9 @@ const Checkout = () => {
             setBillingAddress={setBillingAddress}
             billingCity={billingCity}
             setBillingCity={setBillingCity}
+            hasUnpricedItems={hasUnpricedItems}
+            allUnpriced={allUnpriced}
+            unpricedCount={unpricedItems.length}
           />
         )}
 
@@ -718,6 +733,9 @@ interface PaymentProps {
   setBillingAddress: (v: string) => void;
   billingCity: string;
   setBillingCity: (v: string) => void;
+  hasUnpricedItems: boolean;
+  allUnpriced: boolean;
+  unpricedCount: number;
 }
 
 const StepPayment = ({
@@ -726,6 +744,7 @@ const StepPayment = ({
   onBack, codEligible, maxCod, getEffectivePrice, couponDiscount, couponCode,
   dingerEmail, setDingerEmail, billingSameAsDelivery, setBillingSameAsDelivery,
   billingAddress, setBillingAddress, billingCity, setBillingCity,
+  hasUnpricedItems, allUnpriced, unpricedCount,
 }: PaymentProps) => {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const codDisabled = !codEligible || (maxCod !== null && total > maxCod);
@@ -746,6 +765,26 @@ const StepPayment = ({
       <div className="flex-1 space-y-6">
         <button onClick={onBack} className="text-sm text-primary hover:underline">← Back to Delivery</button>
         <h2 className="text-xl font-bold text-foreground">Payment Method</h2>
+
+        {/* Unpriced items warning banners */}
+        {allUnpriced && (
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-destructive/10 border border-destructive/30">
+            <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-destructive">All items in your cart require a quote</p>
+              <p className="text-xs text-destructive/80 mt-1">Please contact us for pricing before placing an order.</p>
+            </div>
+          </div>
+        )}
+        {hasUnpricedItems && !allUnpriced && (
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800">
+            <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">{unpricedCount} item{unpricedCount > 1 ? "s" : ""} won't be included in this order</p>
+              <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">Items without prices require a quote and will be excluded. Contact us for pricing on those items.</p>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-3">
           {methods.map((m) => (
@@ -814,7 +853,7 @@ const StepPayment = ({
 
                   <button
                     onClick={onDingerCheckout}
-                    disabled={placing || !dingerEmail}
+                    disabled={placing || !dingerEmail || allUnpriced}
                     className="w-full bg-amber-500 hover:bg-amber-600 text-white py-3.5 rounded-lg font-bold text-base transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {placing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Lock className="w-4 h-4" />}
@@ -840,7 +879,7 @@ const StepPayment = ({
         {paymentMethod === "cod" && (
           <button
             onClick={onPlaceOrder}
-            disabled={placing}
+            disabled={placing || allUnpriced}
             className="w-full bg-accent text-accent-foreground py-3.5 rounded-lg font-bold text-base hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {placing ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
