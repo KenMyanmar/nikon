@@ -7,8 +7,8 @@ import { useMarketingData } from "@/hooks/useMarketingData";
 import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
 import {
-  Truck, CreditCard, CheckCircle, Plus, Banknote, Smartphone, Wallet,
-  Upload, X, Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap, Tag
+  Truck, CreditCard, CheckCircle, Plus, Banknote,
+  Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap, Tag, Lock
 } from "lucide-react";
 import RecommendedProducts from "@/components/RecommendedProducts";
 
@@ -179,6 +179,7 @@ const Checkout = () => {
   const codEligible = feeRow?.cod_eligible !== false;
   const maxCod = feeRow?.max_cod_amount ? Number(feeRow.max_cod_amount) : null;
   const estimatedDays = feeRow?.estimated_days || "2-4 days";
+
   // ── Coupon from cart (persisted in sessionStorage)
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(() => {
     try {
@@ -221,14 +222,65 @@ const Checkout = () => {
   }, [fullPriceSubtotal, appliedCoupon]);
 
   // ── Payment state
-  const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
-  const [paymentProofUrl, setPaymentProofUrl] = useState<string | null>(null);
-  const [paymentRef, setPaymentRef] = useState("");
-  const [uploading, setUploading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string>("dinger_prebuilt");
   const [placing, setPlacing] = useState(false);
+
+  // ── Dinger state
+  const [dingerEmail, setDingerEmail] = useState("");
+  const [billingSameAsDelivery, setBillingSameAsDelivery] = useState(true);
+  const [billingAddress, setBillingAddress] = useState("");
+  const [billingCity, setBillingCity] = useState("Yangon");
+
+  // Pre-fill email from customer
+  useEffect(() => {
+    if (customer?.email && !dingerEmail) {
+      setDingerEmail(customer.email);
+    }
+  }, [customer, dingerEmail]);
 
   // ── Order result
   const [orderResult, setOrderResult] = useState<any>(null);
+
+  // ── Handle return from Dinger payment
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paymentStatus = params.get("payment");
+    const reason = params.get("reason");
+    const returnOrderId = params.get("orderId");
+
+    if (paymentStatus === "failed") {
+      toast({ title: "Payment Failed", description: `Payment ${reason || "was not completed"}. Please try again.`, variant: "destructive" });
+      // Clean URL params
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+
+    if (paymentStatus === "success" && returnOrderId) {
+      // Fetch order and show confirmation
+      supabase
+        .from("orders")
+        .select("id, order_number, total, shipping_cost, payment_method, payment_status")
+        .eq("id", returnOrderId)
+        .single()
+        .then(({ data, error }) => {
+          if (data && !error) {
+            setOrderResult({
+              order_id: data.id,
+              order_number: data.order_number,
+              total: data.total,
+              delivery_fee: data.shipping_cost,
+            });
+            setPaymentMethod(data.payment_method || "dinger_prebuilt");
+            setStep(3);
+            sessionStorage.removeItem("appliedCoupon");
+            queryClient.invalidateQueries({ queryKey: ["cart-count"] });
+            queryClient.invalidateQueries({ queryKey: ["cart"] });
+            queryClient.invalidateQueries({ queryKey: ["cart-checkout"] });
+          }
+        });
+      // Clean URL params
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [queryClient]);
 
   // ── Redirect if not logged in or cart empty
   useEffect(() => {
@@ -279,20 +331,69 @@ const Checkout = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleUploadProof = async (file: File) => {
-    if (!customerId) return;
-    setUploading(true);
+  const handleDingerCheckout = async () => {
+    if (placingRef.current) return;
+    if (!dingerEmail) {
+      toast({ title: "Email required", description: "Please enter your email address for payment", variant: "destructive" });
+      return;
+    }
+    placingRef.current = true;
+    setPlacing(true);
+
     try {
-      const ext = file.name.split(".").pop();
-      const path = `${customerId}/${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from("payment-proofs").upload(path, file);
+      const addressId = selectedAddressId!;
+      const addr = addresses.find((a) => a.id === addressId);
+      const idempotencyKey = `${customerId}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+      // Step 1: Place the order
+      const { data: orderData, error: orderError } = await (supabase.rpc as any)("place_order", {
+        p_customer_id: customerId,
+        p_idempotency_key: idempotencyKey,
+        p_payment_method: "dinger_prebuilt",
+        p_delivery_address_id: addressId,
+        p_delivery_zone: zone,
+        p_contact_name: addr?.contact_phone ? (addrForm.contact_name || customer?.name || "") : (addrForm.contact_name || customer?.name || ""),
+        p_contact_phone: addr?.contact_phone || addrForm.contact_phone || customer?.phone || "",
+        p_customer_notes: (showNewAddress ? addrForm.delivery_notes : addr?.delivery_notes) || null,
+        p_payment_proof_url: null,
+        p_payment_reference: null,
+        p_coupon_code: appliedCoupon?.code || null,
+      });
+
+      if (orderError) throw orderError;
+      if (!orderData?.success) throw new Error(orderData?.error || "Failed to place order");
+
+      // Step 2: Call Dinger checkout Edge Function
+      const resolvedBillingAddress = billingSameAsDelivery
+        ? (addr?.address_line || addrForm.address_line)
+        : billingAddress;
+      const resolvedBillingCity = billingSameAsDelivery
+        ? (addr?.city || addrForm.city || "Yangon")
+        : billingCity;
+
+      const { data, error } = await supabase.functions.invoke("dingar-checkout", {
+        body: {
+          orderId: orderData.order_id,
+          customerEmail: dingerEmail,
+          billingAddress: resolvedBillingAddress,
+          billingCity: resolvedBillingCity,
+        },
+      });
+
       if (error) throw error;
-      const { data: { publicUrl } } = supabase.storage.from("payment-proofs").getPublicUrl(path);
-      setPaymentProofUrl(publicUrl);
+
+      if (data?.success && data?.redirectUrl) {
+        // Step 3: Redirect to Dinger's hosted checkout
+        window.location.href = data.redirectUrl;
+      } else {
+        throw new Error(data?.error || "Failed to initiate payment");
+      }
     } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      toast({ title: "Payment Error", description: err.message || "Payment initiation failed. Please try again.", variant: "destructive" });
+      console.error("Dinger checkout error:", err);
     } finally {
-      setUploading(false);
+      setPlacing(false);
+      placingRef.current = false;
     }
   };
 
@@ -315,8 +416,8 @@ const Checkout = () => {
         p_contact_name: addr?.contact_phone ? (addrForm.contact_name || customer?.name || "") : (addrForm.contact_name || customer?.name || ""),
         p_contact_phone: addr?.contact_phone || addrForm.contact_phone || customer?.phone || "",
         p_customer_notes: (showNewAddress ? addrForm.delivery_notes : addr?.delivery_notes) || null,
-        p_payment_proof_url: paymentProofUrl || null,
-        p_payment_reference: paymentRef || null,
+        p_payment_proof_url: null,
+        p_payment_reference: null,
         p_coupon_code: appliedCoupon?.code || null,
       });
 
@@ -399,20 +500,23 @@ const Checkout = () => {
             total={total}
             paymentMethod={paymentMethod}
             setPaymentMethod={setPaymentMethod}
-            paymentProofUrl={paymentProofUrl}
-            setPaymentProofUrl={setPaymentProofUrl}
-            paymentRef={paymentRef}
-            setPaymentRef={setPaymentRef}
-            uploading={uploading}
-            onUpload={handleUploadProof}
             placing={placing}
             onPlaceOrder={handlePlaceOrder}
+            onDingerCheckout={handleDingerCheckout}
             onBack={() => setStep(1)}
             codEligible={codEligible}
             maxCod={maxCod}
             getEffectivePrice={getEffectivePrice}
             couponDiscount={couponDiscount}
             couponCode={appliedCoupon?.code || null}
+            dingerEmail={dingerEmail}
+            setDingerEmail={setDingerEmail}
+            billingSameAsDelivery={billingSameAsDelivery}
+            setBillingSameAsDelivery={setBillingSameAsDelivery}
+            billingAddress={billingAddress}
+            setBillingAddress={setBillingAddress}
+            billingCity={billingCity}
+            setBillingCity={setBillingCity}
           />
         )}
 
@@ -420,7 +524,6 @@ const Checkout = () => {
           <StepConfirmation
             orderResult={orderResult}
             paymentMethod={paymentMethod}
-            paymentProofUrl={paymentProofUrl}
           />
         )}
       </div>
@@ -596,41 +699,46 @@ interface PaymentProps {
   subtotal: number;
   deliveryFee: number;
   total: number;
-  paymentMethod: string | null;
+  paymentMethod: string;
   setPaymentMethod: (m: string) => void;
-  paymentProofUrl: string | null;
-  setPaymentProofUrl: (u: string | null) => void;
-  paymentRef: string;
-  setPaymentRef: (v: string) => void;
-  uploading: boolean;
-  onUpload: (f: File) => void;
   placing: boolean;
   onPlaceOrder: () => void;
+  onDingerCheckout: () => void;
   onBack: () => void;
   couponDiscount: number;
   couponCode: string | null;
   codEligible: boolean;
   maxCod: number | null;
   getEffectivePrice: (productId: string, sellingPrice: number, categoryId?: string | null, brandId?: string | null, quantity?: number) => { price: number; originalPrice: number; isFlashDeal: boolean; isPromotion: boolean; promoTitle: string | null };
+  dingerEmail: string;
+  setDingerEmail: (v: string) => void;
+  billingSameAsDelivery: boolean;
+  setBillingSameAsDelivery: (v: boolean) => void;
+  billingAddress: string;
+  setBillingAddress: (v: string) => void;
+  billingCity: string;
+  setBillingCity: (v: string) => void;
 }
 
 const StepPayment = ({
   cartItems, subtotal, deliveryFee, total,
-  paymentMethod, setPaymentMethod, paymentProofUrl, setPaymentProofUrl,
-  paymentRef, setPaymentRef, uploading, onUpload, placing, onPlaceOrder,
+  paymentMethod, setPaymentMethod, placing, onPlaceOrder, onDingerCheckout,
   onBack, codEligible, maxCod, getEffectivePrice, couponDiscount, couponCode,
+  dingerEmail, setDingerEmail, billingSameAsDelivery, setBillingSameAsDelivery,
+  billingAddress, setBillingAddress, billingCity, setBillingCity,
 }: PaymentProps) => {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const codDisabled = !codEligible || (maxCod !== null && total > maxCod);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const methods = [
+    {
+      id: "dinger_prebuilt", label: "Pay with Dinger", icon: CreditCard, disabled: false,
+      desc: "KBZ Pay, AYA Pay, Wave, Visa, Mastercard & more",
+    },
     {
       id: "cod", label: "Cash on Delivery", icon: Banknote, disabled: codDisabled,
       desc: codDisabled ? "Not available for this order" : "Pay cash when your order arrives",
     },
-    { id: "kbz_pay", label: "KBZ Pay", icon: Smartphone, disabled: false, desc: "Pay via KBZ Pay mobile app" },
-    { id: "myanpay", label: "MyanPay", icon: Wallet, disabled: false, desc: "Pay via MyanPay mobile app" },
   ];
 
   return (
@@ -657,49 +765,65 @@ const StepPayment = ({
                 </div>
               </label>
 
-              {/* Expanded UI for mobile payments */}
-              {paymentMethod === m.id && (m.id === "kbz_pay" || m.id === "myanpay") && (
+              {/* Dinger expanded UI */}
+              {paymentMethod === "dinger_prebuilt" && m.id === "dinger_prebuilt" && (
                 <div className="mt-2 ml-4 p-4 bg-card rounded-lg border border-border space-y-4">
-                  <div className="text-sm space-y-1">
-                    <p className="font-medium text-foreground">Transfer to:</p>
-                    <p className="text-muted-foreground">Account: <span className="font-mono font-semibold text-foreground">09-XXX-XXX-XXXX</span></p>
-                    <p className="text-muted-foreground">Name: <span className="font-semibold text-foreground">IKON Mart Co., Ltd</span></p>
-                  </div>
-
-                  {/* Upload */}
                   <div>
-                    <p className="text-sm font-medium text-foreground mb-2">Upload Payment Screenshot</p>
-                    {paymentProofUrl ? (
-                      <div className="flex items-center gap-3">
-                        <img src={paymentProofUrl} alt="Proof" className="w-16 h-16 object-cover rounded border border-border" />
-                        <button onClick={() => setPaymentProofUrl(null)} className="text-sm text-destructive hover:underline flex items-center gap-1">
-                          <X className="w-3 h-3" /> Remove
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => fileRef.current?.click()}
-                        disabled={uploading}
-                        className="flex items-center gap-2 px-4 py-2 text-sm border border-dashed border-input rounded-lg hover:bg-muted/50 transition"
-                      >
-                        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                        {uploading ? "Uploading..." : "Choose file"}
-                      </button>
-                    )}
-                    <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
-                      onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])} />
-                    <p className="text-[10px] text-muted-foreground mt-1">
-                      Upload is optional — you can upload from My Orders later. Orders with proof are processed faster.
-                    </p>
-                  </div>
-
-                  {/* Payment reference */}
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">Payment Reference (optional)</label>
-                    <input value={paymentRef} onChange={(e) => setPaymentRef(e.target.value)}
+                    <label className="block text-sm font-medium text-foreground mb-1">Email Address *</label>
+                    <input
+                      type="email"
+                      value={dingerEmail}
+                      onChange={(e) => setDingerEmail(e.target.value)}
                       className="w-full px-3 py-2 text-sm border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-                      placeholder="Transaction ID from app" />
+                      placeholder="your@email.com"
+                    />
                   </div>
+
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={billingSameAsDelivery}
+                      onChange={(e) => setBillingSameAsDelivery(e.target.checked)}
+                      className="accent-[hsl(var(--accent))]"
+                    />
+                    Billing address same as delivery address
+                  </label>
+
+                  {!billingSameAsDelivery && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">Billing Address *</label>
+                        <input
+                          value={billingAddress}
+                          onChange={(e) => setBillingAddress(e.target.value)}
+                          className="w-full px-3 py-2 text-sm border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                          placeholder="Street, building number"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">City *</label>
+                        <input
+                          value={billingCity}
+                          onChange={(e) => setBillingCity(e.target.value)}
+                          className="w-full px-3 py-2 text-sm border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                          placeholder="Yangon"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={onDingerCheckout}
+                    disabled={placing || !dingerEmail}
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-white py-3.5 rounded-lg font-bold text-base transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {placing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Lock className="w-4 h-4" />}
+                    {placing ? "Processing..." : `Proceed to Secure Payment — ${fmt(total)}`}
+                  </button>
+
+                  <p className="text-xs text-muted-foreground text-center">
+                    You'll be redirected to choose your payment method (KBZ Pay, AYA Pay, Wave, Visa, Mastercard, etc.)
+                  </p>
                 </div>
               )}
 
@@ -712,14 +836,17 @@ const StepPayment = ({
           ))}
         </div>
 
-        <button
-          onClick={onPlaceOrder}
-          disabled={!paymentMethod || placing}
-          className="w-full bg-accent text-accent-foreground py-3.5 rounded-lg font-bold text-base hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        >
-          {placing ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-          {placing ? "Placing Order..." : `Place Order · ${fmt(total)}`}
-        </button>
+        {/* Place Order button for COD only */}
+        {paymentMethod === "cod" && (
+          <button
+            onClick={onPlaceOrder}
+            disabled={placing}
+            className="w-full bg-accent text-accent-foreground py-3.5 rounded-lg font-bold text-base hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {placing ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+            {placing ? "Placing Order..." : `Place Order · ${fmt(total)}`}
+          </button>
+        )}
       </div>
 
       {/* Order Summary */}
@@ -777,13 +904,13 @@ const StepPayment = ({
 };
 
 /* ─── Step 3: Confirmation ─── */
-const StepConfirmation = ({ orderResult, paymentMethod, paymentProofUrl }: { orderResult: any; paymentMethod: string | null; paymentProofUrl: string | null }) => {
+const StepConfirmation = ({ orderResult, paymentMethod }: { orderResult: any; paymentMethod: string | null }) => {
   const navigate = useNavigate();
 
   const getStatusInfo = () => {
     if (paymentMethod === "cod") return { label: "Confirmed", color: "bg-emerald-100 text-emerald-700", msg: "Our team will prepare your order for delivery." };
-    if (paymentProofUrl) return { label: "Payment Under Review", color: "bg-amber-100 text-amber-700", msg: "We'll verify your payment within 30 minutes during business hours." };
-    return { label: "Awaiting Payment", color: "bg-red-100 text-red-700", msg: "Please upload your payment screenshot for faster processing." };
+    if (paymentMethod === "dinger_prebuilt") return { label: "Payment Confirmed", color: "bg-emerald-100 text-emerald-700", msg: "Your payment has been verified. We'll prepare your order for delivery." };
+    return { label: "Processing", color: "bg-amber-100 text-amber-700", msg: "Your order is being processed." };
   };
 
   const status = getStatusInfo();
@@ -809,18 +936,13 @@ const StepConfirmation = ({ orderResult, paymentMethod, paymentProofUrl }: { ord
         <p className="text-sm text-muted-foreground">{status.msg}</p>
         <hr className="border-border" />
         <div className="grid grid-cols-2 gap-2 text-sm">
-          <div><span className="text-muted-foreground">Payment:</span> <span className="font-medium text-foreground capitalize">{paymentMethod?.replace("_", " ")}</span></div>
+          <div><span className="text-muted-foreground">Payment:</span> <span className="font-medium text-foreground capitalize">{paymentMethod === "dinger_prebuilt" ? "Dinger" : paymentMethod?.replace("_", " ")}</span></div>
           <div><span className="text-muted-foreground">Total:</span> <span className="font-bold text-accent">{fmt(Number(orderResult.total))}</span></div>
           {orderResult.delivery_fee > 0 && <div><span className="text-muted-foreground">Delivery:</span> <span className="text-foreground">{fmt(Number(orderResult.delivery_fee))}</span></div>}
         </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        {!paymentProofUrl && paymentMethod !== "cod" && (
-          <button onClick={() => navigate("/orders")} className="px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition">
-            Upload Payment Proof
-          </button>
-        )}
         <button onClick={() => navigate("/orders")} className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition">
           View My Orders
         </button>
