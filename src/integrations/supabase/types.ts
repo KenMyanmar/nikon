@@ -2612,18 +2612,21 @@ export type Database = {
           created_at: string
           customer_id: string
           id: string
+          is_default: boolean | null
           name: string
         }
         Insert: {
           created_at?: string
           customer_id: string
           id?: string
+          is_default?: boolean | null
           name: string
         }
         Update: {
           created_at?: string
           customer_id?: string
           id?: string
+          is_default?: boolean | null
           name?: string
         }
         Relationships: [
