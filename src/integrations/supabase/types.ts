@@ -2413,6 +2413,10 @@ export type Database = {
           assigned_to: string | null
           attachments: Json
           budget_range: string | null
+          company_name: string | null
+          contact_email: string | null
+          contact_person: string | null
+          contact_phone: string | null
           converted_order_id: string | null
           created_at: string
           customer_id: string | null
@@ -2424,6 +2428,7 @@ export type Database = {
           quote_number: string
           response_items: Json | null
           sales_rep_id: string | null
+          source: string | null
           status: string
           timeline: string | null
           total_quoted: number | null
@@ -2436,6 +2441,10 @@ export type Database = {
           assigned_to?: string | null
           attachments?: Json
           budget_range?: string | null
+          company_name?: string | null
+          contact_email?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
           converted_order_id?: string | null
           created_at?: string
           customer_id?: string | null
@@ -2447,6 +2456,7 @@ export type Database = {
           quote_number?: string
           response_items?: Json | null
           sales_rep_id?: string | null
+          source?: string | null
           status?: string
           timeline?: string | null
           total_quoted?: number | null
@@ -2459,6 +2469,10 @@ export type Database = {
           assigned_to?: string | null
           attachments?: Json
           budget_range?: string | null
+          company_name?: string | null
+          contact_email?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
           converted_order_id?: string | null
           created_at?: string
           customer_id?: string | null
@@ -2470,6 +2484,7 @@ export type Database = {
           quote_number?: string
           response_items?: Json | null
           sales_rep_id?: string | null
+          source?: string | null
           status?: string
           timeline?: string | null
           total_quoted?: number | null
