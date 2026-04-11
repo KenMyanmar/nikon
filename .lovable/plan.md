@@ -1,63 +1,54 @@
 
 
-# Fix: Coupon Code System — Backend Discount Application
+# Client Logos: Database + Homepage Carousel
 
-## Current State (after investigation)
+## Summary
+Create `client_logos` table and `client-logos` storage bucket with proper RLS. Rewrite the static `ClientLogos` component into a database-driven infinite marquee carousel. Insert it into the homepage between TopBrandsShowcase and NewArrivals.
 
-**What already works:**
-- Cart page: CouponInput validates against DB (code, dates, usage limit, min order, applies_to) ✓
-- Cart page: Stores coupon in sessionStorage ✓
-- Checkout page: Reads coupon from sessionStorage, displays discount line ✓
-- Checkout page: Passes `p_coupon_code` to `place_order` RPC ✓
-- `coupons` table: Exists with correct schema (columns: `type`, `discount_value`, `max_uses`, `max_uses_per_user`, `min_order_amount`, etc.) ✓
+## Database Migration (single SQL file)
 
-**What is broken:**
-- `place_order` accepts `p_coupon_code` parameter but **never processes it** — `v_discount` stays at 0
-- No coupon validation, no discount calculation, no `coupon_usage` insert, no `used_count` increment
-- `coupon_usage` table missing `discount_amount` column (needed for audit trail)
-- Frontend CouponInput doesn't check `max_uses_per_user` (per-customer usage limit)
-
-## Plan
-
-### 1. Database Migration — Single SQL migration
-
-**a)** Add `discount_amount` column to `coupon_usage`:
+**1. Ensure `update_updated_at_column()` trigger function exists** (not found in existing migrations):
 ```sql
-ALTER TABLE coupon_usage ADD COLUMN IF NOT EXISTS discount_amount NUMERIC DEFAULT 0;
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
+$$ LANGUAGE plpgsql;
 ```
 
-**b)** Replace `place_order` function to add coupon processing block between subtotal calculation and COD check:
-- Look up coupon by `p_coupon_code` (case-insensitive)
-- Validate: `is_active`, date range, `max_uses` vs `used_count`, `max_uses_per_user` vs existing usage for this customer
-- Calculate discount: percentage (with `max_discount_amount` cap) or fixed_amount
-- Apply only to full-price items (consistent with frontend exclusivity logic)
-- Set `v_discount` so it flows into order total
-- After order INSERT: insert `coupon_usage` record, increment `coupons.used_count`
+**2. Create `client_logos` table** with RLS:
+- Columns: `id`, `name`, `logo_url`, `website_url`, `sort_order`, `is_active`, `created_at`, `updated_at`
+- Public SELECT for active logos; staff ALL via `is_staff()`
+- `update_updated_at_column` trigger
 
-### 2. Frontend — Add per-user usage check to CouponInput
+**3. Create `client-logos` storage bucket** (public):
+- Public SELECT policy
+- Staff INSERT/DELETE policies via `is_staff()`
 
-In `CartPage.tsx` CouponInput's `handleApply`, after the `max_uses` check, add:
-```typescript
-// Per-user usage check
-if (data.max_uses_per_user) {
-  const { count } = await supabase
-    .from("coupon_usage")
-    .select("*", { count: "exact", head: true })
-    .eq("coupon_id", data.id)
-    .eq("user_id", user.id);
-  if ((count || 0) >= data.max_uses_per_user) {
-    setError("You have already used this coupon");
-    return;
-  }
-}
-```
+## Frontend Changes
 
-### 3. Files Summary
+### 1. REWRITE `src/components/home/ClientLogos.tsx`
+- Fetch active logos from `client_logos` ordered by `sort_order` (React Query, 5min staleTime)
+- Return `null` if no active logos
+- CSS `@keyframes` infinite marquee with duplicated children for seamless loop
+- Grayscale 70% opacity default → full color + scale(1.05) on hover (CSS transition)
+- Pause on hover via `animation-play-state: paused`
+- Tooltips via Shadcn Tooltip showing client name
+- External link wrapper if `website_url` provided
+- `prefers-reduced-motion` → disable auto-scroll
+- Responsive: 60px logo height desktop, 50px mobile
+
+### 2. UPDATE `src/pages/Index.tsx`
+- Import ClientLogos (already exists as import target)
+- Place `<ClientLogos />` between `<TopBrandsShowcase />` and `<NewArrivals />`
+
+### 3. UPDATE `src/integrations/supabase/types.ts`
+- Will be auto-regenerated after migration
+
+## Files Summary
 
 | File | Action |
 |------|--------|
-| Migration SQL | Add `discount_amount` to `coupon_usage`, rewrite `place_order` with coupon logic |
-| `src/pages/CartPage.tsx` | Add `max_uses_per_user` check in CouponInput |
-
-No other frontend changes needed — sessionStorage persistence, checkout display, and RPC call are all already working.
+| New SQL migration | Create table, bucket, RLS, trigger |
+| `src/components/home/ClientLogos.tsx` | Full rewrite |
+| `src/pages/Index.tsx` | Add ClientLogos between TopBrandsShowcase and NewArrivals |
 
