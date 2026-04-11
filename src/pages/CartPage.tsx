@@ -456,6 +456,7 @@ interface CouponInputProps {
 }
 
 const CouponInput = ({ subtotal, cartItems, appliedCoupon, onApply, onRemove }: CouponInputProps) => {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState("");
   const [validating, setValidating] = useState(false);
@@ -491,6 +492,19 @@ const CouponInput = ({ subtotal, cartItems, appliedCoupon, onApply, onRemove }: 
       if (data.max_uses && (data.used_count || 0) >= data.max_uses) {
         setError("This coupon has been fully redeemed");
         return;
+      }
+
+      // Per-user usage limit
+      if (data.max_uses_per_user && user) {
+        const { count } = await supabase
+          .from("coupon_usage")
+          .select("*", { count: "exact", head: true })
+          .eq("coupon_id", data.id)
+          .eq("user_id", user.id);
+        if ((count || 0) >= data.max_uses_per_user) {
+          setError("You have already used this coupon");
+          return;
+        }
       }
 
       // Min order amount

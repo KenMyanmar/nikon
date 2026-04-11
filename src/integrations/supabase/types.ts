@@ -536,6 +536,7 @@ export type Database = {
       coupon_usage: {
         Row: {
           coupon_id: string
+          discount_amount: number | null
           id: string
           order_id: string | null
           used_at: string | null
@@ -543,6 +544,7 @@ export type Database = {
         }
         Insert: {
           coupon_id: string
+          discount_amount?: number | null
           id?: string
           order_id?: string | null
           used_at?: string | null
@@ -550,6 +552,7 @@ export type Database = {
         }
         Update: {
           coupon_id?: string
+          discount_amount?: number | null
           id?: string
           order_id?: string | null
           used_at?: string | null
