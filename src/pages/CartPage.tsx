@@ -456,6 +456,7 @@ interface CouponInputProps {
 }
 
 const CouponInput = ({ subtotal, cartItems, appliedCoupon, onApply, onRemove }: CouponInputProps) => {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState("");
   const [validating, setValidating] = useState(false);
