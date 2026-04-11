@@ -12,7 +12,7 @@ const QuotationCTA = () => {
           Whether you're setting up a new kitchen, renovating a hotel, or ordering in bulk — our team will prepare a competitive quotation within 4 hours.
         </p>
         <Link
-          to="/bulk-orders"
+          to="/request-quote"
           className="inline-flex items-center gap-2 bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-8 py-4 rounded-button transition-all text-lg shadow-lg hover:shadow-xl active:scale-[0.98]"
         >
           Get a Quote <ArrowRight className="w-5 h-5" />

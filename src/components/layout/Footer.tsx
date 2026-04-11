@@ -32,7 +32,7 @@ const SERVICE_LINKS = [
   { label: "My Account", href: "/account" },
   { label: "Order Tracking", href: "/orders" },
   { label: "Shipping & Delivery", href: "/delivery-info" },
-  { label: "Bulk Orders / Get a Quote", href: "/bulk-orders" },
+  { label: "Bulk Orders / Get a Quote", href: "/request-quote" },
   { label: "Contact Us", href: "/contact" },
 ];
 
