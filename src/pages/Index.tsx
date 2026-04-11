@@ -5,6 +5,7 @@ import PromotionsBanner from "@/components/home/PromotionsBanner";
 import FlashDealsRow from "@/components/home/FlashDealsRow";
 import BestSellers from "@/components/home/BestSellers";
 import TopBrandsShowcase from "@/components/home/TopBrandsShowcase";
+import ClientLogos from "@/components/home/ClientLogos";
 import NewArrivals from "@/components/home/NewArrivals";
 import TrustBadgeBar from "@/components/home/TrustBadgeBar";
 import QuotationCTA from "@/components/home/QuotationCTA";
@@ -19,6 +20,7 @@ const Index = () => {
       <FlashDealsRow />
       <BestSellers />
       <TopBrandsShowcase />
+      <ClientLogos />
       <NewArrivals />
       <TrustBadgeBar />
       <QuotationCTA />
