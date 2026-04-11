@@ -1155,6 +1155,7 @@ export type Database = {
           callback_url: string | null
           client_id: string | null
           created_at: string | null
+          encryption_key: string | null
           environment: string
           fail_return_url: string | null
           id: string
@@ -1174,6 +1175,7 @@ export type Database = {
           callback_url?: string | null
           client_id?: string | null
           created_at?: string | null
+          encryption_key?: string | null
           environment?: string
           fail_return_url?: string | null
           id?: string
@@ -1193,6 +1195,7 @@ export type Database = {
           callback_url?: string | null
           client_id?: string | null
           created_at?: string | null
+          encryption_key?: string | null
           environment?: string
           fail_return_url?: string | null
           id?: string
