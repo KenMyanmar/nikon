@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAddToCart } from "@/hooks/useCart";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useMarketingData } from "@/hooks/useMarketingData";
+import { useSavedProductIds, useToggleSave } from "@/hooks/useSavedItems";
 
 interface ProductCardProps {
   id?: string;
@@ -38,6 +39,9 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
   const { user, openAuthModal } = useAuthContext();
   const navigate = useNavigate();
   const { getFlashDeal, getPromotion } = useMarketingData();
+  const { savedIds } = useSavedProductIds();
+  const { toggleSave, isPending: isSaving } = useToggleSave();
+  const isSaved = id ? savedIds.has(id) : false;
 
   const flashDeal = id ? getFlashDeal(id) : undefined;
   const promotion = id ? getPromotion(id, categoryId, brandId) : undefined;
@@ -140,8 +144,12 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
           </div>
         )}
 
-        <button className="absolute top-3 right-3 p-2 rounded-full bg-card/80 hover:bg-card text-muted-foreground hover:text-accent transition opacity-0 group-hover:opacity-100" onClick={(e) => e.preventDefault()}>
-          <Heart className="w-4 h-4" />
+        <button
+          className={`absolute top-3 right-3 p-2 rounded-full bg-card/80 hover:bg-card transition ${isSaved ? "opacity-100 text-red-500" : "opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500"}`}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (id) toggleSave(id, isSaved); }}
+          disabled={isSaving}
+        >
+          <Heart className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
         </button>
       </div>
 
