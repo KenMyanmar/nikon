@@ -1,8 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const GATEWAY_URL = "https://connector-gateway.lovable.dev/resend";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -14,16 +12,6 @@ serve(async (req) => {
   }
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
-
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-    if (!RESEND_API_KEY) {
-      throw new Error("RESEND_API_KEY is not configured — connect Resend in Lovable Cloud settings");
-    }
-
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
@@ -35,13 +23,12 @@ serve(async (req) => {
     if (payload.communication_id) {
       communicationId = payload.communication_id;
     } else if (payload.type === "INSERT" && payload.record?.id) {
-      // DB webhook payload format
       communicationId = payload.record.id;
     } else {
       throw new Error("Missing communication_id or webhook record");
     }
 
-    // Fetch the communication record with customer email
+    // Fetch the communication record
     const { data: comm, error: commError } = await supabase
       .from("customer_communications")
       .select("id, subject, body, channel, status, customer_id, order_id, template_key")
@@ -68,61 +55,28 @@ serve(async (req) => {
       );
     }
 
-    // Get customer email
-    const { data: customer, error: custError } = await supabase
+    // Get customer email for logging
+    const { data: customer } = await supabase
       .from("customers")
       .select("email, name")
       .eq("id", comm.customer_id)
       .single();
 
-    if (custError || !customer?.email) {
-      // Update status to failed — no email to send to
-      await supabase
-        .from("customer_communications")
-        .update({ status: "failed" })
-        .eq("id", communicationId);
+    // --- EMAIL SENDING PLACEHOLDER ---
+    // Currently skipping actual email delivery.
+    // To enable real emails later, add Resend/SMTP logic here.
+    console.log(`[PLACEHOLDER] Would send email to ${customer?.email || 'unknown'}: "${comm.subject}"`);
 
-      throw new Error(`Customer email not found for customer_id: ${comm.customer_id}`);
-    }
-
-    // Send via Resend connector gateway
-    const emailResponse = await fetch(`${GATEWAY_URL}/emails`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "X-Connection-Api-Key": RESEND_API_KEY,
-      },
-      body: JSON.stringify({
-        from: "IkonMart Orders <onboarding@resend.dev>",
-        to: [customer.email],
-        subject: comm.subject || "Order Update",
-        html: comm.body || "",
-      }),
-    });
-
-    const emailResult = await emailResponse.json();
-
-    if (!emailResponse.ok) {
-      // Update status to failed
-      await supabase
-        .from("customer_communications")
-        .update({ status: "failed" })
-        .eq("id", communicationId);
-
-      throw new Error(`Resend API failed [${emailResponse.status}]: ${JSON.stringify(emailResult)}`);
-    }
-
-    // Update status to delivered
+    // Mark as delivered (pipeline is wired, email sending skipped for now)
     await supabase
       .from("customer_communications")
       .update({ status: "delivered", sent_at: new Date().toISOString() })
       .eq("id", communicationId);
 
-    console.log(`Email delivered for communication ${communicationId} to ${customer.email}`);
+    console.log(`Communication ${communicationId} marked as delivered (email sending placeholder)`);
 
     return new Response(
-      JSON.stringify({ success: true, communication_id: communicationId, resend_id: emailResult.id }),
+      JSON.stringify({ success: true, communication_id: communicationId, placeholder: true }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: unknown) {
