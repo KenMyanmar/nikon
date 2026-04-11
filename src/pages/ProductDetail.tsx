@@ -8,7 +8,8 @@ import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone, Bell, MessageCircle } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone, Bell, MessageCircle, Heart } from "lucide-react";
+import { useSavedProductIds, useToggleSave } from "@/hooks/useSavedItems";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
 import { Input } from "@/components/ui/input";
@@ -74,6 +75,8 @@ const ProductDetail = () => {
   const { getFlashDeal, getPromotion } = useMarketingData();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { savedIds } = useSavedProductIds();
+  const { toggleSave, isPending: isSaving } = useToggleSave();
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
@@ -449,7 +452,17 @@ const ProductDetail = () => {
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest">{product.brand_name}</span>
               </div>
             )}
-            <h1 className="text-lg md:text-xl font-bold text-foreground leading-tight mb-3">{product.description}</h1>
+            <div className="flex items-start gap-2 mb-3">
+              <h1 className="text-lg md:text-xl font-bold text-foreground leading-tight flex-1">{product.description}</h1>
+              <button
+                onClick={() => product.id && toggleSave(product.id, savedIds.has(product.id))}
+                disabled={isSaving}
+                className={`p-2 rounded-full border transition shrink-0 ${savedIds.has(product.id) ? "border-red-200 bg-red-50 text-red-500" : "border-border bg-card text-muted-foreground hover:text-red-500 hover:border-red-200"}`}
+                title={savedIds.has(product.id) ? "Remove from Saved Items" : "Save to Saved Items"}
+              >
+                <Heart className={`w-5 h-5 ${savedIds.has(product.id) ? "fill-current" : ""}`} />
+              </button>
+            </div>
 
             {/* Star Rating */}
             <div className="flex items-center gap-1.5 mb-4">
