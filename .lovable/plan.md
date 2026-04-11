@@ -1,58 +1,63 @@
 
 
-# Fix: Saved Lists / Wishlist Feature
+# Fix: Coupon Code System — Backend Discount Application
 
-## Summary
-Wire up the heart icon across the app with a centralized save/unsave hook. Add `is_default` column to `saved_lists` for clean default-list logic. Enhance the account saved lists page to show product details.
+## Current State (after investigation)
 
-## Database Migration
+**What already works:**
+- Cart page: CouponInput validates against DB (code, dates, usage limit, min order, applies_to) ✓
+- Cart page: Stores coupon in sessionStorage ✓
+- Checkout page: Reads coupon from sessionStorage, displays discount line ✓
+- Checkout page: Passes `p_coupon_code` to `place_order` RPC ✓
+- `coupons` table: Exists with correct schema (columns: `type`, `discount_value`, `max_uses`, `max_uses_per_user`, `min_order_amount`, etc.) ✓
 
-Add `is_default` column to `saved_lists`:
+**What is broken:**
+- `place_order` accepts `p_coupon_code` parameter but **never processes it** — `v_discount` stays at 0
+- No coupon validation, no discount calculation, no `coupon_usage` insert, no `used_count` increment
+- `coupon_usage` table missing `discount_amount` column (needed for audit trail)
+- Frontend CouponInput doesn't check `max_uses_per_user` (per-customer usage limit)
 
+## Plan
+
+### 1. Database Migration — Single SQL migration
+
+**a)** Add `discount_amount` column to `coupon_usage`:
 ```sql
-ALTER TABLE saved_lists ADD COLUMN is_default BOOLEAN DEFAULT false;
+ALTER TABLE coupon_usage ADD COLUMN IF NOT EXISTS discount_amount NUMERIC DEFAULT 0;
 ```
 
-No RLS changes needed — existing policies already cover all operations.
+**b)** Replace `place_order` function to add coupon processing block between subtotal calculation and COD check:
+- Look up coupon by `p_coupon_code` (case-insensitive)
+- Validate: `is_active`, date range, `max_uses` vs `used_count`, `max_uses_per_user` vs existing usage for this customer
+- Calculate discount: percentage (with `max_discount_amount` cap) or fixed_amount
+- Apply only to full-price items (consistent with frontend exclusivity logic)
+- Set `v_discount` so it flows into order total
+- After order INSERT: insert `coupon_usage` record, increment `coupons.used_count`
 
-## File Changes
+### 2. Frontend — Add per-user usage check to CouponInput
 
-### 1. CREATE `src/hooks/useSavedItems.ts`
+In `CartPage.tsx` CouponInput's `handleApply`, after the `max_uses` check, add:
+```typescript
+// Per-user usage check
+if (data.max_uses_per_user) {
+  const { count } = await supabase
+    .from("coupon_usage")
+    .select("*", { count: "exact", head: true })
+    .eq("coupon_id", data.id)
+    .eq("user_id", user.id);
+  if ((count || 0) >= data.max_uses_per_user) {
+    setError("You have already used this coupon");
+    return;
+  }
+}
+```
 
-**`useSavedProductIds()`** — returns `Set<string>` of all saved product IDs for the current user:
-- Get customer ID via `get_customer_id_for_user`
-- Query `saved_list_items` joined through `saved_lists` where `customer_id` matches
-- Query key: `["saved-items", userId]`
+### 3. Files Summary
 
-**`useToggleSave()`** — mutation hook:
-- If not logged in → call `openAuthModal()`
-- Get customer ID, find default list (`WHERE customer_id = X AND is_default = true`)
-- If no default list → auto-create one (`name: "Saved Items", is_default: true`)
-- If product already in set → DELETE from `saved_list_items`
-- If not → INSERT into `saved_list_items`
-- On success: invalidate `["saved-items"]` and `["saved-lists"]`
-- Toast: "Saved to Saved Items" / "Removed from Saved Items"
+| File | Action |
+|------|--------|
+| Migration SQL | Add `discount_amount` to `coupon_usage`, rewrite `place_order` with coupon logic |
+| `src/pages/CartPage.tsx` | Add `max_uses_per_user` check in CouponInput |
 
-### 2. UPDATE `src/components/ProductCard.tsx`
-
-- Import `useSavedProductIds` and `useToggleSave`
-- Heart button: call `toggleSave(productId)` on click
-- Heart icon: filled red when saved (`fill-current text-red-500`), outline when not
-- Always visible for saved items (remove `opacity-0 group-hover:opacity-100` when saved)
-
-### 3. UPDATE `src/pages/ProductDetail.tsx`
-
-- Add heart/save button next to the Add to Cart area
-- Same toggle logic as ProductCard
-
-### 4. UPDATE `src/components/account/AccountSavedLists.tsx`
-
-- Fetch product details via join: `saved_list_items(*, products:product_id(id, title, slug, selling_price, images, brand_id))`
-- Show product cards in a grid within each list (image, name, price)
-- Add "Remove" button per product
-- On remove: delete from `saved_list_items`, invalidate queries
-
-## No other changes needed
-- RLS policies already allow customers to manage their own saved lists and items
-- No edge function changes
+No other frontend changes needed — sessionStorage persistence, checkout display, and RPC call are all already working.
 
