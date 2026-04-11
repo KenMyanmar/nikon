@@ -493,6 +493,19 @@ const CouponInput = ({ subtotal, cartItems, appliedCoupon, onApply, onRemove }: 
         return;
       }
 
+      // Per-user usage limit
+      if (data.max_uses_per_user && user) {
+        const { count } = await supabase
+          .from("coupon_usage")
+          .select("*", { count: "exact", head: true })
+          .eq("coupon_id", data.id)
+          .eq("user_id", user.id);
+        if ((count || 0) >= data.max_uses_per_user) {
+          setError("You have already used this coupon");
+          return;
+        }
+      }
+
       // Min order amount
       if (data.min_order_amount && subtotal < Number(data.min_order_amount)) {
         setError(`Minimum order of MMK ${Number(data.min_order_amount).toLocaleString()} required`);
