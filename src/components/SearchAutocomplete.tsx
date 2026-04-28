@@ -109,7 +109,7 @@ const SearchAutocomplete = ({
               key={r.id}
               className="w-full flex items-center gap-3 px-4 py-3 hover:bg-ikon-bg-secondary transition text-left"
               onClick={() => {
-                navigate(`/product/${r.slug}`);
+                navigate(`/product/${r.slug || r.id}`);
                 setIsOpen(false);
                 setQuery("");
               }}
