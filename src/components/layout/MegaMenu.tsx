@@ -53,7 +53,7 @@ export const useNavData = () => {
         .select("id, name, slug, product_count")
         .eq("depth", 0)
         .eq("is_active", true)
-        .order("product_count", { ascending: false });
+        .order("name", { ascending: true });
       if (error) throw error;
       return (data || []) as MainCategory[];
     },
@@ -68,7 +68,7 @@ export const useNavData = () => {
         .select("id, name, slug, parent_id, product_count")
         .eq("depth", 1)
         .eq("is_active", true)
-        .order("product_count", { ascending: false });
+        .order("name", { ascending: true });
       if (error) throw error;
       return (data || []) as SubCategory[];
     },
