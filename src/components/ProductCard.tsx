@@ -87,8 +87,10 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
 
   const showUrgency = stockStatus === "low_stock" && onhandQty && onhandQty <= 5;
 
+  const linkTarget = slug || id;
+
   return (
-    <Link to={`/product/${slug}`} className="bg-card rounded-card shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-250 overflow-hidden group cursor-pointer block flex flex-col h-full">
+    <Link to={linkTarget ? `/product/${linkTarget}` : "#"} className="bg-card rounded-card shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-250 overflow-hidden group cursor-pointer block flex flex-col h-full">
       {/* Image */}
       <div className="relative aspect-square bg-[#F8F9FA] overflow-hidden rounded-t-card">
         {isPlaceholder ? (
@@ -109,7 +111,7 @@ const ProductCard = ({ id, image, title, brand, specs, price, currency = "MMK", 
           {flashDeal && (
             <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 w-fit">
               <Zap className="w-3 h-3 fill-current" />
-              -{flashDeal.discount_percentage || Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100)}%
+              -{flashDeal.discount_percentage || (flashDeal.original_price ? Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100) : 0)}%
             </span>
           )}
           {!flashDeal && promotion && (
