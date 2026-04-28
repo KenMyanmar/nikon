@@ -26,6 +26,7 @@ import About from "./pages/About";
 import Promotions from "./pages/Promotions";
 import PromotionDetail from "./pages/PromotionDetail";
 import ScrollToTop from "./components/ScrollToTop";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <AuthProvider>
+          <ErrorBoundary label="App">
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/admin/import" element={<AdminImport />} />
@@ -61,6 +63,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </ErrorBoundary>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
