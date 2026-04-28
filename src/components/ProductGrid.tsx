@@ -21,14 +21,17 @@ interface ProductGridProps {
 }
 
 const ProductGrid = ({ products }: ProductGridProps) => {
+  // Defensive: skip rows missing required identifiers to prevent render crashes
+  const safeProducts = (products || []).filter((p) => p && p.id);
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-      {products.map((p) => (
+      {safeProducts.map((p) => (
         <ProductCard
           key={p.id}
           id={p.id}
           image={p.thumbnail_url || "/placeholder.svg"}
-          title={p.description}
+          title={p.description || "Untitled product"}
           brand={p.brand_name || ""}
           specs={p.short_description || undefined}
           price={p.selling_price ? Number(p.selling_price) : null}
@@ -36,7 +39,7 @@ const ProductGrid = ({ products }: ProductGridProps) => {
           moq={p.moq || undefined}
           stockStatus={(p.stock_status as "in_stock" | "low_stock" | "out_of_stock") || "in_stock"}
           sku={p.stock_code || ""}
-          slug={p.slug}
+          slug={p.slug || p.id}
           categoryName={p.category_name || undefined}
           brandLogo={p.brand_logo || null}
         />

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import type { SearchProductRow } from "@/integrations/supabase/rpc-types";
 
 interface SearchAutocompleteProps {
   className?: string;
@@ -10,15 +11,7 @@ interface SearchAutocompleteProps {
   showButton?: boolean;
 }
 
-interface SearchResult {
-  id: string;
-  description: string;
-  brand_name: string;
-  selling_price: number | null;
-  currency: string;
-  thumbnail_url: string | null;
-  slug: string;
-}
+type SearchResult = SearchProductRow;
 
 const SearchAutocomplete = ({
   className = "",
@@ -53,7 +46,7 @@ const SearchAutocomplete = ({
       .then(({ data, error }) => {
         setIsLoading(false);
         if (!error && data) {
-          setResults(data as SearchResult[]);
+          setResults((data as unknown) as SearchResult[]);
           setIsOpen(true);
         }
       });
@@ -116,7 +109,7 @@ const SearchAutocomplete = ({
               key={r.id}
               className="w-full flex items-center gap-3 px-4 py-3 hover:bg-ikon-bg-secondary transition text-left"
               onClick={() => {
-                navigate(`/product/${r.slug}`);
+                navigate(`/product/${r.slug || r.id}`);
                 setIsOpen(false);
                 setQuery("");
               }}
