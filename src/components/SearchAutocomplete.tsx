@@ -46,7 +46,7 @@ const SearchAutocomplete = ({
       .then(({ data, error }) => {
         setIsLoading(false);
         if (!error && data) {
-          setResults(data as SearchResult[]);
+          setResults((data as unknown) as SearchResult[]);
           setIsOpen(true);
         }
       });
