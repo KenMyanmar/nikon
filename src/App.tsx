@@ -18,6 +18,7 @@ import RequestQuotePage from "./pages/RequestQuotePage";
 import AllCategoriesPage from "./pages/AllCategoriesPage";
 import AllBrandsPage from "./pages/AllBrandsPage";
 import FlashDealsPage from "./pages/FlashDealsPage";
+import BestSellersPage from "./pages/BestSellersPage";
 import Checkout from "./pages/Checkout";
 import MyOrders from "./pages/MyOrders";
 import Articles from "./pages/Articles";
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/categories" element={<AllCategoriesPage />} />
             <Route path="/brands" element={<AllBrandsPage />} />
             <Route path="/flash-deals" element={<FlashDealsPage />} />
+            <Route path="/best-sellers" element={<BestSellersPage />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/orders" element={<MyOrders />} />
             <Route path="/articles" element={<Articles />} />
