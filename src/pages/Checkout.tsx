@@ -539,6 +539,8 @@ const Checkout = () => {
           <StepConfirmation
             orderResult={orderResult}
             paymentMethod={paymentMethod}
+            customerEmail={customer?.email || user?.email || ""}
+            estimatedDays={estimatedDays}
           />
         )}
       </div>
