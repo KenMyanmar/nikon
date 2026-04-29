@@ -1,72 +1,103 @@
-## Contact Page Redesign — Match Mockup Exactly
+## Redesign Checkout Step 3 (Order Confirmation)
 
-Goal: Rework `src/pages/Contact.tsx` so the visual hierarchy, density, and color accents match the attached mockup. No DB or routing changes — purely a frontend redesign of the existing page.
+Replace the minimal centered confirmation card in `src/pages/Checkout.tsx` with a full-width, information-rich confirmation page matching the mockup. Stays in-place — no new route.
 
-### What's removed
-- Entire "Chat with IKON Sales Team" block (the WhatsApp / Viber / Messenger / WeChat / Chat / SfiveChat 3×2 grid).
-- The `CHANNELS` constant and its imports become unused — delete.
-- The hero buttons keep their labels but become anchor scrolls only (no chat hrefs).
+### Data fetching (inside `StepConfirmation`)
 
-### Section 1 — Hero (visual upgrade)
-- Full-bleed commercial kitchen photo as background (keep current Unsplash kitchen image — it is already a real photo; just lighten the overlay).
-- Replace heavy `from-[#1B3A5C]/90 to-[#0f1729]/85` with subtler gradient: `from-[#0f1729]/75 via-[#1B3A5C]/55 to-transparent` going left→right, so the kitchen is clearly visible on the right side.
-- Container becomes left-aligned (`text-left`), max-w-3xl, removed `mx-auto` on inner text.
-- Title `Contact IKON Mart` — `text-4xl md:text-6xl font-bold text-white`.
-- Subtitle in `text-white/80`, max-w-xl.
-- Three pill buttons in a row, all anchor-scroll only:
-  - **Call Us** → `#contact-info`, blue (`bg-primary`), Phone icon.
-  - **WhatsApp / Viber** → `#contact-info`, green (`bg-[#25D366] hover:bg-[#1ebe57]`), MessageCircle icon.
-  - **Send Inquiry** → `#inquiry`, blue (`bg-primary`), Send icon.
-- Reduced vertical padding: `py-16 md:py-24`.
+Add a `useQuery` keyed `["order-confirmation", orderResult.order_id]` that runs once on mount:
 
-### Section 2 — Contact Info Cards (key visual fix)
-- Layout: 2-col grid on `md+`, single col on mobile. Four cards, in this order: Call Us, Email, Visit Our Office, Business Hours.
-- Per-card structure to match mockup density:
-  ```text
-  ┌──┬─────────────────────────────────────┐
-  │██│ [● icon]  CALL US (color-accent label)
-  │██│ 01-8650230
-  │██│ 01-8650231
-  │██│ ───────────────────────────────────
-  │██│ Chat with Sales Team  ›
-  └──┴─────────────────────────────────────┘
-  ```
-- Left border: `border-l-4` in card's accent color.
-- Icon badge: solid filled circle `w-11 h-11 rounded-full` with white icon inside. Backgrounds use full color (not /10 tint):
-  - Call Us → `bg-primary` (blue) + `border-l-primary`, label `text-primary`.
-  - Email → `bg-amber-500` + `border-l-amber-500`, label `text-amber-600`.
-  - Visit Our Office → `bg-emerald-600` + `border-l-emerald-600`, label `text-emerald-700`.
-  - Business Hours → `bg-amber-400` + `border-l-amber-400`, label `text-amber-600`.
-- Label is uppercase, `text-xs font-bold tracking-wide` in accent color (e.g. "CALL US", "EMAIL").
-- Info text directly below in `text-foreground font-medium` (tight spacing, not `text-muted-foreground`).
-- "Chat with Sales Team →" action link only on Call Us and Email cards, separated by a `border-t border-border/60 mt-3 pt-3`.
-- Reduced padding: `p-5` (not `p-6`) for compactness; `gap-4` between cards.
+```ts
+supabase.from("orders")
+  .select(`*, order_items(*, product:products_public(id, slug, description, stock_code, thumbnail_url, selling_price, currency, category_id))`)
+  .eq("id", orderResult.order_id)
+  .single()
+```
 
-### Section 3 — Map + Inquiry Form (side by side)
-- Two-column grid (`lg:grid-cols-2`), white section background (`bg-card`, alternates from cards above which become `bg-ikon-bg-secondary`).
-- **Left column**: existing Google Maps iframe in a `rounded-card shadow-card` wrapper. Below the iframe, prominent "Get Directions" button styled as a solid `bg-primary text-primary-foreground rounded-button` button (not a text link).
-- **Right column**: Inquiry form, same fields and zod schema as today, but visual cleanup:
-  - White card `bg-card rounded-card shadow-card p-6`.
-  - Heading "Send Us an Inquiry" `text-2xl font-bold`.
-  - Form fields: keep current 2-col grid for name/company/phone/email; ensure `space-y-4` rhythm.
-  - Business Type stays as selectable pill chips (current implementation already correct).
-  - Inquiry Type rendered as checkbox rows with a green/blue check icon when on (keep checkbox, just style accent green via `accent-emerald-600`).
-  - Submit button: full-width, `bg-primary` with right-chevron (Send icon kept), label "Send Inquiry ›".
-- The big `#chat` block and `CHANNELS` map are removed entirely from this section.
+Plus a second `useQuery` for the customer email — pull from `customers` table via `user_id = auth.uid()` (the user is authenticated at this point). Use the `customer` already fetched in the parent — pass it as a prop instead of re-querying.
 
-### Section 4 — Why Contact IKON Mart?
-- No structural changes. Keep current implementation.
+A third `useQuery` for related products, enabled once the order data is available:
+- Collect `category_id` from each `order_items[].product`.
+- Collect `product_id` of every line item (to exclude).
+- `supabase.from("products_public").select("id, slug, description, thumbnail_url, selling_price, currency, onhand_qty").in("category_id", catIds).not("id", "in", `(${purchasedIds.join(",")})`).not("thumbnail_url", "is", null).eq("is_active", true).order("onhand_qty", { ascending: false }).limit(8)`.
+- Guard: if `catIds` is empty, skip.
 
-### Section 5 — Contact by Department
-- Keep grid; tighten card style to mimic mockup:
-  - `flex items-center gap-3 p-4` (slightly smaller).
-  - Icon in a small rounded square `w-9 h-9 rounded-md bg-primary/10 text-primary`.
-  - Right `ChevronRight` in `text-muted-foreground`.
-  - Hover: `hover:bg-card hover:shadow-card-hover hover:-translate-y-0.5 transition`.
+Estimated delivery: compute from `order.created_at` + `feeRow.estimated_days` (already available in parent — pass `estimatedDays` as a prop). Parse the leading number from strings like "2-4 days" and add days; format as `Apr 30, 2026`. Fallback to plain "2-4 days" string display if parse fails.
 
-### Files affected
-- `src/pages/Contact.tsx` — single-file rewrite of the JSX. No new files. No route changes. No DB changes.
+### Component update — `StepConfirmation`
+
+New props: `{ orderResult, paymentMethod, customerEmail, estimatedDays }`. Update the call site at line 538 to pass them.
+
+Remove the existing `max-w-lg mx-auto` container. Render a full-width page with sections stacked, gap-8, max-w-6xl outer wrapper.
+
+### Section 1 — Thank You Header
+
+White card, `bg-card rounded-card shadow-card p-8`, centered content:
+- `CheckCircle` (lucide) inside `w-16 h-16 bg-emerald-100 rounded-full` wrapper, icon `text-emerald-600 w-10 h-10`.
+- "Thank you for your order!" — `text-3xl font-bold`.
+- `Order Number:` followed by `order_number` in `text-emerald-700 font-mono font-bold`.
+- `Confirmation email sent to: {customerEmail}` in `text-muted-foreground text-sm`.
+- `Estimated Delivery: {computedDate}` in `text-foreground text-sm font-medium`.
+- Button row: `Track Order` (`bg-emerald-600 text-white rounded-button px-5 py-2.5`, navigates to `/orders/{order.id}`) + `Download Invoice` (outlined `border border-border`, click → toast "Invoice download coming soon").
+
+### Section 2 — Order Summary
+
+White card. Title "Order Summary" `text-xl font-bold mb-4`.
+
+**Progress stepper** — 4 stages: Order Received, Processing, Packed, Out for Delivery. First two completed (green filled circle with white check), last two pending (gray outline). Stages connected by a horizontal `h-0.5` line — green between completed, gray for pending. Sub-label "Today" under "Order Received" only. Implement as a flex row with 4 stage cells, each containing the circle + label; lines drawn via pseudo-elements / sibling `flex-1 h-0.5` divs between circles.
+
+**Product table** — `<table>` with header row `Product | SKU | Qty | Unit Price | Total`. Each row: 48×48 thumbnail (or placeholder.svg), product `description` and a small SKU chip below in mobile, qty, `unit_price`, `total` (already on `order_items`). Use `border-b border-border/50` between rows. Mobile: cards instead of table.
+
+**Totals block** — right-aligned, `max-w-sm ml-auto`:
+- Subtotal: `fmt(order.subtotal)`.
+- Shipping: green "Free" if `order.shipping_cost === 0`, else `fmt(order.shipping_cost)`.
+- Tax: `fmt(order.tax)`.
+- Discount: shown only if `order.discount > 0`, in red.
+- Grand Total: `text-2xl text-emerald-700 font-bold`.
+
+**Action button row** below totals — `Print Order` (Printer icon, `window.print()`), `Download Invoice` (Download icon, toast placeholder), `Send to Procurement Team` (Users icon, toast placeholder), `Service message` (MessageSquare icon, navigate `/contact`). All `variant="outline"` shadcn-styled or hand-rolled outlined buttons.
+
+### Section 3 — "Customers who bought this also needed"
+
+Heading `text-xl font-bold`. Horizontal scroll: `flex gap-4 overflow-x-auto pb-4 snap-x`. Each card `min-w-[220px] bg-card rounded-card border border-border shadow-card p-3`:
+- 1:1 thumbnail.
+- `description` truncated `line-clamp-2`.
+- Price `fmt(selling_price)` in `text-emerald-700 font-bold`.
+- "Add to Existing Order" button (small, `bg-foreground text-background` or `bg-emerald-600 text-white`) → toast "Visit product page to add to your next order" then `navigate('/product/' + slug)`.
+
+If query returns 0 rows, hide the section.
+
+### Section 4 — Two-column bottom
+
+Grid `grid-cols-1 lg:grid-cols-3 gap-6`:
+
+**Left (lg:col-span-2)** — "Manage Your Kitchen Procurement". 2×2 grid of static bundle cards:
+- Restaurant Opening Package
+- Commercial Kitchen Starter Kit
+- Café Equipment Bundle
+- Bakery Essentials Package
+
+Each card: title, one-line subtitle, Unsplash kitchen-style placeholder image (use a small set of fixed Unsplash URLs already used in About/Contact for visual consistency), "View Bundle" button → toast "Bundle packages coming soon".
+
+**Right** — "Need assistance?". Vertical list of clickable rows (`flex items-center gap-3 p-3 rounded-button hover:bg-muted/50`), each with icon + label + `ChevronRight`:
+- Contact Account Manager (Users) → `/contact`
+- Live Chat (MessageCircle) → `https://wa.me/959890090301`
+- WhatsApp Procurement Support (MessageCircle/Phone) → same WhatsApp link
+- Call 01-8650230 (Phone) → `tel:018650230`
+
+### Visual + layout
+
+- Outer wrapper: remove `max-w-lg mx-auto text-center`, replace with `max-w-6xl mx-auto space-y-8`.
+- Alternate section backgrounds: white cards with `bg-card`, page background already inherits from parent `MainLayout`.
+- All colors via existing tokens; emerald accents are allowed (Tailwind defaults), matching the mockup green.
+- Loading state: while the order query is loading, show a skeleton block (header + table placeholder) instead of empty content.
+- Error state: if the order query fails, fall back to the existing simple "Order Placed Successfully" header so users always see confirmation.
+
+### Files
+
+- `src/pages/Checkout.tsx` — only file changed. Edit `StepConfirmation` (line 946 onwards) and its call site (line 538). Add lucide imports `Printer, Download, Users, MessageSquare, MessageCircle, Phone, ChevronRight`.
 
 ### Out of scope
-- No changes to `App.tsx`, no new components, no new migrations.
-- No edits to global tokens — all accent colors used (`amber-500`, `emerald-600`, `primary`) are already available via Tailwind defaults / project tokens.
+
+- No DB migrations.
+- No new routes.
+- No real invoice PDF generation, no real bundle data, no actual "add to existing order" backend — these are placeholder toasts as specified.
