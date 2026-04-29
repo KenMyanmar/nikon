@@ -74,7 +74,6 @@ const INFO_CARDS: InfoCard[] = [
     borderClass: "border-l-primary",
     badgeBgClass: "bg-primary",
     labelColorClass: "text-primary",
-    action: { text: "Chat with Sales Team", href: "#inquiry" },
   },
   {
     icon: Mail,
@@ -83,7 +82,6 @@ const INFO_CARDS: InfoCard[] = [
     borderClass: "border-l-amber-500",
     badgeBgClass: "bg-amber-500",
     labelColorClass: "text-amber-600",
-    action: { text: "Chat with Sales Team", href: "#inquiry" },
   },
   {
     icon: MapPin,
