@@ -566,6 +566,42 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_inquiries: {
+        Row: {
+          business_type: string[]
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          inquiry_type: string[]
+          message: string | null
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          business_type?: string[]
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          inquiry_type?: string[]
+          message?: string | null
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          business_type?: string[]
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          inquiry_type?: string[]
+          message?: string | null
+          name?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
       coupon_usage: {
         Row: {
           coupon_id: string
