@@ -8,7 +8,8 @@ import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
 import {
   Truck, CreditCard, CheckCircle, Plus, Banknote,
-  Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap, Tag, Lock
+  Loader2, ChevronDown, ChevronUp, MapPin, AlertTriangle, PartyPopper, Zap, Tag, Lock,
+  Printer, Download, Users, MessageSquare, MessageCircle, Phone, ChevronRight, Check
 } from "lucide-react";
 import RecommendedProducts from "@/components/RecommendedProducts";
 
