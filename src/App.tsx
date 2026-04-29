@@ -26,6 +26,7 @@ import ArticleDetail from "./pages/ArticleDetail";
 import About from "./pages/About";
 import Promotions from "./pages/Promotions";
 import PromotionDetail from "./pages/PromotionDetail";
+import Contact from "./pages/Contact";
 import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 
@@ -62,6 +63,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/promotions" element={<Promotions />} />
             <Route path="/promotions/:id" element={<PromotionDetail />} />
+            <Route path="/contact" element={<Contact />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
