@@ -946,52 +946,438 @@ const StepPayment = ({
 };
 
 /* ─── Step 3: Confirmation ─── */
-const StepConfirmation = ({ orderResult, paymentMethod }: { orderResult: any; paymentMethod: string | null }) => {
+const BUNDLE_IMG = [
+  "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=600&q=70",
+  "https://images.unsplash.com/photo-1581299894007-aaa50297cf16?auto=format&fit=crop&w=600&q=70",
+  "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=600&q=70",
+  "https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&fit=crop&w=600&q=70",
+];
+
+const BUNDLES = [
+  { title: "Restaurant Opening Package", subtitle: "Full kitchen setup for new restaurants", img: BUNDLE_IMG[0] },
+  { title: "Commercial Kitchen Starter Kit", subtitle: "Essential equipment for high-volume kitchens", img: BUNDLE_IMG[1] },
+  { title: "Café Equipment Bundle", subtitle: "Espresso, pastry & front-of-house basics", img: BUNDLE_IMG[2] },
+  { title: "Bakery Essentials Package", subtitle: "Ovens, mixers & proofing essentials", img: BUNDLE_IMG[3] },
+];
+
+interface StepConfirmationProps {
+  orderResult: any;
+  paymentMethod: string | null;
+  customerEmail: string;
+  estimatedDays: string;
+}
+
+const StepConfirmation = ({ orderResult, paymentMethod, customerEmail, estimatedDays }: StepConfirmationProps) => {
   const navigate = useNavigate();
 
-  const getStatusInfo = () => {
-    if (paymentMethod === "cod") return { label: "Confirmed", color: "bg-emerald-100 text-emerald-700", msg: "Our team will prepare your order for delivery." };
-    if (paymentMethod === "dinger_prebuilt") return { label: "Payment Confirmed", color: "bg-emerald-100 text-emerald-700", msg: "Your payment has been verified. We'll prepare your order for delivery." };
-    return { label: "Processing", color: "bg-amber-100 text-amber-700", msg: "Your order is being processed." };
-  };
+  // ── Full order with items
+  const { data: order, isLoading: orderLoading } = useQuery({
+    queryKey: ["order-confirmation", orderResult.order_id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select(`*, order_items(*, product:products_public(id, slug, description, stock_code, thumbnail_url, selling_price, currency, category_id))`)
+        .eq("id", orderResult.order_id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
-  const status = getStatusInfo();
+  const items = (order?.order_items as any[]) || [];
+
+  // ── Related products
+  const { data: relatedProducts = [] } = useQuery({
+    queryKey: ["order-related-products", orderResult.order_id],
+    enabled: !!order && items.length > 0,
+    queryFn: async () => {
+      const catIds = Array.from(
+        new Set(items.map((it: any) => it.product?.category_id).filter(Boolean))
+      );
+      const purchasedIds = items.map((it: any) => it.product_id).filter(Boolean);
+      if (catIds.length === 0) return [];
+      let q = supabase
+        .from("products_public")
+        .select("id, slug, description, thumbnail_url, selling_price, currency, onhand_qty")
+        .in("category_id", catIds)
+        .not("thumbnail_url", "is", null)
+        .eq("is_active", true)
+        .order("onhand_qty", { ascending: false })
+        .limit(8);
+      if (purchasedIds.length > 0) {
+        q = q.not("id", "in", `(${purchasedIds.join(",")})`);
+      }
+      const { data, error } = await q;
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // ── Estimated delivery date
+  const estimatedDeliveryLabel = (() => {
+    if (!order?.created_at) return estimatedDays;
+    const match = String(estimatedDays).match(/(\d+)/g);
+    if (!match || match.length === 0) return estimatedDays;
+    const days = Number(match[match.length - 1]);
+    if (!Number.isFinite(days)) return estimatedDays;
+    const d = new Date(order.created_at);
+    d.setDate(d.getDate() + days);
+    return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  })();
+
+  const handleInvoiceToast = () =>
+    toast({ title: "Invoice download coming soon", description: "We'll email your invoice once payment is finalized." });
+  const handleProcurementToast = () =>
+    toast({ title: "Coming soon", description: "Sending orders to procurement teams will be available shortly." });
+  const handleBundleToast = () =>
+    toast({ title: "Bundle packages coming soon", description: "Curated kitchen bundles are launching soon." });
+
+  if (orderLoading || !order) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-6">
+        <div className="bg-card rounded-card shadow-card p-8 text-center">
+          <div className="w-16 h-16 bg-emerald-100 rounded-full mx-auto flex items-center justify-center">
+            <CheckCircle className="w-10 h-10 text-emerald-600" />
+          </div>
+          <h2 className="text-3xl font-bold mt-4">Thank you for your order!</h2>
+          <p className="text-muted-foreground mt-1">
+            Order Number: <span className="font-mono font-bold text-emerald-700">{orderResult.order_number}</span>
+          </p>
+          <div className="mt-6 h-32 bg-muted/40 rounded animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+
+  const subtotal = Number(order.subtotal ?? 0);
+  const shipping = Number(order.shipping_cost ?? 0);
+  const tax = Number(order.tax ?? 0);
+  const discount = Number(order.discount ?? 0);
+  const grandTotal = Number(order.total ?? 0);
+
+  const STAGES = [
+    { label: "Order Received", done: true, sub: "Today" },
+    { label: "Processing", done: true, sub: null },
+    { label: "Packed", done: false, sub: null },
+    { label: "Out for Delivery", done: false, sub: null },
+  ];
 
   return (
-    <div className="max-w-lg mx-auto text-center space-y-6">
-      <div className="flex justify-center">
-        <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center animate-bounce">
-          <PartyPopper className="w-10 h-10 text-emerald-600" />
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* ─── Section 1: Thank You Header ─── */}
+      <section className="bg-card rounded-card shadow-card p-6 md:p-8 text-center">
+        <div className="w-16 h-16 bg-emerald-100 rounded-full mx-auto flex items-center justify-center">
+          <CheckCircle className="w-10 h-10 text-emerald-600" />
         </div>
-      </div>
-
-      <div>
-        <h2 className="text-2xl font-bold text-foreground">Order Placed Successfully!</h2>
-        <p className="text-muted-foreground mt-1">Order Number: <span className="font-mono font-bold text-foreground">{orderResult.order_number}</span></p>
-      </div>
-
-      <div className="bg-card rounded-lg border border-border p-4 text-left space-y-3">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">Status:</span>
-          <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full ${status.color}`}>{status.label}</span>
+        <h2 className="text-2xl md:text-3xl font-bold mt-4 text-foreground">Thank you for your order!</h2>
+        <p className="mt-2 text-foreground">
+          Order Number:{" "}
+          <span className="font-mono font-bold text-emerald-700">{order.order_number}</span>
+        </p>
+        {customerEmail && (
+          <p className="mt-1 text-sm text-muted-foreground">
+            Confirmation email sent to: <span className="text-foreground">{customerEmail}</span>
+          </p>
+        )}
+        <p className="mt-1 text-sm font-medium text-foreground">
+          Estimated Delivery: <span className="text-emerald-700">{estimatedDeliveryLabel}</span>
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <button
+            onClick={() => navigate(`/orders/${order.id}`)}
+            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-5 py-2.5 rounded-button font-semibold hover:bg-emerald-700 transition"
+          >
+            <Truck className="w-4 h-4" /> Track Order
+          </button>
+          <button
+            onClick={handleInvoiceToast}
+            className="inline-flex items-center gap-2 border border-border bg-background text-foreground px-5 py-2.5 rounded-button font-semibold hover:bg-muted/50 transition"
+          >
+            <Download className="w-4 h-4" /> Download Invoice
+          </button>
         </div>
-        <p className="text-sm text-muted-foreground">{status.msg}</p>
-        <hr className="border-border" />
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          <div><span className="text-muted-foreground">Payment:</span> <span className="font-medium text-foreground capitalize">{paymentMethod === "dinger_prebuilt" ? "Dinger" : paymentMethod?.replace("_", " ")}</span></div>
-          <div><span className="text-muted-foreground">Total:</span> <span className="font-bold text-accent">{fmt(Number(orderResult.total))}</span></div>
-          {orderResult.delivery_fee > 0 && <div><span className="text-muted-foreground">Delivery:</span> <span className="text-foreground">{fmt(Number(orderResult.delivery_fee))}</span></div>}
-        </div>
-      </div>
+      </section>
 
-      <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <button onClick={() => navigate("/orders")} className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition">
-          View My Orders
-        </button>
-        <button onClick={() => navigate("/")} className="px-6 py-3 border border-border text-foreground rounded-lg font-semibold hover:bg-muted/50 transition">
-          Continue Shopping
-        </button>
-      </div>
+      {/* ─── Section 2: Order Summary ─── */}
+      <section className="bg-card rounded-card shadow-card p-6 md:p-8">
+        <h3 className="text-xl font-bold text-foreground mb-6">Order Summary</h3>
+
+        {/* Stepper */}
+        <div className="flex items-center justify-between mb-8">
+          {STAGES.map((s, i) => (
+            <div key={s.label} className="flex items-center flex-1 last:flex-none min-w-0">
+              <div className="flex flex-col items-center text-center min-w-0">
+                <div
+                  className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+                    s.done
+                      ? "bg-emerald-600 text-white"
+                      : "border-2 border-muted-foreground/30 bg-background text-muted-foreground"
+                  }`}
+                >
+                  {s.done ? <Check className="w-5 h-5" /> : <span className="text-xs font-semibold">{i + 1}</span>}
+                </div>
+                <p className={`mt-2 text-xs md:text-sm font-medium ${s.done ? "text-foreground" : "text-muted-foreground"}`}>
+                  {s.label}
+                </p>
+                {s.sub && <p className="text-[11px] text-emerald-600 font-medium">{s.sub}</p>}
+              </div>
+              {i < STAGES.length - 1 && (
+                <div
+                  className={`flex-1 h-0.5 mx-2 ${
+                    STAGES[i + 1].done || s.done ? "bg-emerald-600" : "bg-muted-foreground/30"
+                  }`}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Items: desktop table */}
+        <div className="hidden md:block overflow-hidden rounded-card border border-border">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/40 text-muted-foreground">
+              <tr>
+                <th className="text-left px-4 py-3 font-semibold">Product</th>
+                <th className="text-left px-4 py-3 font-semibold">SKU</th>
+                <th className="text-right px-4 py-3 font-semibold">Qty</th>
+                <th className="text-right px-4 py-3 font-semibold">Unit Price</th>
+                <th className="text-right px-4 py-3 font-semibold">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((it: any) => (
+                <tr key={it.id} className="border-t border-border/60">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={it.product?.thumbnail_url || "/placeholder.svg"}
+                        alt={it.product_name || it.product?.description || "Product"}
+                        className="w-12 h-12 rounded-md object-cover bg-muted"
+                      />
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground line-clamp-2">
+                          {it.product?.description || it.product_name || "Item"}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground font-mono text-xs">
+                    {it.product?.stock_code || it.sku || "—"}
+                  </td>
+                  <td className="px-4 py-3 text-right font-medium">{it.quantity}</td>
+                  <td className="px-4 py-3 text-right">{fmt(Number(it.unit_price))}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-foreground">
+                    {fmt(Number(it.total))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Items: mobile cards */}
+        <div className="md:hidden space-y-3">
+          {items.map((it: any) => (
+            <div key={it.id} className="border border-border rounded-card p-3 flex gap-3">
+              <img
+                src={it.product?.thumbnail_url || "/placeholder.svg"}
+                alt={it.product_name || "Product"}
+                className="w-14 h-14 rounded-md object-cover bg-muted shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-foreground line-clamp-2 text-sm">
+                  {it.product?.description || it.product_name || "Item"}
+                </p>
+                <p className="text-xs text-muted-foreground font-mono mt-0.5">
+                  {it.product?.stock_code || it.sku || "—"}
+                </p>
+                <div className="mt-1 flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {it.quantity} × {fmt(Number(it.unit_price))}
+                  </span>
+                  <span className="font-semibold">{fmt(Number(it.total))}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Totals */}
+        <div className="mt-6 flex justify-end">
+          <div className="w-full max-w-sm space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Subtotal</span>
+              <span className="font-medium text-foreground">{fmt(subtotal)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Shipping</span>
+              {shipping === 0 ? (
+                <span className="font-semibold text-emerald-600">Free</span>
+              ) : (
+                <span className="font-medium text-foreground">{fmt(shipping)}</span>
+              )}
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Tax</span>
+              <span className="font-medium text-foreground">{fmt(tax)}</span>
+            </div>
+            {discount > 0 && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Discount</span>
+                <span className="font-medium text-destructive">-{fmt(discount)}</span>
+              </div>
+            )}
+            <div className="border-t border-border pt-2 flex justify-between items-baseline">
+              <span className="font-semibold text-foreground">Grand Total</span>
+              <span className="text-2xl font-bold text-emerald-700">{fmt(grandTotal)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Action button row */}
+        <div className="mt-6 flex flex-wrap gap-2 justify-end">
+          <button
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-2 border border-border bg-background text-foreground px-4 py-2 rounded-button text-sm font-medium hover:bg-muted/50 transition"
+          >
+            <Printer className="w-4 h-4" /> Print Order
+          </button>
+          <button
+            onClick={handleInvoiceToast}
+            className="inline-flex items-center gap-2 border border-border bg-background text-foreground px-4 py-2 rounded-button text-sm font-medium hover:bg-muted/50 transition"
+          >
+            <Download className="w-4 h-4" /> Download Invoice
+          </button>
+          <button
+            onClick={handleProcurementToast}
+            className="inline-flex items-center gap-2 border border-border bg-background text-foreground px-4 py-2 rounded-button text-sm font-medium hover:bg-muted/50 transition"
+          >
+            <Users className="w-4 h-4" /> Send to Procurement Team
+          </button>
+          <button
+            onClick={() => navigate("/contact")}
+            className="inline-flex items-center gap-2 border border-border bg-background text-foreground px-4 py-2 rounded-button text-sm font-medium hover:bg-muted/50 transition"
+          >
+            <MessageSquare className="w-4 h-4" /> Service message
+          </button>
+        </div>
+      </section>
+
+      {/* ─── Section 3: Customers who bought this also needed ─── */}
+      {relatedProducts.length > 0 && (
+        <section className="bg-card rounded-card shadow-card p-6 md:p-8">
+          <h3 className="text-xl font-bold text-foreground mb-4">
+            Customers who bought this also needed
+          </h3>
+          <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
+            {relatedProducts.map((p: any) => (
+              <div
+                key={p.id}
+                className="min-w-[220px] max-w-[220px] snap-start bg-card rounded-card border border-border shadow-card p-3 flex flex-col"
+              >
+                <div className="aspect-square rounded-md overflow-hidden bg-muted">
+                  <img
+                    src={p.thumbnail_url || "/placeholder.svg"}
+                    alt={p.description || "Product"}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="mt-2 text-sm font-medium text-foreground line-clamp-2 min-h-[2.5rem]">
+                  {p.description || "Product"}
+                </p>
+                <p className="mt-1 text-emerald-700 font-bold">
+                  {fmt(Number(p.selling_price ?? 0))}
+                </p>
+                <button
+                  onClick={() => {
+                    toast({
+                      title: "Visit product page",
+                      description: "Open the product to add it to your next order.",
+                    });
+                    navigate(`/product/${p.slug}`);
+                  }}
+                  className="mt-3 w-full bg-emerald-600 text-white text-xs font-semibold px-3 py-2 rounded-button hover:bg-emerald-700 transition"
+                >
+                  Add to Existing Order
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ─── Section 4: Bundles + Assistance ─── */}
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-card rounded-card shadow-card p-6">
+          <h3 className="text-xl font-bold text-foreground mb-4">Manage Your Kitchen Procurement</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {BUNDLES.map((b) => (
+              <div key={b.title} className="rounded-card border border-border overflow-hidden bg-card flex flex-col">
+                <div
+                  className="aspect-[16/9] bg-cover bg-center"
+                  style={{ backgroundImage: `url(${b.img})` }}
+                  aria-hidden
+                />
+                <div className="p-4 flex-1 flex flex-col">
+                  <p className="font-semibold text-foreground">{b.title}</p>
+                  <p className="text-xs text-muted-foreground mt-1 flex-1">{b.subtitle}</p>
+                  <button
+                    onClick={handleBundleToast}
+                    className="mt-3 inline-flex items-center justify-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-3 py-2 rounded-button hover:bg-emerald-700 transition"
+                  >
+                    View Bundle
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-card rounded-card shadow-card p-6">
+          <h3 className="text-xl font-bold text-foreground mb-4">Need assistance?</h3>
+          <div className="space-y-1">
+            {[
+              { icon: Users, label: "Contact Account Manager", href: "/contact", external: false },
+              { icon: MessageCircle, label: "Live Chat", href: "https://wa.me/959890090301", external: true },
+              { icon: MessageSquare, label: "WhatsApp Procurement Support", href: "https://wa.me/959890090301", external: true },
+              { icon: Phone, label: "Call 01-8650230", href: "tel:018650230", external: true },
+            ].map((row) => {
+              const Icon = row.icon;
+              const inner = (
+                <>
+                  <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <span className="flex-1 text-sm font-medium text-foreground">{row.label}</span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </>
+              );
+              return row.external ? (
+                <a
+                  key={row.label}
+                  href={row.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-button hover:bg-muted/50 transition"
+                >
+                  {inner}
+                </a>
+              ) : (
+                <button
+                  key={row.label}
+                  onClick={() => navigate(row.href)}
+                  className="w-full flex items-center gap-3 p-3 rounded-button hover:bg-muted/50 transition text-left"
+                >
+                  {inner}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
