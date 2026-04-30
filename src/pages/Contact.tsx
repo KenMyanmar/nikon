@@ -28,7 +28,7 @@ const KITCHEN_BG =
   "https://images.unsplash.com/photo-1581299894007-aaa50297cf16?auto=format&fit=crop&w=1200&q=70";
 
 const MAPS_EMBED =
-  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3818.6!2d96.13!3d16.91!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTbCsDU0JzM2LjAiTiA5NsKwMDcnNDguMCJF!5e0!3m2!1sen!2smm!4v1!5m2!1sen!2smm";
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1000!2d96.1415933!3d16.8985072!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30c5149b3b53a179%3A0xe43ad227f49b696b!2sIKON+Mart+Showroom!5e0!3m2!1sen!2smm!4v1";
 
 const BUSINESS_TYPES = ["Restaurant", "Hotel", "Cafe", "Catering"] as const;
 const INQUIRY_TYPES = [
