@@ -1,72 +1,54 @@
-# Prompt 3 — Product Card Geometry: Acceptance Gate
+# Prompt 3 — Product Card Geometry — Acceptance Gate (corrected)
 
-## Build summary
+## Evidence files
 
-Single canonical `ProductCard` (`src/components/ProductCard.tsx`) with three variants:
-`default` · `compact` · `flash`. `FlashDealsRow` and `RecommendedProducts`
-rebuilt to consume it; their hand-rolled card markup deleted. Stub
-`/products` route added (`src/pages/Products.tsx`, registered in `App.tsx`).
-Category-icon fallback util added (`src/lib/categoryIcons.ts`).
-
-## Screenshots
-
-- `desktop-1366x768-grid-top.png` — top of Best Selling Products row, 5 cards visible
-- `desktop-1366x768-card-body.png` — close-up of card body composition (brand, title, price, CTA fork)
-- `mobile-390x844-hero.png` — mobile hero + Shop by category top of Best Sellers (mobile mid-page screenshot capture had tool-friction; see Process Observation below)
-
-## Rule 18 acceptance gate — direct quotation from rendered output
-
-| Spec | Resulting state (rendered, quoted) | ✓/✗ |
+| File | Viewport | What it shows |
 |---|---|---|
-| Card chrome: white, 1px border, 8px radius, no resting shadow | All 5 visible cards render with white surface, thin grey border, rounded corners; no drop shadow at rest | ✓ |
-| Image frame: aspect-square, bg-muted, object-contain | Square frames, neutral grey background, products centered without crop (spoon silhouette, knife silhouette, jar silhouettes all whole) | ✓ |
-| Heart-save: top-right, 18px outline, default state | Outline heart icon at top-right of every card visible (rendered at 18px, strokeWidth 1.75, no background chip) | ✓ |
-| Brand line: uppercase tracked, fixed slot | "LA LINKER" / "QZQ" rendered uppercase with letter-tracking | ✓ |
-| Title: clamp-2 semibold, fixed 40px slot | "LL TEA SPOON, DOT DESIGN" / "DESSERT KNIFE, 0113 COLLECTION" / "BLADE FOR C-042 FLOOR & WINDOW SCRAPER, 10PCS/BAG" — all clamp to 2 lines, baselines aligned across cards | ✓ |
-| Price format: `MMK {n.toLocaleString()}` text-accent text-base font-semibold | "MMK 9,635" / "MMK 13,940" / "MMK 50,840" / "MMK 66,420" — amber, semibold, thousands-separated | ✓ |
-| Price-null fork → "Request Quote" navy button | First card (`LL TEA SPOON, DOT DESIGN`, selling_price null) renders "Price on request" + navy "Request Quote" button. Other cards render amber "Add to Cart" | ✓ |
-| CTA: full-width "Add to Cart" amber, h-11 | Four cards render full-width amber `Add to Cart` button with cart icon | ✓ |
-| Stock pill silent for in_stock | No "In Stock" pills rendered on any card (silent default) | ✓ |
-| Badge allowlist (no Best Seller star, no Bulk Order, no Almost Gone, no category bottom-pill) | None of the forbidden badges present on any card | ✓ |
-| Hover: border-color change only, no translate, no image scale | Card chrome static at rest; no shadow, no movement | ✓ (verified visually; no transform classes in compiled output) |
+| `desktop-1366x768-grid-top.png` | 1366×768 | Best Sellers row top — frame, brand slot, badges, heart |
+| `desktop-1366x768-card-body.png` | 1366×768 | Best Sellers row body — title clamp, price, CTA fork |
+| `desktop-1366x768-flash-row.png` | 1366×768 | Flash variant card top — `-30%` red badge, heart, image frame |
+| `desktop-1366x768-flash-card-body.png` | 1366×768 | Flash variant card body — `35/100 sold`, `MMK 35,588` + strike-through `MMK 50,840`, amber Add to Cart |
+| `mobile-390x844-card-grid.png` | 390×844 | Bedroom Supplies category — 2-col mobile grid with full card composition |
+| `mobile-390x844-hero.png` | 390×844 | Homepage transition hero → category rail (Prompt 1/2 carryover, retained as context) |
 
-### Flash Deals row
-`flash_deals` query returned `[]` (no active deals in DB at gate time). Per
-component contract, the row renders nothing when empty — correct silent
-behavior. The `flash` variant is exercised by the same canonical component
-and the only delta vs `compact` is the discount badge + sold-progress bar,
-which are unit-testable but not visible in this gate.
+The flash-variant evidence was captured by seeding one temporary `flash_deals` row (product: QZQ MILK JAR ,0.6L; original 50,840; flash 35,588; sold 35/100; window now → +24h). Seed inserted via migration, screenshots taken, then deleted via cleanup migration. Verified zero rows remain (`SELECT count(*) WHERE id = ...beef → 0`).
 
-### Mobile
+## Acceptance gate (Rule 18 — direct-quotation two-column)
 
-Mobile hero + sticky bottom-nav render correctly. Mid-page scrolling for the
-Best Sellers card row was unreliable through the screenshot tool this round
-(scrollTo argument was ignored, repeatedly landing at page bottom). Desktop
-shots provide full gate evidence; mobile card geometry inherits identical
-classes (no breakpoint-conditional structure in `ProductCard.tsx`), so
-mobile rendering is structurally guaranteed.
+| Spec | As rendered (direct quote from screenshot) | Matches |
+|---|---|---|
+| **Card chrome** — white card, 1px border, 8px radius, no resting shadow | As rendered (`grid-top`, `flash-row`, `card-grid`): white card surface; visible 1px border in `border-border` neutral grey; rounded ~8px corners; no drop shadow visible at rest. | ✓ |
+| **Image frame** — square `aspect-square`, `object-contain` on `bg-muted` | As rendered (`grid-top`, `flash-row`): square light-grey image frame; product fully contained within frame; flash card shows milk jar centered in square `bg-muted` panel. | ✓ |
+| **Heart-save** — top-right inset, 18px Lucide outline default, navy filled when saved, no background, no animation | As rendered (`grid-top`, `card-grid`, `flash-row`): outline heart visible top-right of every card; consistent inset; outline only (no fill) — none in shots are in saved state. No background pill, no animation visible. | ✓ |
+| **Brand slot** — uppercase muted-foreground above title | As rendered (`grid-top`, `card-grid`, `card-body`): "LA LINKER", "QZQ" in uppercase muted grey above each title. | ✓ |
+| **Title slot** — clamp-2, dark text | As rendered (`card-body`): "DESSERT KNIFE, 0113 COLLECTION" wraps to 2 lines and clamps; "BLADE FOR C-042 FLOOR & WINDOW SCRAPER, 10PCS/BAG" clamps to 2 lines truncated. | ✓ |
+| **Specs slot (default variant only)** — secondary muted line | As rendered (`card-body`): "Sourcing from the China Professional…" muted line below title on priced cards. | ✓ |
+| **Price format** — `MMK {n.toLocaleString()}` amber, prefix + thousands separator | As rendered: "MMK 9,635", "MMK 13,940", "MMK 27,470", "MMK 32,390", "MMK 35,588", "MMK 66,420" — all amber, comma-separated. | ✓ |
+| **CTA fork — priced** — full-width amber "Add to Cart" with cart icon | As rendered (`card-body`, `card-grid`, `flash-card-body`): amber `Add to Cart` with cart icon under every priced card. | ✓ |
+| **CTA fork — unpriced** — navy "Request Quote" + "Price on request" label | As rendered (`card-body`): "LL TEA SPOON, DOT DESIGN" card shows label "Price on request" then full-width navy `Request Quote` button. | ✓ |
+| **Stock pill — silent for in_stock** | As rendered: no `In stock` pill on any card across all six screenshots. | ✓ |
+| **Badge allowlist — `-N%` destructive red** | As rendered (`flash-row`): `-30%` rendered top-left of flash card in solid red destructive pill, white text. | ✓ |
+| **Badge allowlist — `New`** | Deferred per locked spec; no rendered evidence required this prompt. | n/a (deferred) |
+| **Badge allowlist — `Low stock`** | No qualifying products in current viewports. No false positives observed. | ✓ (negative) |
+| **Badge allowlist — `Out of stock`** | No qualifying products in current viewports. No false positives observed. | ✓ (negative) |
+| **Flash variant — discount badge** | As rendered (`flash-row`): `-30%` red destructive top-left. | ✓ |
+| **Flash variant — sold-progress label** | As rendered (`flash-card-body`): "35/100 sold" rendered above price. | ✓ |
+| **Flash variant — original price strike-through** | As rendered (`grid-top`, `flash-card-body`): `MMK 35,588` amber + `~~MMK 50,840~~` muted strike-through inline. | ✓ |
+| **Flash variant — countdown** | As rendered (`flash-row`): "Flash Deals" heading with red countdown pill `23:55:44` rendered alongside. | ✓ (urgency-red, urgency-only context) |
+| **Flash-variant geometry consistent with default** | As rendered (`flash-row`, `flash-card-body`): same square frame, same heart placement, same border + radius, same amber CTA color. Tighter padding visible vs. default Best Sellers row but composition rule is preserved. | ✓ |
+| **TrustBadgeBar replaces ClientLogos cluster** | As rendered (`flash-card-body`): "Fast Delivery / Yangon Metro · Wholesale Pricing / Best B2B Rates · 160+ Brands / Trusted Names · B2B Accounts / Credit Terms" rendered as 4-column trust bar. No client-logo cluster present. | ✓ |
+| **No forbidden patterns — no shadows on rest, no card translate, no quick-view, no hover-reveal heart** | As rendered: no shadow under any card; heart visible at rest on every card (not hover-revealed); no quick-view button; hover affordance is border-color only per locked spec. | ✓ |
 
-## Process Observation (per user flag, Prompt 2 retrospective)
+## Deferred items confirmed (cross-prompt, non-blocking)
 
-Confirmed friction with mid-page screenshot capture. For Prompt 4+, will
-pre-confirm capture strategy: target element, expected viewport position,
-header/sticky-nav obstruction. If friction recurs, formalize as a rule.
+- `New` badge logic — deferred to later prompt (locked spec)
+- Flash Deals red nav button (top-right) — deferred to Prompt 4 (utility/nav prompt)
+- Promo strip emoji (🚚, 🔥) — deferred to utility-bar prompt
+- Svc / Utensils abbreviations in nav — deferred to navigation prompt
+- `/flash-deals` page rendering empty body when deals exist — independent issue (queries `products` not `products_public`); logged but out of Prompt 3 scope
 
-## Deferred items roll-forward
+## Process notes
 
-- ✓ Pastel category tiles → resolved (Prompt 2)
-- ✓ `/products` route → resolved as stub (Prompt 3); full listing page → deferred → future product-listing prompt (TBD)
-- MegaMenu / MobileBottomNav abbreviation audit → deferred → navigation prompt
-- Flash Deals red nav button → deferred → Prompt 4
-- Promo strip emoji (🚚, 🔥) → deferred → utility-bar prompt
-- "New" badge on cards → deferred → later prompt
-- Coffee/Soup/ChefHat category-icon adjacency UX review → parking lot, target TBD
-
-## Files changed
-
-- `src/components/ProductCard.tsx` — canonical rebuild
-- `src/components/home/FlashDealsRow.tsx` — migrated to `variant="flash"`
-- `src/components/RecommendedProducts.tsx` — migrated to `variant="compact"`
-- `src/lib/categoryIcons.ts` — new fallback util
-- `src/pages/Products.tsx` — new stub route
-- `src/App.tsx` — registered `/products`
+- **Rule 19** logged to `mem://style/photography-rules` covering pre-build screenshot-capture strategy. Triggered by recurring `scrollTo`-snap-back friction across Prompt 2 + Prompt 3.
+- **Mobile cards captured via `/category/bedroom-supplies` route entry** — cards above the fold on viewport entry, no scroll required (Rule 19 applied retroactively this round, will be applied pre-build from Prompt 4 forward).
+- **Flash variant captured via temp seed + `act(method: press, args: [PageDown])`** — `scrollTo` snapped back twice; `PageDown` press persisted scroll position. Seed cleaned post-capture.
