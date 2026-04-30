@@ -54,11 +54,11 @@ const Hero = () => {
       {/* Desktop layout — left-anchored, vertically centered */}
       <div className="relative hidden md:block">
         <div className="container mx-auto px-6 lg:px-10 min-h-[560px] lg:min-h-[640px] flex items-center">
-          <div className="max-w-2xl py-20">
-            <h1 className="font-bold text-primary-foreground tracking-tight leading-[1.1] text-[44px] lg:text-[52px]">
-              Myanmar's Trusted Marketplace<br />
-              for Kitchen, Hotel, Restaurant<br />
-              &amp; Commercial Supplies
+          <div className="max-w-3xl py-20">
+            <h1 className="font-bold text-primary-foreground tracking-tight leading-[1.1] text-[40px] lg:text-[48px]">
+              Myanmar's Trusted Marketplace for Kitchen,<br />
+              Hotel, Restaurant &amp; Commercial<br />
+              Supplies
             </h1>
             <p className="mt-5 text-lg text-primary-foreground/80 max-w-xl">
               4,000+ products from 160+ premium international brands. Trade pricing,
