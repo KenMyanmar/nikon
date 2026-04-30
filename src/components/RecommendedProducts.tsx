@@ -1,9 +1,13 @@
+/**
+ * RecommendedProducts — Cart/Checkout "Things you'll love" rail (Prompt 3 migration).
+ *
+ * Now consumes canonical <ProductCard variant="compact" />. Hand-rolled markup deleted.
+ */
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAddToCart } from "@/hooks/useCart";
-import { Sparkles, ShoppingCart, Loader2 } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import ProductCard from "./ProductCard";
 
 interface CartItem {
   product_id: string;
@@ -26,9 +30,10 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-const RecommendedProducts = ({ cartItems }: RecommendedProductsProps) => {
-  const { addToCart, isAdding } = useAddToCart();
+const SELECT =
+  "id, slug, description, short_description, brand_name, selling_price, currency, stock_status, stock_code, thumbnail_url, category_id, category_name";
 
+const RecommendedProducts = ({ cartItems }: RecommendedProductsProps) => {
   const { categoryIds, groupIds, cartProductIds } = useMemo(() => {
     const cats = new Set<string>();
     const groups = new Set<string>();
@@ -51,12 +56,11 @@ const RecommendedProducts = ({ cartItems }: RecommendedProductsProps) => {
       const excludeIds = [...cartProductIds];
       const selectedIds = new Set<string>();
 
-      // Strategy 1: Same category
       let sameCat: any[] = [];
       if (categoryIds.length > 0) {
         const { data } = await supabase
           .from("products_public")
-          .select("id, slug, description, selling_price, currency, thumbnail_url, brand_name, category_name")
+          .select(SELECT)
           .in("category_id", categoryIds)
           .not("id", "in", `(${excludeIds.join(",")})`)
           .not("thumbnail_url", "is", null)
@@ -65,11 +69,10 @@ const RecommendedProducts = ({ cartItems }: RecommendedProductsProps) => {
         sameCat.forEach((p) => selectedIds.add(p.id));
       }
 
-      // Strategy 2: Featured
       const featExclude = [...excludeIds, ...Array.from(selectedIds)];
       const { data: featData } = await supabase
         .from("products_public")
-        .select("id, slug, description, selling_price, currency, thumbnail_url, brand_name, category_name")
+        .select(SELECT)
         .eq("is_featured", true)
         .not("id", "in", `(${featExclude.join(",")})`)
         .not("thumbnail_url", "is", null)
@@ -77,13 +80,12 @@ const RecommendedProducts = ({ cartItems }: RecommendedProductsProps) => {
       const featured = shuffle(featData || []).slice(0, 2);
       featured.forEach((p) => selectedIds.add(p.id));
 
-      // Strategy 3: Complementary group (same group, different category)
       let complementary: any[] = [];
       if (groupIds.length > 0 && categoryIds.length > 0) {
         const compExclude = [...excludeIds, ...Array.from(selectedIds)];
         const { data } = await supabase
           .from("products_public")
-          .select("id, slug, description, selling_price, currency, thumbnail_url, brand_name, category_name")
+          .select(SELECT)
           .in("group_id", groupIds)
           .not("category_id", "in", `(${categoryIds.join(",")})`)
           .not("id", "in", `(${compExclude.join(",")})`)
@@ -94,12 +96,11 @@ const RecommendedProducts = ({ cartItems }: RecommendedProductsProps) => {
 
       let combined = [...sameCat, ...featured, ...complementary];
 
-      // Fill to 6 if short
       if (combined.length < 6) {
         const allIds = [...excludeIds, ...combined.map((p) => p.id)];
         const { data: filler } = await supabase
           .from("products_public")
-          .select("id, slug, description, selling_price, currency, thumbnail_url, brand_name, category_name")
+          .select(SELECT)
           .not("id", "in", `(${allIds.join(",")})`)
           .not("thumbnail_url", "is", null)
           .limit(10);
@@ -117,13 +118,13 @@ const RecommendedProducts = ({ cartItems }: RecommendedProductsProps) => {
     return (
       <div className="py-6">
         <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="w-5 h-5 text-accent" />
+          <Sparkles className="w-5 h-5 text-primary" strokeWidth={1.75} />
           <h3 className="text-h4 text-foreground">Things you'll love</h3>
         </div>
         <div className="flex gap-3">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="min-w-[140px] md:min-w-[180px] animate-pulse">
-              <div className="aspect-square bg-muted rounded-lg" />
+            <div key={i} className="min-w-[160px] w-[160px] animate-pulse">
+              <div className="aspect-square bg-muted rounded-card" />
               <div className="h-3 bg-muted rounded mt-2 w-16" />
               <div className="h-4 bg-muted rounded mt-1 w-full" />
             </div>
@@ -138,64 +139,35 @@ const RecommendedProducts = ({ cartItems }: RecommendedProductsProps) => {
   return (
     <div className="py-6">
       <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="w-5 h-5 text-accent" />
+        <Sparkles className="w-5 h-5 text-primary" strokeWidth={1.75} />
         <h3 className="text-h4 text-foreground">Things you'll love</h3>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory md:snap-none md:overflow-x-visible md:flex-wrap">
-        {recommendations.map((product) => {
-          const price = Number(product.selling_price) || 0;
-          return (
-            <div
-              key={product.id}
-              className="min-w-[140px] w-[140px] md:min-w-[180px] md:w-auto md:flex-1 max-w-[220px] snap-start shrink-0 bg-card rounded-card shadow-card overflow-hidden flex flex-col"
-            >
-              <Link to={`/product/${product.slug || product.id}`} className="block">
-                <div className="aspect-square bg-secondary/30 p-2">
-                  <img
-                    src={product.thumbnail_url!}
-                    alt={product.description || ""}
-                    className="w-full h-full object-contain"
-                    loading="lazy"
-                  />
-                </div>
-              </Link>
-
-              <div className="p-2 flex flex-col flex-1">
-                {product.brand_name && (
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-wide truncate">
-                    {product.brand_name}
-                  </span>
-                )}
-                <Link
-                  to={`/product/${product.slug || product.id}`}
-                  className="text-xs font-medium text-foreground line-clamp-2 hover:text-primary transition-colors mt-0.5 flex-1"
-                >
-                  {product.description}
-                </Link>
-
-                <div className="mt-1.5">
-                  {price > 0 ? (
-                    <span className="text-sm font-bold text-foreground">
-                      {product.currency || "MMK"} {price.toLocaleString()}
-                    </span>
-                  ) : (
-                    <span className="text-sm font-medium text-primary">Quote</span>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => addToCart(product.id, 1, product.description || undefined)}
-                  disabled={isAdding}
-                  className="mt-2 w-full flex items-center justify-center gap-1 bg-primary text-primary-foreground text-xs font-semibold py-1.5 rounded-button hover:bg-primary/90 transition disabled:opacity-50"
-                >
-                  <ShoppingCart className="w-3 h-3" />
-                  Add
-                </button>
-              </div>
-            </div>
-          );
-        })}
+      <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory md:snap-none md:overflow-x-visible md:grid md:grid-cols-3 lg:grid-cols-6">
+        {recommendations.map((p) => (
+          <div
+            key={p.id}
+            className="min-w-[160px] w-[160px] md:min-w-0 md:w-auto snap-start shrink-0"
+          >
+            <ProductCard
+              variant="compact"
+              id={p.id}
+              image={p.thumbnail_url || "/placeholder.svg"}
+              title={p.description || ""}
+              brand={p.brand_name || ""}
+              specs={p.short_description || undefined}
+              price={p.selling_price ? Number(p.selling_price) : null}
+              currency={p.currency || "MMK"}
+              stockStatus={
+                (p.stock_status as "in_stock" | "low_stock" | "out_of_stock") || "in_stock"
+              }
+              sku={p.stock_code || ""}
+              slug={p.slug || ""}
+              categoryId={p.category_id || null}
+              categoryName={p.category_name || undefined}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
