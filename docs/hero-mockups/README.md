@@ -29,8 +29,8 @@ Licensed Unsplash+ photo `On_1eB9U6k0` (Getty warehouse aisle), committed at
 ## Versioning
 
 Mockup version numbers are strictly sequential across all iterations
-regardless of filename, branch, or content change (Rule 15). v3 is archived
-as rejected. v4 is current.
+regardless of filename, branch, or content change (Rule 15). v3 archived
+(rejected, substituted copy). v4 archived (watermarked source). v5 current.
 
 See `mem://style/photography-rules` for Rules 12–16 governing render-time
 inspection, copy lock, sequential versioning, and archival.
