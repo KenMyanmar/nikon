@@ -2196,6 +2196,7 @@ export type Database = {
           datasheet_url: string | null
           description: string
           enriched_by: string | null
+          erp_description: string | null
           features: string | null
           group_id: string | null
           id: string
@@ -2235,6 +2236,7 @@ export type Database = {
           datasheet_url?: string | null
           description: string
           enriched_by?: string | null
+          erp_description?: string | null
           features?: string | null
           group_id?: string | null
           id?: string
@@ -2274,6 +2276,7 @@ export type Database = {
           datasheet_url?: string | null
           description?: string
           enriched_by?: string | null
+          erp_description?: string | null
           features?: string | null
           group_id?: string | null
           id?: string
@@ -3137,8 +3140,8 @@ export type Database = {
         | { Args: { _user_id: string }; Returns: boolean }
       place_order: {
         Args: {
-          p_contact_name: string
-          p_contact_phone: string
+          p_contact_name?: string
+          p_contact_phone?: string
           p_coupon_code?: string
           p_customer_id: string
           p_customer_notes?: string
