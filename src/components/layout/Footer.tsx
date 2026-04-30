@@ -261,17 +261,26 @@ const Footer = () => {
           <div className="md:hidden">
             <AccordionSection title="About IKON" open={openSection === "about"} onToggle={() => toggle("about")}>
               <FooterLinks links={ABOUT_LINKS} />
-              <div className="mt-3 space-y-1 text-xs text-[#9ca3af]">
-                <p>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</p>
-                <p>📞 09 89009 0301</p>
-                <p>📧 ikonmartecommerce@gmail.com</p>
+              <div className="mt-3 space-y-1.5 text-xs text-[#9ca3af]">
+                <div className="flex items-start gap-1.5">
+                  <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
+                  <span>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Phone className="h-3 w-3 shrink-0" />
+                  <span>09 89009 0301</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Mail className="h-3 w-3 shrink-0" />
+                  <span>ikonmartecommerce@gmail.com</span>
+                </div>
               </div>
             </AccordionSection>
 
             <AccordionSection title="Shop by Category" open={openSection === "category"} onToggle={() => toggle("category")}>
               <FooterLinks links={categoryLinks} />
-              <Link to="/flash-deals" className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-[#f59e0b]">
-                <Zap className="h-3.5 w-3.5" /> Flash Deals
+              <Link to="/flash-deals" className="mt-2 inline-block text-sm font-medium text-[#f59e0b]">
+                Flash Deals →
               </Link>
             </AccordionSection>
 
@@ -279,7 +288,7 @@ const Footer = () => {
               <FooterLinks links={SERVICE_LINKS} />
             </AccordionSection>
 
-            <AccordionSection title="Resources ⭐" open={openSection === "resources"} onToggle={() => toggle("resources")}>
+            <AccordionSection title="Resources" open={openSection === "resources"} onToggle={() => toggle("resources")}>
               <FooterLinks links={RESOURCE_LINKS} />
             </AccordionSection>
 
@@ -295,10 +304,16 @@ const Footer = () => {
                   </a>
                 ))}
               </div>
-              <div className="space-y-1 text-xs text-[#9ca3af]">
-                <p>📍 Mingalardon, Yangon</p>
-                <p>📞 09 89009 0301</p>
-                <p>🕐 Mon–Sat: 9:00 AM – 5:00 PM</p>
+              <div className="space-y-1.5 text-xs text-[#9ca3af]">
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="h-3 w-3 shrink-0" /> Mingalardon, Yangon
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Phone className="h-3 w-3 shrink-0" /> 09 89009 0301
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Clock className="h-3 w-3 shrink-0" /> Mon–Sat: 9:00 AM – 5:00 PM
+                </div>
               </div>
             </div>
           </div>
