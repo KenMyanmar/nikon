@@ -1,0 +1,1 @@
+DELETE FROM public.flash_deals WHERE id = '00000000-0000-0000-0000-00000000beef'::uuid;
