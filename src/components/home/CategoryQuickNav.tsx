@@ -8,24 +8,35 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 
+/**
+ * Category Rail (Prompt 2 — Path A: neutral icon tiles)
+ *
+ * Design Contract compliance:
+ *   - Tile: bg-card, 1px border, 8px radius, no resting shadow
+ *   - Icon chip: 48×48, bg-muted, 8px radius
+ *   - Icon: Lucide line, 24px, text-primary, strokeWidth 1.75
+ *   - Hover: border primary/30, chip primary/10
+ *   - Focus-visible: hover state + 2px navy outline at offset 2
+ *   - No per-tile accent colors, no pastels, no badges, no emoji
+ */
+
 interface CategoryConfig {
-  color: string;
   icon: LucideIcon;
   name: string;
   slug: string;
 }
 
 const categoryConfig: Record<string, CategoryConfig> = {
-  TWD: { color: "#6366F1", icon: UtensilsCrossed, name: "Tableware", slug: "tableware" },
-  SPS: { color: "#8B5CF6", icon: Settings, name: "Spare Parts", slug: "spare-parts" },
-  KUT: { color: "#EC4899", icon: ChefHat, name: "Kitchen Utensils", slug: "kitchen-utensils" },
-  HKG: { color: "#14B8A6", icon: SprayCan, name: "Housekeeping", slug: "housekeeping-supplies" },
-  ABL: { color: "#F59E0B", icon: Bed, name: "Bedroom", slug: "bedroom-supplies" },
-  FBS: { color: "#EF4444", icon: Coffee, name: "F&B Solutions", slug: "f-and-b-solutions" },
-  KSR: { color: "#F97316", icon: Flame, name: "Kitchen Services", slug: "kitchen-services" },
-  FSR: { color: "#10B981", icon: Soup, name: "Food Services", slug: "food-services" },
-  BQE: { color: "#3B82F6", icon: Armchair, name: "Buffet & Banquet", slug: "buffet-and-banquet" },
-  LPR: { color: "#06B6D4", icon: WashingMachine, name: "Laundry", slug: "laundry-solutions" },
+  TWD: { icon: UtensilsCrossed, name: "Tableware", slug: "tableware" },
+  SPS: { icon: Settings, name: "Spare Parts", slug: "spare-parts" },
+  KUT: { icon: ChefHat, name: "Kitchen Utensils", slug: "kitchen-utensils" },
+  HKG: { icon: SprayCan, name: "Housekeeping", slug: "housekeeping-supplies" },
+  ABL: { icon: Bed, name: "Bedroom", slug: "bedroom-supplies" },
+  FBS: { icon: Coffee, name: "Food & Beverage", slug: "f-and-b-solutions" },
+  KSR: { icon: Flame, name: "Kitchen Services", slug: "kitchen-services" },
+  FSR: { icon: Soup, name: "Food Services", slug: "food-services" },
+  BQE: { icon: Armchair, name: "Buffet & Banquet", slug: "buffet-and-banquet" },
+  LPR: { icon: WashingMachine, name: "Laundry", slug: "laundry-solutions" },
 };
 
 const CategoryQuickNav = () => {
@@ -40,7 +51,7 @@ const CategoryQuickNav = () => {
       if (error) throw error;
       return data || [];
     },
-    staleTime: 10 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: parentCategories = [], isLoading: loadingCats } = useQuery({
@@ -54,24 +65,26 @@ const CategoryQuickNav = () => {
       if (error) throw error;
       return data || [];
     },
-    staleTime: 10 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
   });
 
   const isLoading = loadingGroups || loadingCats;
 
   if (isLoading) {
     return (
-      <section className="container mx-auto px-4 py-6">
+      <section className="container mx-auto px-4 py-10">
+        <div className="h-7 w-48 mb-6">
+          <Skeleton className="h-7 w-48" />
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {Array.from({ length: 10 }).map((_, i) => (
-            <Skeleton key={i} className="h-28 rounded-[14px]" />
+            <Skeleton key={i} className="h-24 rounded-lg" />
           ))}
         </div>
       </section>
     );
   }
 
-  // Match parent category by slug for fresh product_count
   const countBySlug = new Map(
     parentCategories.map((c) => [c.slug, c.product_count ?? 0])
   );
@@ -91,16 +104,20 @@ const CategoryQuickNav = () => {
   if (cards.length === 0) return null;
 
   return (
-    <section className="container mx-auto px-4 py-6">
-      {/* Desktop / Tablet grid */}
+    <section className="container mx-auto px-4 py-10">
+      <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-6">
+        Shop by category
+      </h2>
+
+      {/* Desktop / Tablet flat grid */}
       <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-5 gap-4">
         {cards.map(({ config, count }) => (
           <CategoryCard key={config.slug} config={config} count={count} />
         ))}
       </div>
 
-      {/* Mobile horizontal scroll */}
-      <div className="flex md:hidden gap-3 overflow-x-auto scroll-snap-x-mandatory pb-2 no-scrollbar">
+      {/* Mobile horizontal snap-scroll */}
+      <div className="flex md:hidden gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 no-scrollbar">
         {cards.map(({ config, count }) => (
           <CategoryCard key={config.slug} config={config} count={count} mobile />
         ))}
@@ -119,38 +136,32 @@ const CategoryCard = ({
   mobile?: boolean;
 }) => {
   const Icon = config.icon;
-  const bg6 = `${config.color}0F`;   // 6% opacity
-  const bg15 = `${config.color}26`;  // 15% opacity
-  const bg40 = `${config.color}66`;  // 40% opacity
 
   return (
     <Link
       to={`/category/${config.slug}`}
-      className={`
-        flex items-center h-28 rounded-[14px] p-5 border transition-all duration-200
-        hover:-translate-y-0.5 hover:shadow-md group
-        ${mobile ? "min-w-[200px] snap-start flex-shrink-0" : ""}
-      `}
-      style={{
-        backgroundColor: bg6,
-        borderColor: bg15,
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget.style.borderColor = bg40);
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget.style.borderColor = bg15);
-      }}
+      className={[
+        "group flex items-center h-24 rounded-lg p-4 bg-card border border-border",
+        "transition-colors duration-200",
+        "hover:border-primary/30",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:border-primary/30",
+        mobile ? "min-w-[200px] snap-start flex-shrink-0" : "",
+      ].join(" ")}
     >
       <div
-        className="flex items-center justify-center w-12 h-12 rounded-xl flex-shrink-0"
-        style={{ backgroundColor: bg15 }}
+        className={[
+          "flex items-center justify-center w-12 h-12 rounded-lg flex-shrink-0 bg-muted",
+          "transition-colors duration-200",
+          "group-hover:bg-primary/10 group-focus-visible:bg-primary/10",
+        ].join(" ")}
       >
-        <Icon size={24} style={{ color: config.color }} />
+        <Icon size={24} strokeWidth={1.75} className="text-primary" />
       </div>
       <div className="ml-4 min-w-0">
-        <p className="font-semibold text-sm text-foreground line-clamp-1">{config.name}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">{count.toLocaleString()} items</p>
+        <p className="font-semibold text-sm text-foreground truncate">{config.name}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          {count.toLocaleString()} items
+        </p>
       </div>
     </Link>
   );
