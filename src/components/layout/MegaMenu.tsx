@@ -1,8 +1,8 @@
-import { useState, useRef, useMemo, useEffect, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useRef, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronDown, Zap, Tag } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -31,18 +31,6 @@ interface TopBrand {
   slug: string;
   product_count: number;
 }
-
-const SHORT_NAMES: Record<string, string> = {
-  "Housekeeping Supplies": "Housekeeping",
-  "Laundry Solutions": "Laundry",
-  "F & B Solutions": "F&B",
-  "Bedroom Supplies": "Bedroom",
-  "Buffet & Banquet": "Buffet",
-  "Kitchen Utensils": "Utensils",
-  "Kitchen Services": "Kitchen Svc",
-  "Food Services": "Food Svc",
-  "Spare Parts": "Spare Parts",
-};
 
 export const useNavData = () => {
   const { data: mainCategories = [] } = useQuery({
@@ -110,7 +98,7 @@ const MegaMenuDropdown = ({
   );
 
   return (
-    <div className="absolute left-0 right-0 top-full w-full bg-card border-t-2 border-primary shadow-xl z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+    <div className="absolute left-0 right-0 top-full w-full bg-card border-t-2 border-primary shadow-xl z-50 animate-in fade-in duration-150">
       <div className="max-w-[1280px] mx-auto px-8 py-6">
         <div className="grid grid-cols-[1fr_220px] gap-8">
           {/* Left — Sub-categories */}
@@ -123,11 +111,9 @@ const MegaMenuDropdown = ({
                 <Link
                   key={sub.id}
                   to={`/category/${sub.slug}`}
-                  className="flex items-center gap-2 py-1.5 text-sm text-muted-foreground hover:text-accent transition group/item min-w-0"
+                  className="flex items-center gap-2 py-1.5 text-sm text-muted-foreground hover:text-accent min-w-0"
                 >
-                  <span className="truncate min-w-0 group-hover/item:translate-x-1 transition-transform">
-                    {sub.name}
-                  </span>
+                  <span className="truncate min-w-0">{sub.name}</span>
                   <span className="text-xs text-muted-foreground/60 shrink-0">
                     ({sub.product_count})
                   </span>
@@ -157,7 +143,7 @@ const MegaMenuDropdown = ({
                 <Link
                   key={brand.id}
                   to={`/brand/${brand.slug}`}
-                  className="flex items-center justify-between py-1.5 text-sm text-muted-foreground hover:text-accent transition"
+                  className="flex items-center justify-between py-1.5 text-sm text-muted-foreground hover:text-accent"
                 >
                   <span className="truncate">{brand.name}</span>
                   <span className="text-xs text-muted-foreground/60 shrink-0 ml-2">
@@ -187,8 +173,6 @@ export const DesktopMegaNav = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const shortName = (name: string) => SHORT_NAMES[name] || name;
-
   const handleMouseEnter = (id: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setActiveId(id);
@@ -202,7 +186,7 @@ export const DesktopMegaNav = () => {
     <nav className="hidden lg:block bg-primary relative">
       <div className="container mx-auto px-4">
         <div className="flex items-center">
-          {/* All 10 categories */}
+          {/* All 10 categories — full names, no abbreviations */}
           {mainCategories.map((cat) => (
             <div
               key={cat.id}
@@ -211,39 +195,15 @@ export const DesktopMegaNav = () => {
             >
               <Link
                 to={`/category/${cat.slug}`}
-                className={`flex items-center gap-1 px-3 py-3 text-primary-foreground text-[13px] font-medium transition whitespace-nowrap ${
-                  activeId === cat.id ? "bg-[hsl(var(--ikon-navy-light))]" : "hover:bg-[hsl(var(--ikon-navy-light))]"
+                className={`flex items-center gap-1 px-3 py-3 text-primary-foreground text-[13px] font-medium whitespace-nowrap ${
+                  activeId === cat.id ? "bg-primary/85" : "hover:bg-primary/85"
                 }`}
               >
-                {shortName(cat.name)}
+                {cat.name}
                 <ChevronDown className="w-3 h-3 opacity-60" />
               </Link>
             </div>
           ))}
-
-          {/* Divider */}
-          <div className="w-px h-6 bg-primary-foreground/20 shrink-0 mx-1" />
-
-          {/* Brands standalone link */}
-          <Link
-            to="/brands"
-            className="flex items-center gap-1.5 px-3 py-3 text-primary-foreground text-[13px] font-medium hover:bg-[hsl(var(--ikon-navy-light))] transition whitespace-nowrap"
-          >
-            <Tag className="w-3.5 h-3.5 opacity-70" />
-            Brands
-          </Link>
-
-          {/* Spacer */}
-          <div className="flex-1" />
-
-          {/* Flash Deals */}
-          <Link
-            to="/flash-deals"
-            className="flex items-center gap-1.5 px-4 py-3 text-white text-[13px] font-bold bg-destructive hover:bg-[hsl(var(--ikon-red-dark))] transition whitespace-nowrap shrink-0"
-          >
-            <Zap className="w-3.5 h-3.5" />
-            Flash Deals
-          </Link>
         </div>
       </div>
 
@@ -268,30 +228,18 @@ export const DesktopMegaNav = () => {
 export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
   const { mainCategories, subCategories } = useNavData();
 
-  // Sort by product_count DESC (already sorted from query)
   const sorted = mainCategories;
 
   return (
     <div className="px-4 py-3">
-      {/* Prominent buttons at top */}
-      <div className="flex gap-2 mb-4">
-        <Link
-          to="/flash-deals"
-          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg bg-destructive text-white font-bold text-sm transition hover:opacity-90"
-          onClick={onClose}
-        >
-          <Zap className="w-4 h-4" />
-          Flash Deals
-        </Link>
-        <Link
-          to="/brands"
-          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg bg-primary text-primary-foreground font-bold text-sm transition hover:opacity-90"
-          onClick={onClose}
-        >
-          <Tag className="w-4 h-4" />
-          Browse Brands
-        </Link>
-      </div>
+      {/* Browse Brands — sub-heading-level treatment, solo (post Flash Deals removal) */}
+      <Link
+        to="/brands"
+        className="block py-2 mb-3 text-sm font-medium text-primary hover:text-accent"
+        onClick={onClose}
+      >
+        Browse Brands →
+      </Link>
 
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 px-1">
         Categories
@@ -305,7 +253,7 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
               <div className="flex items-center">
                 <Link
                   to={`/category/${cat.slug}`}
-                  className="flex-1 flex items-center justify-between py-2.5 px-3 text-sm font-medium text-foreground hover:text-accent transition"
+                  className="flex-1 flex items-center justify-between py-2.5 px-3 text-sm font-medium text-foreground hover:text-accent"
                   onClick={onClose}
                 >
                   <span className="truncate">{cat.name}</span>
@@ -321,7 +269,7 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
                     <Link
                       key={sub.id}
                       to={`/category/${sub.slug}`}
-                      className="flex items-center justify-between py-1.5 text-sm text-muted-foreground hover:text-accent transition"
+                      className="flex items-center justify-between py-1.5 text-sm text-muted-foreground hover:text-accent"
                       onClick={onClose}
                     >
                       <span className="truncate">{sub.name}</span>
