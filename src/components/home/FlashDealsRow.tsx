@@ -59,13 +59,13 @@ const FlashDealsRow = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <Zap className="w-6 h-6 text-red-600 fill-red-600" />
+            <Zap className="w-6 h-6 text-destructive fill-destructive" />
             <h2 className="text-h3 text-foreground">Flash Deals</h2>
-            <span className="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+            <span className="bg-destructive text-destructive-foreground text-xs font-bold px-3 py-1 rounded-full">
               {formatTime(timeLeft)}
             </span>
           </div>
-          <Link to="/flash-deals" className="text-sm font-semibold text-red-600 hover:underline">
+          <Link to="/flash-deals" className="text-sm font-semibold text-destructive hover:underline">
             View All Deals →
           </Link>
         </div>
@@ -90,12 +90,12 @@ const FlashDealsRow = () => {
                     className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform"
                     loading="lazy"
                   />
-                  <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  <span className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
                     -{discountPct}%
                   </span>
                   {soldPct > 70 && (
-                    <span className="absolute top-2 right-2 bg-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
-                      🔥 Almost Gone!
+                    <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5 py-0.5 rounded">
+                      Almost Gone!
                     </span>
                   )}
                 </div>
@@ -116,7 +116,7 @@ const FlashDealsRow = () => {
                     <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${
-                          soldPct > 70 ? "bg-red-500" : soldPct > 30 ? "bg-orange-400" : "bg-emerald-500"
+                          soldPct > 70 ? "bg-destructive" : soldPct > 30 ? "bg-muted-foreground/60" : "bg-muted-foreground/30"
                         }`}
                         style={{ width: `${Math.min(soldPct, 100)}%` }}
                       />

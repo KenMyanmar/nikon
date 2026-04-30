@@ -27,6 +27,7 @@ import About from "./pages/About";
 import Promotions from "./pages/Promotions";
 import PromotionDetail from "./pages/PromotionDetail";
 import Contact from "./pages/Contact";
+import WholesaleSignup from "./pages/WholesaleSignup";
 import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 
@@ -64,6 +65,7 @@ const App = () => (
             <Route path="/promotions" element={<Promotions />} />
             <Route path="/promotions/:id" element={<PromotionDetail />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/wholesale-signup" element={<WholesaleSignup />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
