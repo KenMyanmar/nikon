@@ -63,11 +63,18 @@ Hex values, role rules (urgency-only red), forbidden values list, hardcoded-hex 
 
 Replace deprecated palette in Core with Contract values. Add forbidden-hex line.
 
+## Resolved decisions (logged as rules in mem://style/color-palette)
+
+Standing rule: red belongs in content, never in navigation or brand surfaces. Valid uses include flash-sale countdowns, percentage-off badges, low-stock warnings, errors, destructive states.
+
+1. PromotionsBanner red flame icon + "% OFF" badges → **urgency red, content-level usage, Contract-compliant**. No change.
+2. Promotions / PromotionDetail "% OFF" badges → **urgency red, content-level usage, Contract-compliant**. No change.
+3. FlashDealsRow gradient → **removed**, replaced with `bg-background` (#FFFFFF), per Contract gradient prohibition. Executed in this commit (file 3).
+
 ## Out of scope (deferred to numbered prompts)
 
 - All other component edits.
 - MegaMenu Flash Deals red nav buttons → Prompt 4 removes them entirely.
-- PromotionsBanner / Promotions / PromotionDetail red badges → ambiguity flagged; awaits user decision before any prompt re-roles them.
 - Hardcoded hex offenders in `Footer.tsx`, `Articles.tsx`, `ArticleDetail.tsx`, `Contact.tsx`, `ProductDetail.tsx` line 564 → migrate during the prompt that touches each surface.
 
 ## Acceptance test
@@ -83,10 +90,3 @@ After commit, the homepage `/` should render with:
 - Flash Deals row on flat white, no gradient.
 
 Capture 1440×900 desktop + 390×844 mobile screenshots of `/` after commit, post for sign-off.
-
-## Pending decisions before Prompt 1 plan
-
-After this commit lands, two audit calls still needed:
-
-1. PromotionsBanner red flame icon + "X% OFF" badges — keep as urgency, or re-role to amber?
-2. Promotions / PromotionDetail "X% OFF" badges — same call.

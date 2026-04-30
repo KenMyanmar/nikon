@@ -95,9 +95,9 @@ export default {
         modal: "16px",
       },
       boxShadow: {
-        card: "0 4px 6px -1px rgba(33, 34, 101, 0.07), 0 2px 4px -2px rgba(33, 34, 101, 0.05)",
-        "card-hover": "0 10px 15px -3px rgba(33, 34, 101, 0.08), 0 4px 6px -4px rgba(33, 34, 101, 0.05)",
-        nav: "0 2px 8px rgba(33, 34, 101, 0.1)",
+        card: "0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.03)",
+        "card-hover": "0 4px 12px rgba(0, 0, 0, 0.08)",
+        nav: "0 1px 3px rgba(0, 0, 0, 0.06)",
       },
       keyframes: {
         "accordion-down": {

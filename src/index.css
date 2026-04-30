@@ -4,56 +4,59 @@
 
 @layer base {
   :root {
-    /* IKON MART E-MALL DESIGN TOKENS */
+    /* IKON MART — DESIGN CONTRACT TOKENS (Marathon Reset, authoritative)
+       Pure neutrals (no tint). Urgency red is urgency-only — never nav, never brand accent.
+       Primary navy #1B2A4E | Accent amber #C8941F | Urgency red #DC2626
+       Text #1A1A1A | Muted #666666 | Border #E5E5E5 | Bg-subtle #F8F8F8 | Bg #FFFFFF
+       Deprecated (never use): #0f1729, #212265, #ED1F24, #f59e0b */
 
-    /* Primary — Navy (#212265) */
-    --background: 0 0% 97%;
-    --foreground: 240 25% 14%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 25% 14%;
+    --card-foreground: 0 0% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 25% 14%;
+    --popover-foreground: 0 0% 10%;
 
-    --primary: 239 52% 26%;
+    --primary: 222 49% 21%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 33% 96%;
-    --secondary-foreground: 239 52% 26%;
+    --secondary: 0 0% 97%;
+    --secondary-foreground: 222 49% 21%;
 
-    --muted: 240 33% 96%;
-    --muted-foreground: 240 12% 45%;
+    --muted: 0 0% 97%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 40 90% 50%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 39 73% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 20% 93%;
-    --input: 240 20% 93%;
-    --ring: 239 52% 26%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 222 49% 21%;
 
     --radius: 0.5rem;
 
-    /* IKON Extended Tokens */
-    --ikon-navy: 239 52% 26%;
-    --ikon-navy-dark: 239 52% 21%;
-    --ikon-navy-light: 239 52% 33%;
-    --ikon-navy-50: 240 33% 95%;
-    --ikon-red: 357 86% 53%;
-    --ikon-red-dark: 357 78% 47%;
-    --ikon-red-light: 0 90% 96%;
-    --ikon-sale: 357 86% 53%;
-    --ikon-text-primary: 240 25% 14%;
-    --ikon-text-secondary: 240 18% 35%;
-    --ikon-text-tertiary: 240 8% 59%;
-    --ikon-border: 240 20% 91%;
-    --ikon-bg-secondary: 240 33% 97%;
-    --ikon-bg-tertiary: 240 33% 95%;
+    /* IKON Extended Tokens — repointed to Contract palette */
+    --ikon-navy: 222 49% 21%;
+    --ikon-navy-dark: 222 49% 15%;
+    --ikon-navy-light: 222 49% 28%;
+    --ikon-navy-50: 0 0% 97%;
+    --ikon-red: 0 72% 51%;
+    --ikon-red-dark: 0 72% 45%;
+    --ikon-red-light: 0 0% 97%;
+    --ikon-sale: 0 72% 51%;
+    --ikon-text-primary: 0 0% 10%;
+    --ikon-text-secondary: 0 0% 40%;
+    --ikon-text-tertiary: 0 0% 55%;
+    --ikon-border: 0 0% 90%;
+    --ikon-bg-secondary: 0 0% 97%;
+    --ikon-bg-tertiary: 0 0% 94%;
     --ikon-success: 142 72% 37%;
-    --ikon-warning: 38 92% 50%;
+    --ikon-warning: 39 73% 45%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
