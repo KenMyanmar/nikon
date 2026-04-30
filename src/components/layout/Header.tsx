@@ -27,12 +27,12 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-card shadow-nav">
-      {/* Announcement Bar */}
-      <div className="bg-accent text-accent-foreground text-center py-2 text-sm font-medium">
-        🚚 Free delivery on orders over MMK 500,000 in Yangon Metro
-        <Link to="/flash-deals" className="underline ml-2 font-bold">Shop Deals →</Link>
-        <span className="mx-2">|</span>
-        <Link to="/promotions" className="underline font-bold">🔥 Promotions</Link>
+      {/* Announcement Bar — neutral utility strip */}
+      <div className="bg-secondary text-foreground text-center py-2 text-sm font-medium">
+        Free delivery on orders over MMK 500,000 in Yangon Metro
+        <Link to="/flash-deals" className="underline ml-2 text-primary">Shop Deals →</Link>
+        <span className="mx-2 text-muted-foreground">|</span>
+        <Link to="/promotions" className="underline text-primary">Promotions</Link>
       </div>
 
       {/* Main Header */}

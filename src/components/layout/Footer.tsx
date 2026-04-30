@@ -5,19 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   MapPin, Phone, Mail, Clock, Facebook, Instagram,
   MessageCircle, MessageSquare, ChevronDown,
-  Sparkles, ShieldCheck, Handshake, Zap,
+  Sparkles, ShieldCheck, Handshake,
 } from "lucide-react";
-
-const SHORT_NAMES: Record<string, string> = {
-  "Housekeeping Supplies": "Housekeeping",
-  "Laundry Solutions": "Laundry",
-  "Bedroom Supplies": "Bedroom",
-  "F & B Solutions": "F&B",
-  "Kitchen Services": "Kitchen Svc",
-  "Food Services": "Food Svc",
-  "Buffet & Banquet": "Buffet",
-  "Kitchen Utensils": "Utensils",
-};
 
 const ABOUT_LINKS = [
   { label: "Our Story", href: "/about" },
@@ -138,7 +127,7 @@ const Footer = () => {
 
   const categoryLinks = [
     ...categories.slice(0, 10).map((c) => ({
-      label: SHORT_NAMES[c.name] || c.name,
+      label: c.name,
       href: `/category/${c.slug}`,
     })),
   ];
@@ -157,7 +146,7 @@ const Footer = () => {
       <div className="bg-[#1a1f36]">
         <div className="container mx-auto flex flex-col gap-4 px-4 py-6 md:flex-row md:items-center md:justify-between">
           <p className="text-sm font-medium text-white">
-            📩 Stay updated with new products & HoReCa insights
+            Stay updated with new products & HoReCa insights
           </p>
           <div className="flex w-full gap-2 md:w-auto">
             <input
@@ -212,9 +201,9 @@ const Footer = () => {
               <FooterLinks links={categoryLinks} />
               <Link
                 to="/flash-deals"
-                className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-[#f59e0b] transition-colors hover:text-[#fbbf24]"
+                className="mt-2 inline-block text-sm font-medium text-[#f59e0b] transition-colors hover:text-[#fbbf24]"
               >
-                <Zap className="h-3.5 w-3.5" /> Flash Deals
+                Flash Deals →
               </Link>
             </div>
 
@@ -229,7 +218,7 @@ const Footer = () => {
             {/* Col 4 — Resources */}
             <div>
               <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white">
-                Resources ⭐
+                Resources
               </h4>
               <FooterLinks links={RESOURCE_LINKS} />
             </div>
@@ -272,17 +261,26 @@ const Footer = () => {
           <div className="md:hidden">
             <AccordionSection title="About IKON" open={openSection === "about"} onToggle={() => toggle("about")}>
               <FooterLinks links={ABOUT_LINKS} />
-              <div className="mt-3 space-y-1 text-xs text-[#9ca3af]">
-                <p>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</p>
-                <p>📞 09 89009 0301</p>
-                <p>📧 ikonmartecommerce@gmail.com</p>
+              <div className="mt-3 space-y-1.5 text-xs text-[#9ca3af]">
+                <div className="flex items-start gap-1.5">
+                  <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
+                  <span>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Phone className="h-3 w-3 shrink-0" />
+                  <span>09 89009 0301</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Mail className="h-3 w-3 shrink-0" />
+                  <span>ikonmartecommerce@gmail.com</span>
+                </div>
               </div>
             </AccordionSection>
 
             <AccordionSection title="Shop by Category" open={openSection === "category"} onToggle={() => toggle("category")}>
               <FooterLinks links={categoryLinks} />
-              <Link to="/flash-deals" className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-[#f59e0b]">
-                <Zap className="h-3.5 w-3.5" /> Flash Deals
+              <Link to="/flash-deals" className="mt-2 inline-block text-sm font-medium text-[#f59e0b]">
+                Flash Deals →
               </Link>
             </AccordionSection>
 
@@ -290,7 +288,7 @@ const Footer = () => {
               <FooterLinks links={SERVICE_LINKS} />
             </AccordionSection>
 
-            <AccordionSection title="Resources ⭐" open={openSection === "resources"} onToggle={() => toggle("resources")}>
+            <AccordionSection title="Resources" open={openSection === "resources"} onToggle={() => toggle("resources")}>
               <FooterLinks links={RESOURCE_LINKS} />
             </AccordionSection>
 
@@ -306,10 +304,16 @@ const Footer = () => {
                   </a>
                 ))}
               </div>
-              <div className="space-y-1 text-xs text-[#9ca3af]">
-                <p>📍 Mingalardon, Yangon</p>
-                <p>📞 09 89009 0301</p>
-                <p>🕐 Mon–Sat: 9:00 AM – 5:00 PM</p>
+              <div className="space-y-1.5 text-xs text-[#9ca3af]">
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="h-3 w-3 shrink-0" /> Mingalardon, Yangon
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Phone className="h-3 w-3 shrink-0" /> 09 89009 0301
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Clock className="h-3 w-3 shrink-0" /> Mon–Sat: 9:00 AM – 5:00 PM
+                </div>
               </div>
             </div>
           </div>
