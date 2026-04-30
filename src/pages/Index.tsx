@@ -1,29 +1,30 @@
 import MainLayout from "@/components/layout/MainLayout";
+import Hero from "@/components/home/Hero";
 import CategoryQuickNav from "@/components/home/CategoryQuickNav";
-import HeroBannerCarousel from "@/components/home/HeroBannerCarousel";
-import PromotionsBanner from "@/components/home/PromotionsBanner";
 import FlashDealsRow from "@/components/home/FlashDealsRow";
 import BestSellers from "@/components/home/BestSellers";
-import TopBrandsShowcase from "@/components/home/TopBrandsShowcase";
 import ClientLogos from "@/components/home/ClientLogos";
-import NewArrivals from "@/components/home/NewArrivals";
 import TrustBadgeBar from "@/components/home/TrustBadgeBar";
-import QuotationCTA from "@/components/home/QuotationCTA";
 import HoReCaResources from "@/components/home/HoReCaResources";
 
+/**
+ * Homepage section order (Prompt 1):
+ *   PromoBanner (in Header) → Header → Hero → Category Rail
+ *   → Best Sellers → Flash Deals → ClientLogos → TrustBadgeBar
+ *   → Articles (HoReCaResources) → Footer
+ *
+ * Removed: PromotionsBanner, TopBrandsShowcase, NewArrivals, QuotationCTA,
+ * HeroBannerCarousel (replaced by Hero).
+ */
 const Index = () => {
   return (
     <MainLayout>
-      <HeroBannerCarousel />
-      <PromotionsBanner />
+      <Hero />
       <CategoryQuickNav />
-      <FlashDealsRow />
       <BestSellers />
-      <TopBrandsShowcase />
+      <FlashDealsRow />
       <ClientLogos />
-      <NewArrivals />
       <TrustBadgeBar />
-      <QuotationCTA />
       <HoReCaResources />
     </MainLayout>
   );

@@ -70,7 +70,7 @@ const ArticleCard = ({ article }: { article: Article }) => (
           ))}
         </div>
       )}
-      <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-[#f59e0b] transition-colors">
+      <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-accent transition-colors">
         {article.title}
       </h3>
       {article.excerpt && (
@@ -163,8 +163,8 @@ const Articles = () => {
               onClick={() => handleTagClick(f.value)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                 activeTag === f.value
-                  ? "bg-[#f59e0b] text-[#1a1f36] border-[#f59e0b]"
-                  : "border-gray-300 text-gray-600 hover:border-[#f59e0b] hover:text-[#f59e0b]"
+                  ? "bg-accent text-accent-foreground border-accent"
+                  : "border-gray-300 text-gray-600 hover:border-accent hover:text-accent"
               }`}
             >
               {f.label}
@@ -202,7 +202,7 @@ const Articles = () => {
                     ))}
                   </div>
                 )}
-                <h2 className="text-2xl font-bold text-gray-900 group-hover:text-[#f59e0b] transition-colors">
+                <h2 className="text-2xl font-bold text-gray-900 group-hover:text-accent transition-colors">
                   {featured.title}
                 </h2>
                 {featured.excerpt && <p className="text-gray-500 line-clamp-3">{featured.excerpt}</p>}
@@ -218,7 +218,7 @@ const Articles = () => {
                     {featured.view_count || 0} views
                   </span>
                 </div>
-                <span className="text-[#f59e0b] font-medium text-sm">Read More →</span>
+                <span className="text-accent font-medium text-sm">Read More →</span>
               </div>
             </div>
           </Link>
@@ -253,7 +253,7 @@ const Articles = () => {
               <div className="text-center mt-10">
                 <button
                   onClick={() => setPage((p) => p + 1)}
-                  className="px-6 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-[#f59e0b] hover:text-[#f59e0b] transition-colors"
+                  className="px-6 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-accent hover:text-accent transition-colors"
                 >
                   Load More
                 </button>
