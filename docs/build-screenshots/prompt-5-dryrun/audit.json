@@ -1,0 +1,1497 @@
+[
+  {
+    "stock_code": "001ABL010002",
+    "root_name": "Bedroom Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      118,
+      189,
+      697,
+      655
+    ],
+    "fill_ratio": 0.421584375,
+    "transparent_ratio": 0.8062015625
+  },
+  {
+    "stock_code": "001ABL010004",
+    "root_name": "Bedroom Supplies",
+    "bucket": "D",
+    "w": 1772,
+    "h": 1266,
+    "alpha": false
+  },
+  {
+    "stock_code": "001ABL010005",
+    "root_name": "Bedroom Supplies",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      156,
+      85,
+      346,
+      438
+    ],
+    "fill_ratio": 0.26828,
+    "transparent_ratio": 0.880868
+  },
+  {
+    "stock_code": "001ABL010007",
+    "root_name": "Bedroom Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      222,
+      173,
+      567,
+      669
+    ],
+    "fill_ratio": 0.267375,
+    "transparent_ratio": 0.75233125
+  },
+  {
+    "stock_code": "001ABL010008",
+    "root_name": "Bedroom Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      149,
+      252,
+      623,
+      629
+    ],
+    "fill_ratio": 0.279215625,
+    "transparent_ratio": 0.9579640625
+  },
+  {
+    "stock_code": "001ABL010009",
+    "root_name": "Bedroom Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      158,
+      251,
+      642,
+      595
+    ],
+    "fill_ratio": 0.26015,
+    "transparent_ratio": 0.8825359375
+  },
+  {
+    "stock_code": "001ABL010010",
+    "root_name": "Bedroom Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      240,
+      230,
+      572,
+      619
+    ],
+    "fill_ratio": 0.20179375,
+    "transparent_ratio": 0.86646875
+  },
+  {
+    "stock_code": "001ABL010012",
+    "root_name": "Bedroom Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      224,
+      255,
+      594,
+      583
+    ],
+    "fill_ratio": 0.189625,
+    "transparent_ratio": 0.909125
+  },
+  {
+    "stock_code": "001ABL010013",
+    "root_name": "Bedroom Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      138,
+      278,
+      660,
+      589
+    ],
+    "fill_ratio": 0.253659375,
+    "transparent_ratio": 0.849384375
+  },
+  {
+    "stock_code": "001ABL010014",
+    "root_name": "Bedroom Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      128,
+      341,
+      680,
+      624
+    ],
+    "fill_ratio": 0.2440875,
+    "transparent_ratio": 0.807678125
+  },
+  {
+    "stock_code": "112BQE010006",
+    "root_name": "Buffet & Banquet",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      92,
+      129,
+      522,
+      486
+    ],
+    "fill_ratio": 0.42641666666666667,
+    "transparent_ratio": 0.9285611111111111
+  },
+  {
+    "stock_code": "112BQE010002",
+    "root_name": "Buffet & Banquet",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      89,
+      180,
+      509,
+      435
+    ],
+    "fill_ratio": 0.2975,
+    "transparent_ratio": 0.7726694444444444
+  },
+  {
+    "stock_code": "009BQE010001",
+    "root_name": "Buffet & Banquet",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      65,
+      167,
+      547,
+      461
+    ],
+    "fill_ratio": 0.39363333333333334,
+    "transparent_ratio": 0.9143916666666667
+  },
+  {
+    "stock_code": "009BQE010002",
+    "root_name": "Buffet & Banquet",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      66,
+      162,
+      538,
+      450
+    ],
+    "fill_ratio": 0.3776,
+    "transparent_ratio": 0.9180722222222222
+  },
+  {
+    "stock_code": "009BQE010003",
+    "root_name": "Buffet & Banquet",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      57,
+      166,
+      542,
+      463
+    ],
+    "fill_ratio": 0.400125,
+    "transparent_ratio": 0.9133277777777777
+  },
+  {
+    "stock_code": "009BQE010006",
+    "root_name": "Buffet & Banquet",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      48,
+      251,
+      764,
+      563
+    ],
+    "fill_ratio": 0.34905,
+    "transparent_ratio": 0.935959375
+  },
+  {
+    "stock_code": "009BQE010010",
+    "root_name": "Buffet & Banquet",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      43,
+      202,
+      565,
+      430
+    ],
+    "fill_ratio": 0.3306,
+    "transparent_ratio": 0.94045
+  },
+  {
+    "stock_code": "009BQE010014",
+    "root_name": "Buffet & Banquet",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      88,
+      170,
+      531,
+      440
+    ],
+    "fill_ratio": 0.33225,
+    "transparent_ratio": 0.9275611111111111
+  },
+  {
+    "stock_code": "009BQE030001",
+    "root_name": "Buffet & Banquet",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      28,
+      278,
+      773,
+      531
+    ],
+    "fill_ratio": 0.2945078125,
+    "transparent_ratio": 0.8762828125
+  },
+  {
+    "stock_code": "043TWD060003",
+    "root_name": "Buffet & Banquet",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      147,
+      115,
+      649,
+      713
+    ],
+    "fill_ratio": 0.46905625,
+    "transparent_ratio": 0.9531671875
+  },
+  {
+    "stock_code": "138FBS040003",
+    "root_name": "F & B Solutions",
+    "bucket": "B",
+    "w": 1087,
+    "h": 1055,
+    "alpha": true,
+    "bbox": [
+      47,
+      88,
+      1044,
+      967
+    ],
+    "fill_ratio": 0.76419119538536,
+    "transparent_ratio": 0.564741429300174
+  },
+  {
+    "stock_code": "126FBS070010",
+    "root_name": "F & B Solutions",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      154,
+      69,
+      345,
+      446
+    ],
+    "fill_ratio": 0.288028,
+    "transparent_ratio": 0.72692
+  },
+  {
+    "stock_code": "126FBS070013",
+    "root_name": "F & B Solutions",
+    "bucket": "C",
+    "w": 435,
+    "h": 375,
+    "alpha": true,
+    "bbox": [
+      11,
+      90,
+      422,
+      309
+    ],
+    "transparent_ratio": 0.7147647509578544
+  },
+  {
+    "stock_code": "126FBS070015",
+    "root_name": "F & B Solutions",
+    "bucket": "C",
+    "w": 435,
+    "h": 375,
+    "alpha": true,
+    "bbox": [
+      12,
+      78,
+      425,
+      299
+    ],
+    "transparent_ratio": 0.712680459770115
+  },
+  {
+    "stock_code": "128FBS021005-1",
+    "root_name": "F & B Solutions",
+    "bucket": "B",
+    "w": 1080,
+    "h": 1080,
+    "alpha": true,
+    "bbox": [
+      92,
+      68,
+      980,
+      957
+    ],
+    "fill_ratio": 0.6768106995884774,
+    "transparent_ratio": 0.4804895404663923
+  },
+  {
+    "stock_code": "128FBS021006",
+    "root_name": "F & B Solutions",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      78,
+      64,
+      719,
+      724
+    ],
+    "fill_ratio": 0.66103125,
+    "transparent_ratio": 0.489721875
+  },
+  {
+    "stock_code": "128FBS021011-1",
+    "root_name": "F & B Solutions",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      38,
+      133,
+      760,
+      717
+    ],
+    "fill_ratio": 0.658825,
+    "transparent_ratio": 0.55544375
+  },
+  {
+    "stock_code": "128FBS021012-1",
+    "root_name": "F & B Solutions",
+    "bucket": "C",
+    "w": 400,
+    "h": 360,
+    "alpha": true,
+    "bbox": [
+      36,
+      45,
+      370,
+      336
+    ],
+    "transparent_ratio": 0.6326388888888889
+  },
+  {
+    "stock_code": "128FBS021015",
+    "root_name": "F & B Solutions",
+    "bucket": "B",
+    "w": 1000,
+    "h": 1000,
+    "alpha": true,
+    "bbox": [
+      106,
+      95,
+      898,
+      908
+    ],
+    "fill_ratio": 0.643896,
+    "transparent_ratio": 0.544992
+  },
+  {
+    "stock_code": "128FBS021016",
+    "root_name": "F & B Solutions",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      63,
+      102,
+      698,
+      702
+    ],
+    "fill_ratio": 0.5953125,
+    "transparent_ratio": 0.5491234375
+  },
+  {
+    "stock_code": "007FSR050002",
+    "root_name": "Food Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      130,
+      194,
+      621,
+      658
+    ],
+    "fill_ratio": 0.355975,
+    "transparent_ratio": 0.757225
+  },
+  {
+    "stock_code": "007FSR050003",
+    "root_name": "Food Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      154,
+      202,
+      632,
+      653
+    ],
+    "fill_ratio": 0.336840625,
+    "transparent_ratio": 0.7699734375
+  },
+  {
+    "stock_code": "007FSR040001",
+    "root_name": "Food Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      233,
+      139,
+      546,
+      661
+    ],
+    "fill_ratio": 0.255290625,
+    "transparent_ratio": 0.8614859375
+  },
+  {
+    "stock_code": "011FSR010001",
+    "root_name": "Food Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      105,
+      124,
+      713,
+      716
+    ],
+    "fill_ratio": 0.5624,
+    "transparent_ratio": 0.58935
+  },
+  {
+    "stock_code": "011FSR010002",
+    "root_name": "Food Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      82,
+      166,
+      717,
+      678
+    ],
+    "fill_ratio": 0.508,
+    "transparent_ratio": 0.5986203125
+  },
+  {
+    "stock_code": "011FSR040001",
+    "root_name": "Food Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      170,
+      107,
+      630,
+      721
+    ],
+    "fill_ratio": 0.4413125,
+    "transparent_ratio": 0.7126453125
+  },
+  {
+    "stock_code": "011FSR040002",
+    "root_name": "Food Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      156,
+      111,
+      640,
+      713
+    ],
+    "fill_ratio": 0.4552625,
+    "transparent_ratio": 0.70500625
+  },
+  {
+    "stock_code": "011FSR040003",
+    "root_name": "Food Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      188,
+      113,
+      622,
+      713
+    ],
+    "fill_ratio": 0.406875,
+    "transparent_ratio": 0.738778125
+  },
+  {
+    "stock_code": "011FSR040018",
+    "root_name": "Food Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      135,
+      110,
+      680,
+      718
+    ],
+    "fill_ratio": 0.51775,
+    "transparent_ratio": 0.65655625
+  },
+  {
+    "stock_code": "011FSR040019",
+    "root_name": "Food Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      164,
+      100,
+      627,
+      725
+    ],
+    "fill_ratio": 0.4521484375,
+    "transparent_ratio": 0.7243328125
+  },
+  {
+    "stock_code": "112HKG030023",
+    "root_name": "Housekeeping Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      46,
+      267,
+      756,
+      588
+    ],
+    "fill_ratio": 0.356109375,
+    "transparent_ratio": 0.8877890625
+  },
+  {
+    "stock_code": "112HKG030026",
+    "root_name": "Housekeeping Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      133,
+      150,
+      671,
+      676
+    ],
+    "fill_ratio": 0.44216875,
+    "transparent_ratio": 0.8742359375
+  },
+  {
+    "stock_code": "199HKG040001",
+    "root_name": "Housekeeping Supplies",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      205,
+      87,
+      295,
+      413
+    ],
+    "fill_ratio": 0.11736,
+    "transparent_ratio": 0.921676
+  },
+  {
+    "stock_code": "000HKG020001",
+    "root_name": "Housekeeping Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      202,
+      146,
+      604,
+      689
+    ],
+    "fill_ratio": 0.341071875,
+    "transparent_ratio": 0.7361828125
+  },
+  {
+    "stock_code": "001HKG020001",
+    "root_name": "Housekeeping Supplies",
+    "bucket": "C",
+    "w": 575,
+    "h": 434,
+    "alpha": true,
+    "bbox": [
+      2,
+      1,
+      573,
+      433
+    ],
+    "transparent_ratio": 0.25143257864155477
+  },
+  {
+    "stock_code": "001HKG020003",
+    "root_name": "Housekeeping Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      154,
+      151,
+      652,
+      663
+    ],
+    "fill_ratio": 0.3984,
+    "transparent_ratio": 0.669640625
+  },
+  {
+    "stock_code": "001HKG030012",
+    "root_name": "Housekeeping Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      141,
+      166,
+      665,
+      659
+    ],
+    "fill_ratio": 0.40364375,
+    "transparent_ratio": 0.9308796875
+  },
+  {
+    "stock_code": "026HKG020004",
+    "root_name": "Housekeeping Supplies",
+    "bucket": "C",
+    "w": 577,
+    "h": 433,
+    "alpha": true,
+    "bbox": [
+      218,
+      33,
+      360,
+      384
+    ],
+    "transparent_ratio": 0.9235874015874096
+  },
+  {
+    "stock_code": "026HKG040024",
+    "root_name": "Housekeeping Supplies",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      130,
+      94,
+      387,
+      436
+    ],
+    "fill_ratio": 0.351576,
+    "transparent_ratio": 0.825576
+  },
+  {
+    "stock_code": "026HKG040025",
+    "root_name": "Housekeeping Supplies",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      158,
+      200,
+      800,
+      679
+    ],
+    "fill_ratio": 0.480496875,
+    "transparent_ratio": 0.86821875
+  },
+  {
+    "stock_code": "000KSR040009",
+    "root_name": "Kitchen Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      184,
+      94,
+      622,
+      744
+    ],
+    "fill_ratio": 0.44484375,
+    "transparent_ratio": 0.606084375
+  },
+  {
+    "stock_code": "051KSR080021",
+    "root_name": "Kitchen Services",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      147,
+      73,
+      345,
+      436
+    ],
+    "fill_ratio": 0.287496,
+    "transparent_ratio": 0.744416
+  },
+  {
+    "stock_code": "060KSR040002",
+    "root_name": "Kitchen Services",
+    "bucket": "C",
+    "w": 400,
+    "h": 400,
+    "alpha": true,
+    "bbox": [
+      78,
+      42,
+      329,
+      363
+    ],
+    "transparent_ratio": 0.5479
+  },
+  {
+    "stock_code": "051KSR081022",
+    "root_name": "Kitchen Services",
+    "bucket": "D",
+    "w": 250,
+    "h": 201,
+    "alpha": false
+  },
+  {
+    "stock_code": "000HKG010003",
+    "root_name": "Kitchen Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      162,
+      135,
+      637,
+      681
+    ],
+    "fill_ratio": 0.405234375,
+    "transparent_ratio": 0.6646
+  },
+  {
+    "stock_code": "000HKG010004",
+    "root_name": "Kitchen Services",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      135,
+      172,
+      671,
+      697
+    ],
+    "fill_ratio": 0.4396875,
+    "transparent_ratio": 0.6338484375
+  },
+  {
+    "stock_code": "000KSR010001",
+    "root_name": "Kitchen Services",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      120,
+      96,
+      477,
+      531
+    ],
+    "fill_ratio": 0.431375,
+    "transparent_ratio": 0.6328333333333334
+  },
+  {
+    "stock_code": "000KSR010002",
+    "root_name": "Kitchen Services",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      79,
+      113,
+      519,
+      503
+    ],
+    "fill_ratio": 0.4766666666666667,
+    "transparent_ratio": 0.6265527777777777
+  },
+  {
+    "stock_code": "000KSR010004",
+    "root_name": "Kitchen Services",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      90,
+      147,
+      517,
+      472
+    ],
+    "fill_ratio": 0.3854861111111111,
+    "transparent_ratio": 0.6662027777777778
+  },
+  {
+    "stock_code": "000KSR010005",
+    "root_name": "Kitchen Services",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      94,
+      149,
+      511,
+      463
+    ],
+    "fill_ratio": 0.3637166666666667,
+    "transparent_ratio": 0.6778055555555556
+  },
+  {
+    "stock_code": "010KUT050175",
+    "root_name": "Kitchen Utensils",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      29,
+      166,
+      571,
+      461
+    ],
+    "fill_ratio": 0.4441388888888889,
+    "transparent_ratio": 0.8541527777777778
+  },
+  {
+    "stock_code": "010KUT050176",
+    "root_name": "Kitchen Utensils",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      29,
+      166,
+      571,
+      461
+    ],
+    "fill_ratio": 0.4441388888888889,
+    "transparent_ratio": 0.8541527777777778
+  },
+  {
+    "stock_code": "010KUT050182",
+    "root_name": "Kitchen Utensils",
+    "bucket": "C",
+    "w": 483,
+    "h": 516,
+    "alpha": true,
+    "bbox": [
+      100,
+      168,
+      437,
+      348
+    ],
+    "transparent_ratio": 0.7757113967932977
+  },
+  {
+    "stock_code": "011KUT020002",
+    "root_name": "Kitchen Utensils",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      69,
+      189,
+      519,
+      446
+    ],
+    "fill_ratio": 0.32125,
+    "transparent_ratio": 0.8299138888888888
+  },
+  {
+    "stock_code": "011KUT020005",
+    "root_name": "Kitchen Utensils",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      76,
+      202,
+      523,
+      397
+    ],
+    "fill_ratio": 0.242125,
+    "transparent_ratio": 0.8591444444444445
+  },
+  {
+    "stock_code": "011KUT020006",
+    "root_name": "Kitchen Utensils",
+    "bucket": "B",
+    "w": 600,
+    "h": 600,
+    "alpha": true,
+    "bbox": [
+      65,
+      185,
+      535,
+      429
+    ],
+    "fill_ratio": 0.31855555555555554,
+    "transparent_ratio": 0.8003555555555556
+  },
+  {
+    "stock_code": "011KUT020010",
+    "root_name": "Kitchen Utensils",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      68,
+      123,
+      433,
+      391
+    ],
+    "fill_ratio": 0.39128,
+    "transparent_ratio": 0.768404
+  },
+  {
+    "stock_code": "011KUT020012",
+    "root_name": "Kitchen Utensils",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      40,
+      175,
+      451,
+      329
+    ],
+    "fill_ratio": 0.253176,
+    "transparent_ratio": 0.87606
+  },
+  {
+    "stock_code": "011KUT020013",
+    "root_name": "Kitchen Utensils",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      56,
+      136,
+      448,
+      374
+    ],
+    "fill_ratio": 0.373184,
+    "transparent_ratio": 0.81196
+  },
+  {
+    "stock_code": "011KUT020016",
+    "root_name": "Kitchen Utensils",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      56,
+      179,
+      446,
+      330
+    ],
+    "fill_ratio": 0.23556,
+    "transparent_ratio": 0.863744
+  },
+  {
+    "stock_code": "055LPR040005",
+    "root_name": "Laundry Solutions",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      71,
+      110,
+      429,
+      408
+    ],
+    "fill_ratio": 0.426736,
+    "transparent_ratio": 0.813784
+  },
+  {
+    "stock_code": "055LPR040006",
+    "root_name": "Laundry Solutions",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      194,
+      61,
+      295,
+      409
+    ],
+    "fill_ratio": 0.140592,
+    "transparent_ratio": 0.958268
+  },
+  {
+    "stock_code": "143LPR030002",
+    "root_name": "Laundry Solutions",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      79,
+      109,
+      421,
+      362
+    ],
+    "fill_ratio": 0.346104,
+    "transparent_ratio": 0.824692
+  },
+  {
+    "stock_code": "143LPR011001",
+    "root_name": "Laundry Solutions",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      109,
+      138,
+      416,
+      357
+    ],
+    "fill_ratio": 0.268932,
+    "transparent_ratio": 0.826924
+  },
+  {
+    "stock_code": "055LPR040003",
+    "root_name": "Laundry Solutions",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      200,
+      57,
+      287,
+      424
+    ],
+    "fill_ratio": 0.127716,
+    "transparent_ratio": 0.961384
+  },
+  {
+    "stock_code": "055LPR040004",
+    "root_name": "Laundry Solutions",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      78,
+      101,
+      407,
+      372
+    ],
+    "fill_ratio": 0.356636,
+    "transparent_ratio": 0.82114
+  },
+  {
+    "stock_code": "055LPR040008",
+    "root_name": "Laundry Solutions",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      150,
+      94,
+      339,
+      404
+    ],
+    "fill_ratio": 0.23436,
+    "transparent_ratio": 0.90762
+  },
+  {
+    "stock_code": "143LPR020009",
+    "root_name": "Laundry Solutions",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      139,
+      101,
+      359,
+      406
+    ],
+    "fill_ratio": 0.2684,
+    "transparent_ratio": 0.746656
+  },
+  {
+    "stock_code": "055LPR040010",
+    "root_name": "Laundry Solutions",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      172,
+      91,
+      316,
+      405
+    ],
+    "fill_ratio": 0.180864,
+    "transparent_ratio": 0.95284
+  },
+  {
+    "stock_code": "143LPR021001",
+    "root_name": "Laundry Solutions",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      76,
+      122,
+      423,
+      370
+    ],
+    "fill_ratio": 0.344224,
+    "transparent_ratio": 0.77418
+  },
+  {
+    "stock_code": "011KUT020051",
+    "root_name": "Spare Parts",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      14,
+      94,
+      484,
+      407
+    ],
+    "fill_ratio": 0.58844,
+    "transparent_ratio": 0.814736
+  },
+  {
+    "stock_code": "000SPS020001",
+    "root_name": "Spare Parts",
+    "bucket": "D",
+    "w": 598,
+    "h": 598,
+    "alpha": false
+  },
+  {
+    "stock_code": "000SPS020005",
+    "root_name": "Spare Parts",
+    "bucket": "D",
+    "w": 560,
+    "h": 560,
+    "alpha": false
+  },
+  {
+    "stock_code": "000SPS020006",
+    "root_name": "Spare Parts",
+    "bucket": "D",
+    "w": 560,
+    "h": 560,
+    "alpha": false
+  },
+  {
+    "stock_code": "000SPS020008",
+    "root_name": "Spare Parts",
+    "bucket": "D",
+    "w": 702,
+    "h": 727,
+    "alpha": false
+  },
+  {
+    "stock_code": "000SPS020009",
+    "root_name": "Spare Parts",
+    "bucket": "D",
+    "w": 702,
+    "h": 709,
+    "alpha": false
+  },
+  {
+    "stock_code": "000SPS020010",
+    "root_name": "Spare Parts",
+    "bucket": "D",
+    "w": 702,
+    "h": 627,
+    "alpha": false
+  },
+  {
+    "stock_code": "000SPS020011",
+    "root_name": "Spare Parts",
+    "bucket": "D",
+    "w": 225,
+    "h": 225,
+    "alpha": false
+  },
+  {
+    "stock_code": "000SPS020012",
+    "root_name": "Spare Parts",
+    "bucket": "D",
+    "w": 702,
+    "h": 560,
+    "alpha": false
+  },
+  {
+    "stock_code": "000SPS020013",
+    "root_name": "Spare Parts",
+    "bucket": "D",
+    "w": 550,
+    "h": 550,
+    "alpha": false
+  },
+  {
+    "stock_code": "112FSR060022",
+    "root_name": "Tableware",
+    "bucket": "B",
+    "w": 1080,
+    "h": 1080,
+    "alpha": true,
+    "bbox": [
+      492,
+      149,
+      566,
+      870
+    ],
+    "fill_ratio": 0.045742455418381345,
+    "transparent_ratio": 0.9753103566529493
+  },
+  {
+    "stock_code": "112FSR060056",
+    "root_name": "Tableware",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      93,
+      238,
+      727,
+      598
+    ],
+    "fill_ratio": 0.356625,
+    "transparent_ratio": 0.94485
+  },
+  {
+    "stock_code": "112FSR060017",
+    "root_name": "Tableware",
+    "bucket": "B",
+    "w": 1080,
+    "h": 1080,
+    "alpha": true,
+    "bbox": [
+      145,
+      97,
+      935,
+      985
+    ],
+    "fill_ratio": 0.601440329218107,
+    "transparent_ratio": 0.9319324417009602
+  },
+  {
+    "stock_code": "007TWD010005",
+    "root_name": "Tableware",
+    "bucket": "B",
+    "w": 1080,
+    "h": 1080,
+    "alpha": true,
+    "bbox": [
+      498,
+      185,
+      582,
+      895
+    ],
+    "fill_ratio": 0.05113168724279835,
+    "transparent_ratio": 0.9730401234567901
+  },
+  {
+    "stock_code": "007TWD010006",
+    "root_name": "Tableware",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      348,
+      82,
+      432,
+      720
+    ],
+    "fill_ratio": 0.0837375,
+    "transparent_ratio": 0.9670375
+  },
+  {
+    "stock_code": "007TWD010007",
+    "root_name": "Tableware",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      334,
+      69,
+      475,
+      739
+    ],
+    "fill_ratio": 0.147609375,
+    "transparent_ratio": 0.940065625
+  },
+  {
+    "stock_code": "007TWD010008",
+    "root_name": "Tableware",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      348,
+      82,
+      432,
+      720
+    ],
+    "fill_ratio": 0.0837375,
+    "transparent_ratio": 0.9670375
+  },
+  {
+    "stock_code": "007TWD010009",
+    "root_name": "Tableware",
+    "bucket": "B",
+    "w": 800,
+    "h": 800,
+    "alpha": true,
+    "bbox": [
+      93,
+      238,
+      727,
+      598
+    ],
+    "fill_ratio": 0.356625,
+    "transparent_ratio": 0.94485
+  },
+  {
+    "stock_code": "007TWD010010",
+    "root_name": "Tableware",
+    "bucket": "B",
+    "w": 500,
+    "h": 500,
+    "alpha": true,
+    "bbox": [
+      187,
+      41,
+      313,
+      459
+    ],
+    "fill_ratio": 0.210672,
+    "transparent_ratio": 0.92086
+  },
+  {
+    "stock_code": "007TWD010012",
+    "root_name": "Tableware",
+    "bucket": "E",
+    "error": "400 Client Error: Bad Request for url: https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010012/007TWD010012_1.png%5D"
+  }
+]

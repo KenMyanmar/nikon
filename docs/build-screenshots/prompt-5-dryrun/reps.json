@@ -1,0 +1,27 @@
+[
+  {
+    "stock_code": "112ABL010013",
+    "root_name": "Bedroom Supplies",
+    "thumbnail_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/112ABL010013/112ABL010013_1.png"
+  },
+  {
+    "stock_code": "112FSR060064",
+    "root_name": "Food Services",
+    "thumbnail_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/112FSR060064/112FSR060064.png"
+  },
+  {
+    "stock_code": "199HKG040003",
+    "root_name": "Housekeeping Supplies",
+    "thumbnail_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/199HKG040003/199HKG040003_1.png"
+  },
+  {
+    "stock_code": "007TWD060001",
+    "root_name": "Tableware",
+    "thumbnail_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD060001/007TWD060001.webp"
+  },
+  {
+    "stock_code": "256FBS010001",
+    "root_name": "F & B Solutions",
+    "thumbnail_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/256FBS010001/256FBS010001_1.jpg"
+  }
+]

@@ -1,0 +1,196 @@
+{
+  "rule_21_compliance": "All artifacts written directly to docs/build-screenshots/prompt-5-dryrun/ at production time.",
+  "audit": {
+    "total_skus": 100,
+    "duration_s": 126.9,
+    "bucket_distribution": {
+      "A": 0,
+      "B": 81,
+      "C": 7,
+      "D": 11,
+      "E": 1
+    },
+    "bucket_pct": {
+      "A": 0.0,
+      "B": 81.0,
+      "C": 7.0,
+      "D": 11.0,
+      "E": 1.0
+    }
+  },
+  "reps": [
+    {
+      "rep": 1,
+      "stock_code": "112ABL010013",
+      "root_name": "Bedroom Supplies",
+      "source_size": [
+        800,
+        800
+      ],
+      "source_mode": "RGBA",
+      "predicted_bucket": "B",
+      "meta": {
+        "w": 800,
+        "h": 800,
+        "alpha": true,
+        "bbox": [
+          170,
+          189,
+          632,
+          668
+        ],
+        "fill_ratio": 0.345778125,
+        "transparent_ratio": 0.746609375
+      },
+      "pil_latency_s": 0.222,
+      "alpha": {
+        "total": 1000000,
+        "fully_transparent_pct": 51.69,
+        "fully_opaque_pct": 47.1,
+        "partial_alpha_pct": 1.22
+      },
+      "final_bytes": 31014,
+      "final_path": "docs/build-screenshots/prompt-5-dryrun/rep1-final.webp"
+    },
+    {
+      "rep": 2,
+      "stock_code": "112FSR060064",
+      "root_name": "Food Services",
+      "source_size": [
+        567,
+        426
+      ],
+      "source_mode": "RGBA",
+      "predicted_bucket": "C",
+      "meta": {
+        "w": 567,
+        "h": 426,
+        "alpha": true,
+        "bbox": [
+          161,
+          192,
+          457,
+          249
+        ],
+        "transparent_ratio": 0.9747373127654818
+      },
+      "pil_latency_s": 0.227,
+      "alpha": {
+        "total": 1000000,
+        "fully_transparent_pct": 94.26,
+        "fully_opaque_pct": 4.29,
+        "partial_alpha_pct": 1.45
+      },
+      "final_bytes": 16456,
+      "final_path": "docs/build-screenshots/prompt-5-dryrun/rep2-final.webp"
+    },
+    {
+      "rep": 3,
+      "stock_code": "199HKG040003",
+      "root_name": "Housekeeping Supplies",
+      "source_size": [
+        600,
+        600
+      ],
+      "source_mode": "RGBA",
+      "predicted_bucket": "B",
+      "meta": {
+        "w": 600,
+        "h": 600,
+        "alpha": true,
+        "bbox": [
+          245,
+          102,
+          356,
+          503
+        ],
+        "fill_ratio": 0.12364166666666666,
+        "transparent_ratio": 0.9165555555555556
+      },
+      "pil_latency_s": 0.112,
+      "alpha": {
+        "total": 1000000,
+        "fully_transparent_pct": 86.95,
+        "fully_opaque_pct": 11.87,
+        "partial_alpha_pct": 1.18
+      },
+      "final_bytes": 20994,
+      "final_path": "docs/build-screenshots/prompt-5-dryrun/rep3-final.webp"
+    },
+    {
+      "rep": 4,
+      "stock_code": "007TWD060001",
+      "root_name": "Tableware",
+      "source_size": [
+        800,
+        800
+      ],
+      "source_mode": "RGB",
+      "predicted_bucket": "D",
+      "meta": {
+        "w": 800,
+        "h": 800,
+        "alpha": false
+      },
+      "remove_bg": {
+        "latency_s": 0.56,
+        "error": null,
+        "alpha": {
+          "total": 1000000,
+          "fully_transparent_pct": 92.91,
+          "fully_opaque_pct": 5.71,
+          "partial_alpha_pct": 1.39
+        },
+        "final_bytes": 17558,
+        "final_path": "docs/build-screenshots/prompt-5-dryrun/rep4-final-removebg.webp"
+      },
+      "gemini": {
+        "latency_s": 0.01,
+        "error": "edit_image() got an unexpected keyword argument 'input_image_path'"
+      },
+      "pipeline_total_s": 0.81,
+      "final_path": "docs/build-screenshots/prompt-5-dryrun/rep4-final-removebg.webp"
+    },
+    {
+      "rep": 5,
+      "stock_code": "256FBS010001",
+      "root_name": "F & B Solutions",
+      "source_size": [
+        249,
+        202
+      ],
+      "source_mode": "RGB",
+      "predicted_bucket": "D",
+      "meta": {
+        "w": 249,
+        "h": 202,
+        "alpha": false
+      },
+      "pil_latency_s": 0.101,
+      "alpha": {
+        "total": 1000000,
+        "fully_transparent_pct": 45.47,
+        "fully_opaque_pct": 54.53,
+        "partial_alpha_pct": 0.0
+      },
+      "final_bytes": 21446,
+      "final_path": "docs/build-screenshots/prompt-5-dryrun/rep5-final.webp"
+    }
+  ],
+  "decisions": {
+    "full_batch_estimate": {
+      "skus": 100,
+      "ai_routed_skus": 11,
+      "remove_bg_credits_needed": 11,
+      "wall_clock_estimate_s": 168.0
+    }
+  },
+  "files": {
+    "_grid.png": "5-rep composite overview (Rule 12 inspection target)",
+    "rep3-threshold.png": "600px source vs 1000\u00b2 PIL output \u2014 threshold calibration",
+    "rep4-comparison.png": "Source / remove.bg / Gemini 3 Pro side-by-side",
+    "skus.json": "100-SKU resolution (10 nav parents \u00d7 10)",
+    "reps.json": "5 rep selections with metadata",
+    "summary.json": "this file \u2014 bucket distribution, per-rep numerics"
+  }
+}
