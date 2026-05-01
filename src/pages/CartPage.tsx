@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMarketingData } from "@/hooks/useMarketingData";
 import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
-import { Minus, Plus, Trash2, ShoppingCart, LogIn, Tag, X, Loader2, ChevronDown, Zap } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, LogIn, Tag, X, Loader2, ChevronDown, Zap, AlertTriangle } from "lucide-react";
 import RecommendedProducts from "@/components/RecommendedProducts";
 
 interface AppliedCoupon {
@@ -145,6 +145,7 @@ const CartPage = () => {
     let total = 0;
     let unpriced = false;
     cartItems.forEach((item) => {
+      if (!item.product) return; // skip orphans (deactivated products)
       const { price } = getEffectivePrice(item);
       if (price === 0) unpriced = true;
       total += price * item.quantity;
@@ -157,6 +158,7 @@ const CartPage = () => {
     let discounted = 0;
     let hasDisc = false;
     cartItems.forEach((item) => {
+      if (!item.product) return; // skip orphans (deactivated products)
       const { price, isFlashDeal, isPromotion } = getEffectivePrice(item);
       const lineTotal = price * item.quantity;
       if (isFlashDeal || isPromotion) {
@@ -168,6 +170,18 @@ const CartPage = () => {
     });
     return { fullPriceSubtotal: fullPrice, discountedSubtotal: discounted, hasDiscountedItems: hasDisc };
   }, [cartItems, getEffectivePrice]);
+
+  const orphanedItems = useMemo(
+    () => cartItems.filter((item) => !item.product),
+    [cartItems]
+  );
+
+  const handleRemoveUnavailable = async () => {
+    for (const item of orphanedItems) {
+      await removeItem.mutateAsync(item.id);
+    }
+    toast({ title: "Removed unavailable items", description: `${orphanedItems.length} item(s) removed from cart` });
+  };
 
   const couponDiscount = useMemo(() => {
     if (!appliedCoupon || fullPriceSubtotal === 0) return 0;
