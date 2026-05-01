@@ -41,7 +41,7 @@ All B and D outputs normalized to **1000×1000 transparent WebP** at quality 85,
 ## Key per-bucket reads
 
 - **B (82 SKUs):** Deterministic PIL pipeline: bbox-trim → LANCZOS resize so longest side hits 820px → center-pad on 1000² transparent canvas. Avg `partial_alpha_pct` ~1.2–1.5% (anti-aliased edges only — clean alpha, no fringe).
-- **C (9 SKUs):** Routed to Lucide category-icon fallback at render time. These will retain a category-appropriate vector glyph in the catalog UI rather than a blurry upscaled bitmap. Manual-review CSV flags each for "replace source if branded image needed."
+- **C (9 SKUs):** Routed to Lucide category-icon fallback at render time. **Migration MUST set `thumbnail_url = NULL` for these SKUs** — `ProductCard` does not inspect image dimensions; its fallback fires only when `thumbnail_url` is null/missing, equals `/placeholder.svg`, or `onError` triggers. Leaving the original sub-500px URLs in place would render upscaled low-res bitmaps next to clean 1000² cards. Manual-review CSV flags each for "replace source if branded image needed."
 - **D (9 SKUs):** remove.bg matting averaging ~0.6s/call. Spare Parts dominates (8 of 9) — opaque white-bg auto-parts catalog photos.
 
 ## Per-nav-parent distribution
@@ -72,4 +72,41 @@ Human review of:
 - `manual-review.csv` (per-SKU coverage)
 - `audit.json` + this README (numerics)
 
-Then either: (a) sign-off → migration runs (single-transaction `UPDATE products SET thumbnail_url = '<normalized-url>' WHERE stock_code IN (...)` for the 91 uploaded SKUs), or (b) flag corrections for re-run.
+## Migration plan (corrected — two-step single transaction)
+
+**Bug caught at gate review:** Original plan said "C-bucket SKUs keep their existing thumbnail_url and renderer falls back when image is below the floor." This is wrong — `ProductCard` fallback fires only on null/missing URL, `/placeholder.svg`, or `<img onError>`. It does NOT inspect dimensions. Sub-500px URLs left in place would render upscaled. Migration must explicitly NULL them.
+
+```sql
+BEGIN;
+
+-- Step 1: 91 successfully-uploaded SKUs (B + D buckets, upload_ok=True)
+--         → swap thumbnail_url to normalized 1000² WebP in parallel bucket
+UPDATE products
+SET thumbnail_url = 'https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images-normalized/' || stock_code || '.webp',
+    updated_at = now()
+WHERE stock_code IN (
+  -- 91 codes derived from manual-review.csv WHERE bucket IN ('B','D') AND upload_ok = True
+  ...
+);
+
+-- Step 2: 9 sub-500px C-bucket SKUs → NULL so ProductCard Lucide fallback fires
+UPDATE products
+SET thumbnail_url = NULL,
+    updated_at = now()
+WHERE stock_code IN (
+  '126FBS070013', '126FBS070015', '128FBS021012-1',
+  '001HKG020001', '026HKG020004',
+  '060KSR040002', '051KSR081022',
+  '010KUT050182',
+  '000SPS020011'
+);
+
+COMMIT;
+```
+
+**Reversibility:** Originals at `product-images/<stock_code>/...` are untouched (Option C parallel storage). `results.json` records the original `source_url` for every SKU. If post-migration live-state screenshot reveals issues, a counter-migration restores `thumbnail_url` from `results.json`.
+
+**Live-state screenshot requirements (post-migration):**
+1. Cutlery category page at 1366×768 — direct compare with `category-cutlery-pre-migration.png`.
+2. One nav-parent containing C-bucket SKUs (Spare Parts / Kitchen Services / Kitchen Utensils / Housekeeping Supplies / F&B Solutions) at 1366×768 — must visibly show Lucide category icon on at least one C-bucket card, confirming Step 2 NULL-out worked.
+3. PDP for one D-bucket SKU (e.g. `000SPS020001`) showing normalized hero at PDP scale.
