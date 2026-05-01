@@ -3080,8 +3080,33 @@
   {
     "stock_code": "007TWD010012",
     "root_name": "Tableware",
-    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010012/007TWD010012_1.png]",
-    "bucket": "E",
-    "error": "download/open: 400 Client Error: Bad Request for url: https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010012/007TWD010012_1.png%5D"
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010012/007TWD010012_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        179,
+        18,
+        307,
+        486
+      ],
+      "fill_ratio": 0.2396
+    },
+    "normalized_path": "007TWD010012.webp",
+    "normalized_bytes": 17092,
+    "upload_ok": true,
+    "upload_error": null,
+    "alpha": {
+      "fully_transparent_pct": 91.87,
+      "fully_opaque_pct": 7.25,
+      "partial_alpha_pct": 0.87
+    }
   }
 ]
