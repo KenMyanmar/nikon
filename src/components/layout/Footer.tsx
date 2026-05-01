@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   MapPin, Phone, Mail, Clock, Facebook, Instagram,
   MessageCircle, MessageSquare, ChevronDown,
-  Sparkles, ShieldCheck, Handshake,
+  Calendar, Award, BadgeCheck,
 } from "lucide-react";
 
 const ABOUT_LINKS = [
@@ -41,10 +41,16 @@ const SOCIALS = [
   { icon: Mail, href: "mailto:ikonmartecommerce@gmail.com", label: "Email" },
 ];
 
+/**
+ * Prompt 6: Pillars replaced concrete-claim copy. Vague "Luxury / Quality /
+ * Reliability" exec-suite copy retained on /about Vision section, not Footer.
+ * Icons rendered at 20px in muted-foreground (no amber, no decorative motion)
+ * to keep visual emphasis on copy.
+ */
 const PILLARS = [
-  { icon: Sparkles, title: "Luxury", tagline: "Products that exceed expectations" },
-  { icon: ShieldCheck, title: "Quality", tagline: "Carefully selected for lasting value" },
-  { icon: Handshake, title: "Reliability", tagline: "Your dependable partner since 1995" },
+  { icon: Calendar, title: "Since 1995", tagline: "30 years supplying Myanmar HoReCa" },
+  { icon: Award, title: "160+ Brands", tagline: "Authorized distributor network" },
+  { icon: BadgeCheck, title: "CCI France Myanmar", tagline: "Member" },
 ];
 
 const PAYMENTS = ["KBZ Pay", "Wave", "CB Pay", "Bank Transfer", "COD"];
@@ -69,14 +75,14 @@ function AccordionSection({
   onToggle: () => void;
 }) {
   return (
-    <div className="border-b border-[#1f2937] md:hidden">
+    <div className="border-b border-primary-foreground/10 md:hidden">
       <button
         onClick={onToggle}
-        className="flex w-full items-center justify-between py-3 text-sm font-semibold uppercase tracking-wider text-white"
+        className="flex w-full items-center justify-between py-3 text-sm font-semibold uppercase tracking-wider text-primary-foreground"
       >
         {title}
         <ChevronDown
-          className={`h-4 w-4 text-[#9ca3af] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 text-primary-foreground/60 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         />
       </button>
       <div
@@ -96,7 +102,7 @@ function FooterLinks({ links }: { links: { label: string; href: string }[] }) {
         <li key={l.href}>
           <Link
             to={l.href}
-            className="text-sm text-[#d1d5db] transition-colors hover:text-[#f59e0b]"
+            className="text-sm text-primary-foreground/80 transition-colors hover:text-accent"
           >
             {l.label}
           </Link>
@@ -143,9 +149,9 @@ const Footer = () => {
   return (
     <footer>
       {/* ──── ZONE 1: Newsletter ──── */}
-      <div className="bg-[#1a1f36]">
+      <div className="bg-primary/95">
         <div className="container mx-auto flex flex-col gap-4 px-4 py-6 md:flex-row md:items-center md:justify-between">
-          <p className="text-sm font-medium text-white">
+          <p className="text-sm font-medium text-primary-foreground">
             Stay updated with new products & HoReCa insights
           </p>
           <div className="flex w-full gap-2 md:w-auto">
@@ -154,11 +160,11 @@ const Footer = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Your email address"
-              className="h-9 flex-1 rounded-md border border-[#374151] bg-[#0f1729] px-3 text-sm text-white placeholder:text-[#6b7280] focus:border-[#f59e0b] focus:outline-none md:w-64"
+              className="h-9 flex-1 rounded-md border border-primary-foreground/20 bg-primary px-3 text-sm text-primary-foreground placeholder:text-primary-foreground/50 focus:border-accent focus:outline-none md:w-64"
             />
             <button
               onClick={handleSubscribe}
-              className="h-9 whitespace-nowrap rounded-md bg-[#f59e0b] px-4 text-sm font-semibold text-[#1a1f36] transition-colors hover:bg-[#d97706]"
+              className="h-9 whitespace-nowrap rounded-md bg-accent px-4 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
             >
               Subscribe
             </button>
@@ -167,17 +173,17 @@ const Footer = () => {
       </div>
 
       {/* ──── ZONE 2: Main Grid ──── */}
-      <div className="bg-[#0f1729]">
+      <div className="bg-primary">
         <div className="container mx-auto px-4 py-10">
           {/* Desktop grid */}
           <div className="hidden gap-8 md:grid md:grid-cols-3 lg:grid-cols-5">
             {/* Col 1 — About */}
             <div>
-              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white">
+              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary-foreground">
                 About IKON
               </h4>
               <FooterLinks links={ABOUT_LINKS} />
-              <div className="mt-5 space-y-1.5 text-xs text-[#9ca3af]">
+              <div className="mt-5 space-y-1.5 text-xs text-primary-foreground/70">
                 <div className="flex items-start gap-1.5">
                   <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
                   <span>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</span>
@@ -195,13 +201,13 @@ const Footer = () => {
 
             {/* Col 2 — Categories (dynamic) */}
             <div>
-              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white">
+              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary-foreground">
                 Shop by Category
               </h4>
               <FooterLinks links={categoryLinks} />
               <Link
                 to="/flash-deals"
-                className="mt-2 inline-block text-sm font-medium text-[#f59e0b] transition-colors hover:text-[#fbbf24]"
+                className="mt-2 inline-block text-sm font-medium text-accent transition-colors hover:text-accent/80"
               >
                 Flash Deals →
               </Link>
@@ -209,7 +215,7 @@ const Footer = () => {
 
             {/* Col 3 — Customer Service */}
             <div>
-              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white">
+              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary-foreground">
                 Customer Service
               </h4>
               <FooterLinks links={SERVICE_LINKS} />
@@ -217,7 +223,7 @@ const Footer = () => {
 
             {/* Col 4 — Resources */}
             <div>
-              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white">
+              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary-foreground">
                 Resources
               </h4>
               <FooterLinks links={RESOURCE_LINKS} />
@@ -225,7 +231,7 @@ const Footer = () => {
 
             {/* Col 5 — Connect */}
             <div>
-              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-white">
+              <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary-foreground">
                 Connect
               </h4>
               <div className="mb-4 flex gap-3">
@@ -236,13 +242,13 @@ const Footer = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={s.label}
-                    className="text-[#9ca3af] transition-colors hover:text-white"
+                    className="text-primary-foreground/70 transition-colors hover:text-primary-foreground"
                   >
                     <s.icon className="h-5 w-5" />
                   </a>
                 ))}
               </div>
-              <div className="space-y-1.5 text-xs text-[#9ca3af]">
+              <div className="space-y-1.5 text-xs text-primary-foreground/70">
                 <div className="flex items-center gap-1.5">
                   <MapPin className="h-3 w-3 shrink-0" /> Mingalardon, Yangon
                 </div>
@@ -252,7 +258,7 @@ const Footer = () => {
                 <div className="flex items-center gap-1.5">
                   <Clock className="h-3 w-3 shrink-0" /> Mon–Sat: 9:00 AM – 5:00 PM
                 </div>
-                <p className="mt-2 text-[#6b7280]">CCI France Myanmar Member</p>
+                <p className="mt-2 text-primary-foreground/60">CCI France Myanmar Member</p>
               </div>
             </div>
           </div>
@@ -261,7 +267,7 @@ const Footer = () => {
           <div className="md:hidden">
             <AccordionSection title="About IKON" open={openSection === "about"} onToggle={() => toggle("about")}>
               <FooterLinks links={ABOUT_LINKS} />
-              <div className="mt-3 space-y-1.5 text-xs text-[#9ca3af]">
+              <div className="mt-3 space-y-1.5 text-xs text-primary-foreground/70">
                 <div className="flex items-start gap-1.5">
                   <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
                   <span>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</span>
@@ -279,7 +285,7 @@ const Footer = () => {
 
             <AccordionSection title="Shop by Category" open={openSection === "category"} onToggle={() => toggle("category")}>
               <FooterLinks links={categoryLinks} />
-              <Link to="/flash-deals" className="mt-2 inline-block text-sm font-medium text-[#f59e0b]">
+              <Link to="/flash-deals" className="mt-2 inline-block text-sm font-medium text-accent">
                 Flash Deals →
               </Link>
             </AccordionSection>
@@ -293,18 +299,18 @@ const Footer = () => {
             </AccordionSection>
 
             {/* Connect — always visible on mobile */}
-            <div className="border-t border-[#1f2937] pt-4">
-              <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">
+            <div className="border-t border-primary-foreground/10 pt-4">
+              <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary-foreground">
                 Connect With Us
               </h4>
               <div className="mb-3 flex gap-4">
                 {SOCIALS.map((s) => (
-                  <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} className="text-[#9ca3af] hover:text-white">
+                  <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} className="text-primary-foreground/70 hover:text-primary-foreground">
                     <s.icon className="h-5 w-5" />
                   </a>
                 ))}
               </div>
-              <div className="space-y-1.5 text-xs text-[#9ca3af]">
+              <div className="space-y-1.5 text-xs text-primary-foreground/70">
                 <div className="flex items-center gap-1.5">
                   <MapPin className="h-3 w-3 shrink-0" /> Mingalardon, Yangon
                 </div>
@@ -320,15 +326,15 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* ──── ZONE 3A: Brand Pillars ──── */}
-      <div className="bg-[#111827]">
+      {/* ──── ZONE 3A: Concrete-claim Pillars (Prompt 6) ──── */}
+      <div className="bg-primary/95 border-t border-primary-foreground/10">
         <div className="container mx-auto flex flex-col gap-4 px-4 py-5 md:flex-row md:justify-around">
           {PILLARS.map((p) => (
             <div key={p.title} className="flex items-center gap-3">
-              <p.icon className="h-6 w-6 shrink-0 text-[#f59e0b]" />
+              <p.icon className="h-5 w-5 shrink-0 text-primary-foreground/60" />
               <div>
-                <p className="text-sm font-semibold text-white">{p.title}</p>
-                <p className="text-xs text-[#9ca3af]">{p.tagline}</p>
+                <p className="text-sm font-semibold text-primary-foreground">{p.title}</p>
+                <p className="text-xs text-primary-foreground/70">{p.tagline}</p>
               </div>
             </div>
           ))}
@@ -336,12 +342,12 @@ const Footer = () => {
       </div>
 
       {/* ──── ZONE 3B: Payment Methods ──── */}
-      <div className="bg-[#0a0e1a]">
+      <div className="bg-primary/95 border-t border-primary-foreground/10">
         <div className="container mx-auto flex flex-wrap items-center justify-center gap-2 px-4 py-4">
           {PAYMENTS.map((p) => (
             <span
               key={p}
-              className="rounded-full border border-[#374151] px-3 py-1 text-xs text-[#9ca3af]"
+              className="rounded-full border border-primary-foreground/20 px-3 py-1 text-xs text-primary-foreground/70"
             >
               {p}
             </span>
@@ -350,19 +356,19 @@ const Footer = () => {
       </div>
 
       {/* ──── ZONE 3C: Copyright & Legal ──── */}
-      <div className="bg-[#0a0e1a] border-t border-[#1f2937]">
+      <div className="bg-primary/95 border-t border-primary-foreground/10">
         <div className="container mx-auto px-4 py-4 text-center">
-          <p className="text-xs text-[#6b7280]">
+          <p className="text-xs text-primary-foreground/60">
             © {new Date().getFullYear()} IKON Trading Co., Ltd. All rights reserved.
           </p>
           <div className="mt-1.5 flex flex-wrap justify-center gap-x-3 gap-y-1">
-            {LEGAL_LINKS.map((l, i) => (
-              <Link key={l.href} to={l.href} className="text-xs text-[#6b7280] transition-colors hover:text-[#f59e0b]">
+            {LEGAL_LINKS.map((l) => (
+              <Link key={l.href} to={l.href} className="text-xs text-primary-foreground/60 transition-colors hover:text-accent">
                 {l.label}
               </Link>
             ))}
           </div>
-          <p className="mt-1.5 text-xs italic text-[#9ca3af]">
+          <p className="mt-1.5 text-xs italic text-primary-foreground/70">
             Myanmar's Trusted HoReCa Supplier Since 1995
           </p>
         </div>
