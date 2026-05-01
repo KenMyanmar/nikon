@@ -6,7 +6,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-batch-token",
+    "authorization, x-client-info, apikey, content-type, x-import-key",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -15,9 +15,9 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
   try {
-    // Shared-secret auth: pipeline passes the service role key as x-batch-token.
-    const expected = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const got = req.headers.get("x-batch-token");
+    // Shared-secret auth (reuses IMPORT_SECRET pattern).
+    const expected = Deno.env.get("IMPORT_SECRET");
+    const got = req.headers.get("x-import-key");
     if (!expected || got !== expected) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
