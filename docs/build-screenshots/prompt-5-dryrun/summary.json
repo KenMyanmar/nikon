@@ -16,7 +16,8 @@
       "C": 7.0,
       "D": 11.0,
       "E": 1.0
-    }
+    },
+    "bucket_distribution_corrected_note": "Bucket E (1 SKU) was an audit error during initial pass and is being treated as A or B \u2014 final batch will re-classify with low-res check first."
   },
   "reps": [
     {
@@ -145,8 +146,17 @@
         "final_path": "docs/build-screenshots/prompt-5-dryrun/rep4-final-removebg.webp"
       },
       "gemini": {
-        "latency_s": 0.01,
-        "error": "edit_image() got an unexpected keyword argument 'input_image_path'"
+        "latency_s": 32.29,
+        "alpha": {
+          "total": 1000000,
+          "fully_transparent_pct": 32.76,
+          "fully_opaque_pct": 67.24,
+          "partial_alpha_pct": 0.0
+        },
+        "final_bytes": 40924,
+        "final_path": "docs/build-screenshots/prompt-5-dryrun/rep4-final-gemini.webp",
+        "error": null,
+        "text_response": null
       },
       "pipeline_total_s": 0.81,
       "final_path": "docs/build-screenshots/prompt-5-dryrun/rep4-final-removebg.webp"
@@ -174,7 +184,11 @@
         "partial_alpha_pct": 0.0
       },
       "final_bytes": 21446,
-      "final_path": "docs/build-screenshots/prompt-5-dryrun/rep5-final.webp"
+      "final_path": null,
+      "routing_decision": "below 500px floor \u2192 Lucide category icon fallback at render time (no normalized output)",
+      "correct_bucket": "C (low-res, below floor)",
+      "note": "Initial classifier marked D due to no alpha; corrected: low-res check (min(w,h)<500) takes precedence over alpha presence. At 249\u00d7202, source falls below the locked 500px Pass-2 threshold and routes to the Lucide fallback branch \u2014 no normalization attempted.",
+      "fallback": "lucide:Coffee"
     }
   ],
   "decisions": {
@@ -182,7 +196,8 @@
       "skus": 100,
       "ai_routed_skus": 11,
       "remove_bg_credits_needed": 11,
-      "wall_clock_estimate_s": 168.0
+      "wall_clock_estimate_s": 174.0,
+      "note": "127s audit + 11 remove.bg calls (~1.5s each) + ~0.3s/SKU PIL = ~175s wall-clock for full batch"
     }
   },
   "files": {
@@ -192,5 +207,14 @@
     "skus.json": "100-SKU resolution (10 nav parents \u00d7 10)",
     "reps.json": "5 rep selections with metadata",
     "summary.json": "this file \u2014 bucket distribution, per-rep numerics"
+  },
+  "gemini_finding": {
+    "verdict": "remove.bg lock REINFORCED",
+    "remove_bg_partial_alpha_pct": 1.39,
+    "gemini_partial_alpha_pct": 0.0,
+    "remove_bg_latency_s": 0.56,
+    "gemini_latency_s": 32.29,
+    "size_ratio_gemini_over_removebg": "2.3\u00d7",
+    "latency_ratio_gemini_over_removebg": "57.7\u00d7"
   }
 }
