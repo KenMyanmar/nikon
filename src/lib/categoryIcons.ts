@@ -31,9 +31,12 @@ const NAME_MAP: Record<string, LucideIcon> = {
   "housekeeping supplies": SprayCan,
   bedroom: Bed,
   "bedroom supplies": Bed,
+  // Canonical (post-Prompt 6 DB rename)
   "food & beverage": Coffee,
-  "f&b solutions": Coffee,
   "food and beverage": Coffee,
+  // Backward-compat — pre-Prompt 6 strings, kept for resilience
+  "f&b solutions": Coffee,
+  "f & b solutions": Coffee,
   "kitchen services": Flame,
   "food services": Soup,
   "buffet & banquet": Armchair,

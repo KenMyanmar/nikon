@@ -421,7 +421,7 @@ const Contact = () => {
               <a
                 key={d.label}
                 href={`mailto:${d.email}`}
-                className="bg-card rounded-card border border-border hover:shadow-card-hover hover:-translate-y-0.5 transition p-4 flex items-center gap-3"
+                className="bg-card rounded-card border border-border p-4 flex items-center gap-3"
               >
                 <div className="shrink-0 w-9 h-9 rounded-md bg-primary/10 text-primary flex items-center justify-center">
                   <d.icon className="w-5 h-5" />

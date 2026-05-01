@@ -49,10 +49,10 @@ const ShopByBusinessType = () => {
             <Link
               key={biz.slug}
               to={`/industry/${biz.slug}`}
-              className={`relative group rounded-xl overflow-hidden aspect-[4/5] bg-gradient-to-br ${biz.gradient} flex flex-col items-center justify-end p-6 transition-transform hover:scale-[1.03] hover:shadow-lg`}
+              className={`relative group rounded-xl overflow-hidden aspect-[4/5] bg-gradient-to-br ${biz.gradient} flex flex-col items-center justify-end p-6`}
             >
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-              <biz.icon className="w-10 h-10 text-white/80 mb-3 relative z-10 group-hover:scale-110 transition-transform" />
+              <div className="absolute inset-0 bg-black/20" />
+              <biz.icon className="w-10 h-10 text-white/80 mb-3 relative z-10" />
               <span className="text-white font-bold text-lg relative z-10 tracking-wide">
                 {biz.label}
               </span>

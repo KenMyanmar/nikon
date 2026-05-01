@@ -126,7 +126,7 @@ const FlashDealsPage = () => {
                     <img
                       src={product.thumbnail_url || "/placeholder.svg"}
                       alt={product.description}
-                      className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform"
+                      className="w-full h-full object-contain p-4"
                       loading="lazy"
                     />
                     <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
