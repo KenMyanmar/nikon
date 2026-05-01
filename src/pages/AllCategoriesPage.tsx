@@ -14,7 +14,7 @@ const AllCategoriesPage = () => {
         .select("id, name, slug, product_count")
         .eq("depth", 0)
         .eq("is_active", true)
-        .order("name");
+        .order("sort_order", { ascending: true });
       if (error) throw error;
       return data || [];
     },
