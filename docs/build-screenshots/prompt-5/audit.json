@@ -1,0 +1,26 @@
+{
+  "total_skus": 100,
+  "duration_s": 97.7,
+  "bucket_distribution": {
+    "A": 0,
+    "B": 81,
+    "C": 9,
+    "D": 9,
+    "E": 1
+  },
+  "bucket_pct": {
+    "A": 0.0,
+    "B": 81.0,
+    "C": 9.0,
+    "D": 9.0,
+    "E": 1.0
+  },
+  "ai_calls": 9,
+  "remove_bg_credits_used": 9,
+  "classifier_order": [
+    "low_res<500",
+    "alpha_presence",
+    "bbox/fill_ratio",
+    "opaque->D"
+  ]
+}
