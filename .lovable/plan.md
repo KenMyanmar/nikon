@@ -1,92 +1,84 @@
-# Palette Reset Commit (pre-Prompt-1)
+# Reorder Category Navigation — Spare Parts to End
 
-Standalone commit. Scope: design tokens, neutral shadows, one Contract-violation gradient removal, and memory. No other component edits. No Prompt 1 work bundled.
+## Audit results — every `.from("categories")` query
 
-After this lands, the entire app inherits the Design Contract palette through existing tokens (`bg-primary`, `text-foreground`, `border-border`, `bg-ikon-bg-secondary`, `shadow-card`, etc.) — no grep-and-replace through 100+ files needed.
+Project-wide search surfaced 12 category queries across 8 files. Classified below.
 
-## Files touched (5)
+### Top-level (depth=0) display lists — CHANGE to `sort_order` ASC
 
-### 1. `src/index.css` — rewrite `:root` token block (lines 7–56)
+| File | Line | Current | Notes |
+|---|---|---|---|
+| `src/components/layout/MegaMenu.tsx` | 44 | `.order("name", { ascending: true })` | **LOCKED component** — desktop nav `mainCategories` |
+| `src/components/layout/Footer.tsx` | 128 | `.order("name", { ascending: true })` | **LOCKED component** — footer "Shop by Category" column |
+| `src/pages/AllCategoriesPage.tsx` | 17 | `.order("name")` | Standalone /categories page header order |
 
-```text
---background       0 0% 100%   #FFFFFF
---foreground       0 0% 10%    #1A1A1A
---card             0 0% 100%   #FFFFFF
---popover          0 0% 100%   #FFFFFF
---primary          222 49% 21% #1B2A4E   (navy)
---secondary        0 0% 97%    #F8F8F8   (pure neutral, was tinted lavender)
---muted            0 0% 97%    #F8F8F8
---muted-foreground 0 0% 40%    #666666
---accent           39 73% 45%  #C8941F   (amber, was old #f59e0b-ish)
---destructive      0 72% 51%   #DC2626   (urgency-only)
---border           0 0% 90%    #E5E5E5   (pure neutral, was tinted)
---input            0 0% 90%    #E5E5E5
---ring             222 49% 21% #1B2A4E
+### Already correct — NO change
 
---ikon-navy*       repointed to #1B2A4E + tonal variants
---ikon-red*        repointed to #DC2626 + tonal variants (urgency-only role)
---ikon-red-light   becomes pure neutral #F8F8F8 (was pink tint)
---ikon-sale        #DC2626 (urgency-only)
---ikon-text-*      pure greys 10% / 40% / 55%
---ikon-border      #E5E5E5
---ikon-bg-secondary 0 0% 97%   #F8F8F8 (was 240 33% 97% — Contract violation)
---ikon-bg-tertiary  0 0% 94%
---ikon-warning      alias to accent amber
-```
+| File | Line | Sort | Status |
+|---|---|---|---|
+| `src/components/home/CategoryQuickNav.tsx` | 50 | `sort_order` ASC | **LOCKED** — already correct, do not touch |
+| `src/components/home/FeaturedCategories.tsx` | 16 | `sort_order` | Already correct |
+| `src/pages/CategoryPage.tsx` | 62–63 | `sort_order` then `name` | Sub-categories of a parent — already correct |
 
-Comment header updated to mark these as Contract-authoritative.
+### Sub-categories only (depth=1) — LEAVE as-is per spec
 
-### 2. `tailwind.config.ts` — neutralize shadows (lines 97–101)
+| File | Line | Filter | Notes |
+|---|---|---|---|
+| `src/components/layout/MegaMenu.tsx` | 59 | `depth=1` | Sub-categories shown inside hover dropdowns, grouped by parent client-side. Spec says depth=1 queries leave existing sort. |
+| `src/pages/AllCategoriesPage.tsx` | 31 | `depth=1` | Sub-categories listed under each parent section. Same rationale. |
 
-```text
-card        rgba(33,34,101,0.07/0.05)  →  rgba(0,0,0,0.04/0.03)
-card-hover  rgba(33,34,101,0.08/0.05)  →  rgba(0,0,0,0.08)
-nav         rgba(33,34,101,0.10)        →  rgba(0,0,0,0.06)
-```
+### Not in scope — single-row lookups or non-categories
 
-### 3. `src/components/home/FlashDealsRow.tsx` — line 58, gradient removal
+`src/pages/CategoryPage.tsx` lines 27, 43 (single-row lookups, no `.order`), `src/pages/ProductDetail.tsx` line 179 (single-row lookup), `src/pages/AllBrandsPage.tsx` (brands query at line 26).
 
-Direct Contract violation (decorative gradient behind content). One-line className change:
+### No mixed depth=0+depth=1 queries found
+
+Nothing to flag. Every query that currently controls top-level order can be cleanly switched.
+
+## Locked-component disclosure (Rule 18 transparency)
+
+Per the post-marathon locked list, this fix touches **two locked components**:
+
+1. **`src/components/layout/MegaMenu.tsx`** — single-line change to the `mainCategories` query order clause (line 44). No layout, font-size, or padding changes. `text-[12px]` and `px-2.5` preserved (Rule 20).
+2. **`src/components/layout/Footer.tsx`** — single-line change to the footer-categories query order clause (line 128). No structural or token changes.
+
+`CategoryQuickNav.tsx` (also locked) is already on `sort_order` and will not be touched.
+
+## Changes (3 lines, 3 files)
 
 ```text
-from: <section className="py-8 bg-gradient-to-r from-[hsl(var(--accent)/0.05)] to-[hsl(var(--ikon-red-light))]">
-to:   <section className="py-8 bg-background">
+src/components/layout/MegaMenu.tsx:44
+- .order("name", { ascending: true });
++ .order("sort_order", { ascending: true });
+
+src/components/layout/Footer.tsx:128
+- .order("name", { ascending: true });
++ .order("sort_order", { ascending: true });
+
+src/pages/AllCategoriesPage.tsx:17
+- .order("name");
++ .order("sort_order", { ascending: true });
 ```
 
-No other edits to FlashDealsRow. Layout, hierarchy, and final background treatment remain untouched and are revisited in Prompt 1.
+No DB migration (already applied separately). No other code changes.
 
-### 4. `mem://style/color-palette` — replace with Contract-authoritative doc
+## Acceptance evidence (Rule 12)
 
-Hex values, role rules (urgency-only red), forbidden values list, hardcoded-hex cleanup queue, red-audit summary by bucket.
+Capture and commit to `docs/build-screenshots/post-marathon/category-sort-order/`:
 
-### 5. `mem://index.md` — update Core "Design" line
+- `desktop-nav-1366x768.png` — full nav row, expected order: Tableware → Kitchen Utensils → Housekeeping Supplies → Food Services → Kitchen Services → Bedroom Supplies → Buffet & Banquet → Food & Beverage → Laundry Solutions → Spare Parts
+- `footer-categories.png` — same order in footer column
+- `mobile-drawer.png` — mobile hamburger Categories list in same order
+- `actual-viewport-truncation-check.png` — capture at Ken's actual viewport (`window.innerWidth` reported in build report)
+- `README.md` — Rule 18 two-column gate + Rule 14 copy verification
 
-Replace deprecated palette in Core with Contract values. Add forbidden-hex line.
+## Truncation rule
 
-## Resolved decisions (logged as rules in mem://style/color-palette)
+If "Spare Parts" (11 chars, +2 vs prior rightmost "Tableware") truncates at Ken's viewport: STOP, report viewport width and clip amount. Do NOT alter font size, padding, or layout to compensate — that's a separate re-lock decision.
 
-Standing rule: red belongs in content, never in navigation or brand surfaces. Valid uses include flash-sale countdowns, percentage-off badges, low-stock warnings, errors, destructive states.
+## Out of scope
 
-1. PromotionsBanner red flame icon + "% OFF" badges → **urgency red, content-level usage, Contract-compliant**. No change.
-2. Promotions / PromotionDetail "% OFF" badges → **urgency red, content-level usage, Contract-compliant**. No change.
-3. FlashDealsRow gradient → **removed**, replaced with `bg-background` (#FFFFFF), per Contract gradient prohibition. Executed in this commit (file 3).
-
-## Out of scope (deferred to numbered prompts)
-
-- All other component edits.
-- MegaMenu Flash Deals red nav buttons → Prompt 4 removes them entirely.
-- Hardcoded hex offenders in `Footer.tsx`, `Articles.tsx`, `ArticleDetail.tsx`, `Contact.tsx`, `ProductDetail.tsx` line 564 → migrate during the prompt that touches each surface.
-
-## Acceptance test
-
-After commit, the homepage `/` should render with:
-
-- Cards on pure white, no lavender background tint.
-- Navy darker and bluer (`#1B2A4E` vs old `#212265`).
-- Amber slightly more burnt/ochre (`#C8941F` vs old amber).
-- Red slightly more crimson (`#DC2626` vs old `#ED1F24`).
-- Borders pure grey, no lavender cast.
-- Card shadows neutral grey, no navy bleed.
-- Flash Deals row on flat white, no gradient.
-
-Capture 1440×900 desktop + 390×844 mobile screenshots of `/` after commit, post for sign-off.
+- Sub-category sort order inside dropdowns (left as `name` ASC per spec)
+- Any token, font, padding, or layout change
+- Brands queries
+- Database changes (already applied)

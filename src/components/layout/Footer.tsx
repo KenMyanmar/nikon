@@ -125,7 +125,7 @@ const Footer = () => {
         .select("id, name, slug, product_count")
         .eq("is_active", true)
         .eq("depth", 0)
-        .order("name", { ascending: true });
+        .order("sort_order", { ascending: true });
       return data || [];
     },
     staleTime: 10 * 60 * 1000,
