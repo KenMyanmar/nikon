@@ -3,18 +3,17 @@ import Hero from "@/components/home/Hero";
 import CategoryQuickNav from "@/components/home/CategoryQuickNav";
 import FlashDealsRow from "@/components/home/FlashDealsRow";
 import BestSellers from "@/components/home/BestSellers";
-import ClientLogos from "@/components/home/ClientLogos";
 import TrustBadgeBar from "@/components/home/TrustBadgeBar";
 import HoReCaResources from "@/components/home/HoReCaResources";
 
 /**
- * Homepage section order (Prompt 1):
+ * Homepage section order (Prompt 6):
  *   PromoBanner (in Header) → Header → Hero → Category Rail
- *   → Best Sellers → Flash Deals → ClientLogos → TrustBadgeBar
+ *   → Best Sellers → Flash Deals → TrustBadgeBar
  *   → Articles (HoReCaResources) → Footer
  *
- * Removed: PromotionsBanner, TopBrandsShowcase, NewArrivals, QuotationCTA,
- * HeroBannerCarousel (replaced by Hero).
+ * Removed in Prompt 6: ClientLogos (DB-driven hand-curated marquee, decorative
+ * motion violation, redundant against TrustBadgeBar's "160+ Brands" signal).
  */
 const Index = () => {
   return (
@@ -23,7 +22,6 @@ const Index = () => {
       <CategoryQuickNav />
       <BestSellers />
       <FlashDealsRow />
-      <ClientLogos />
       <TrustBadgeBar />
       <HoReCaResources />
     </MainLayout>
