@@ -195,7 +195,7 @@ export const DesktopMegaNav = () => {
             >
               <Link
                 to={`/category/${cat.slug}`}
-                className={`flex items-center gap-1 px-3 py-3 text-primary-foreground text-[13px] font-medium whitespace-nowrap ${
+                className={`flex items-center gap-1 px-2.5 py-3 text-primary-foreground text-[12px] font-medium whitespace-nowrap ${
                   activeId === cat.id ? "bg-primary/85" : "hover:bg-primary/85"
                 }`}
               >
