@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMarketingData } from "@/hooks/useMarketingData";
 import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
-import { Minus, Plus, Trash2, ShoppingCart, LogIn, Tag, X, Loader2, ChevronDown, Zap } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, LogIn, Tag, X, Loader2, ChevronDown, Zap, AlertTriangle } from "lucide-react";
 import RecommendedProducts from "@/components/RecommendedProducts";
 
 interface AppliedCoupon {
@@ -145,6 +145,7 @@ const CartPage = () => {
     let total = 0;
     let unpriced = false;
     cartItems.forEach((item) => {
+      if (!item.product) return; // skip orphans (deactivated products)
       const { price } = getEffectivePrice(item);
       if (price === 0) unpriced = true;
       total += price * item.quantity;
@@ -157,6 +158,7 @@ const CartPage = () => {
     let discounted = 0;
     let hasDisc = false;
     cartItems.forEach((item) => {
+      if (!item.product) return; // skip orphans (deactivated products)
       const { price, isFlashDeal, isPromotion } = getEffectivePrice(item);
       const lineTotal = price * item.quantity;
       if (isFlashDeal || isPromotion) {
@@ -168,6 +170,18 @@ const CartPage = () => {
     });
     return { fullPriceSubtotal: fullPrice, discountedSubtotal: discounted, hasDiscountedItems: hasDisc };
   }, [cartItems, getEffectivePrice]);
+
+  const orphanedItems = useMemo(
+    () => cartItems.filter((item) => !item.product),
+    [cartItems]
+  );
+
+  const handleRemoveUnavailable = async () => {
+    for (const item of orphanedItems) {
+      await removeItem.mutateAsync(item.id);
+    }
+    toast({ title: "Removed unavailable items", description: `${orphanedItems.length} item(s) removed from cart` });
+  };
 
   const couponDiscount = useMemo(() => {
     if (!appliedCoupon || fullPriceSubtotal === 0) return 0;
@@ -273,6 +287,22 @@ const CartPage = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Cart Items */}
           <div className="flex-1 space-y-4">
+            {orphanedItems.length > 0 && (
+              <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 p-4">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
+                  <span className="text-sm text-amber-800">
+                    {orphanedItems.length} item{orphanedItems.length > 1 ? "s" : ""} in your cart {orphanedItems.length > 1 ? "are" : "is"} no longer available.
+                  </span>
+                </div>
+                <button
+                  onClick={handleRemoveUnavailable}
+                  className="text-sm font-medium text-amber-700 border border-amber-300 hover:bg-amber-100 rounded-button px-3 py-1.5 transition shrink-0 ml-3"
+                >
+                  Remove unavailable
+                </button>
+              </div>
+            )}
             {cartItems.map((item) => {
               const product = item.product;
               if (!product) return null;
