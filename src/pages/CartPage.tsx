@@ -287,6 +287,22 @@ const CartPage = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Cart Items */}
           <div className="flex-1 space-y-4">
+            {orphanedItems.length > 0 && (
+              <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 p-4">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
+                  <span className="text-sm text-amber-800">
+                    {orphanedItems.length} item{orphanedItems.length > 1 ? "s" : ""} in your cart {orphanedItems.length > 1 ? "are" : "is"} no longer available.
+                  </span>
+                </div>
+                <button
+                  onClick={handleRemoveUnavailable}
+                  className="text-sm font-medium text-amber-700 border border-amber-300 hover:bg-amber-100 rounded-button px-3 py-1.5 transition shrink-0 ml-3"
+                >
+                  Remove unavailable
+                </button>
+              </div>
+            )}
             {cartItems.map((item) => {
               const product = item.product;
               if (!product) return null;
