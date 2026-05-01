@@ -98,4 +98,4 @@ stock_code,root_name,bucket,source_w,source_h,source_mode,normalized_path,upload
 007TWD010008,Tableware,B,800,800,RGBA,007TWD010008.webp,True,1.42,95.37,3.21,,PIL-normalized — auto-approve unless visual QA flags.,
 007TWD010009,Tableware,B,800,800,RGBA,007TWD010009.webp,True,1.58,92.8,5.62,,PIL-normalized — auto-approve unless visual QA flags.,
 007TWD010010,Tableware,B,500,500,RGBA,007TWD010010.webp,True,1.03,91.68,7.3,,PIL-normalized — auto-approve unless visual QA flags.,
-007TWD010012,Tableware,E,,,,,,,,,,Pipeline error — manual fix required.,download/open: 400 Client Error: Bad Request for url: https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010012/007TWD010012_1.png%5D
+007TWD010012,Tableware,B,500,500,RGBA,007TWD010012.webp,True,0.87,91.87,7.25,,PIL-normalized — auto-approve unless visual QA flags.,
