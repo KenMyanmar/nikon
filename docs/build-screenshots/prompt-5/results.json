@@ -1,0 +1,3112 @@
+[
+  {
+    "stock_code": "001ABL010002",
+    "root_name": "Bedroom Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001ABL010002/001ABL010002_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        118,
+        189,
+        697,
+        655
+      ],
+      "fill_ratio": 0.4216,
+      "transparent_ratio": 0.8062
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001ABL010002.webp",
+    "normalized_bytes": 41208,
+    "alpha": {
+      "fully_transparent_pct": 73.67,
+      "fully_opaque_pct": 24.41,
+      "partial_alpha_pct": 1.92
+    }
+  },
+  {
+    "stock_code": "001ABL010004",
+    "root_name": "Bedroom Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001ABL010004/001ABL010004_1.jpg",
+    "bucket": "D",
+    "source_size": [
+      1772,
+      1266
+    ],
+    "source_mode": "RGB",
+    "meta": {
+      "w": 1772,
+      "h": 1266,
+      "alpha": false
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001ABL010004.webp",
+    "normalized_bytes": 33776,
+    "alpha": {
+      "fully_transparent_pct": 60.6,
+      "fully_opaque_pct": 38.45,
+      "partial_alpha_pct": 0.95
+    },
+    "remove_bg_latency_s": 0.69
+  },
+  {
+    "stock_code": "001ABL010005",
+    "root_name": "Bedroom Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001ABL010005/001ABL010005_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        156,
+        85,
+        346,
+        438
+      ],
+      "fill_ratio": 0.2683,
+      "transparent_ratio": 0.8809
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001ABL010005.webp",
+    "normalized_bytes": 32924,
+    "alpha": {
+      "fully_transparent_pct": 82.92,
+      "fully_opaque_pct": 15.11,
+      "partial_alpha_pct": 1.96
+    }
+  },
+  {
+    "stock_code": "001ABL010007",
+    "root_name": "Bedroom Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001ABL010007/001ABL010007_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        222,
+        173,
+        567,
+        669
+      ],
+      "fill_ratio": 0.2674,
+      "transparent_ratio": 0.7523
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001ABL010007.webp",
+    "normalized_bytes": 18558,
+    "alpha": {
+      "fully_transparent_pct": 54.82,
+      "fully_opaque_pct": 42.94,
+      "partial_alpha_pct": 2.24
+    }
+  },
+  {
+    "stock_code": "001ABL010008",
+    "root_name": "Bedroom Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001ABL010008/001ABL010008_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        149,
+        252,
+        623,
+        629
+      ],
+      "fill_ratio": 0.2792,
+      "transparent_ratio": 0.958
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001ABL010008.webp",
+    "normalized_bytes": 44424,
+    "alpha": {
+      "fully_transparent_pct": 88.88,
+      "fully_opaque_pct": 7.35,
+      "partial_alpha_pct": 3.78
+    }
+  },
+  {
+    "stock_code": "001ABL010009",
+    "root_name": "Bedroom Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001ABL010009/001ABL010009_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        158,
+        251,
+        642,
+        595
+      ],
+      "fill_ratio": 0.2601,
+      "transparent_ratio": 0.8825
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001ABL010009.webp",
+    "normalized_bytes": 30804,
+    "alpha": {
+      "fully_transparent_pct": 75.62,
+      "fully_opaque_pct": 21.04,
+      "partial_alpha_pct": 3.34
+    }
+  },
+  {
+    "stock_code": "001ABL010010",
+    "root_name": "Bedroom Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001ABL010010/001ABL010010_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        240,
+        230,
+        572,
+        619
+      ],
+      "fill_ratio": 0.2018,
+      "transparent_ratio": 0.8665
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001ABL010010.webp",
+    "normalized_bytes": 30738,
+    "alpha": {
+      "fully_transparent_pct": 58.78,
+      "fully_opaque_pct": 37.3,
+      "partial_alpha_pct": 3.92
+    }
+  },
+  {
+    "stock_code": "001ABL010012",
+    "root_name": "Bedroom Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001ABL010012/001ABL010012_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        224,
+        255,
+        594,
+        583
+      ],
+      "fill_ratio": 0.1896,
+      "transparent_ratio": 0.9091
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001ABL010012.webp",
+    "normalized_bytes": 42608,
+    "alpha": {
+      "fully_transparent_pct": 68.83,
+      "fully_opaque_pct": 27.99,
+      "partial_alpha_pct": 3.18
+    }
+  },
+  {
+    "stock_code": "001ABL010013",
+    "root_name": "Bedroom Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001ABL010013/001ABL010013_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        138,
+        278,
+        660,
+        589
+      ],
+      "fill_ratio": 0.2537,
+      "transparent_ratio": 0.8494
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001ABL010013.webp",
+    "normalized_bytes": 32864,
+    "alpha": {
+      "fully_transparent_pct": 74.37,
+      "fully_opaque_pct": 23.44,
+      "partial_alpha_pct": 2.19
+    }
+  },
+  {
+    "stock_code": "001ABL010014",
+    "root_name": "Bedroom Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001ABL010014/001ABL010014_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        128,
+        341,
+        680,
+        624
+      ],
+      "fill_ratio": 0.2441,
+      "transparent_ratio": 0.8077
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001ABL010014.webp",
+    "normalized_bytes": 26954,
+    "alpha": {
+      "fully_transparent_pct": 71.44,
+      "fully_opaque_pct": 26.88,
+      "partial_alpha_pct": 1.69
+    }
+  },
+  {
+    "stock_code": "112BQE010006",
+    "root_name": "Buffet & Banquet",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/112BQE010006/112BQE010006_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        92,
+        129,
+        522,
+        486
+      ],
+      "fill_ratio": 0.4264,
+      "transparent_ratio": 0.9286
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "112BQE010006.webp",
+    "normalized_bytes": 29114,
+    "alpha": {
+      "fully_transparent_pct": 88.0,
+      "fully_opaque_pct": 8.45,
+      "partial_alpha_pct": 3.55
+    }
+  },
+  {
+    "stock_code": "112BQE010002",
+    "root_name": "Buffet & Banquet",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/112BQE010002/112BQE010002_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        89,
+        180,
+        509,
+        435
+      ],
+      "fill_ratio": 0.2975,
+      "transparent_ratio": 0.7727
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "112BQE010002.webp",
+    "normalized_bytes": 28406,
+    "alpha": {
+      "fully_transparent_pct": 68.07,
+      "fully_opaque_pct": 30.8,
+      "partial_alpha_pct": 1.13
+    }
+  },
+  {
+    "stock_code": "009BQE010001",
+    "root_name": "Buffet & Banquet",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/009BQE010001/009BQE010001_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        65,
+        167,
+        547,
+        461
+      ],
+      "fill_ratio": 0.3936,
+      "transparent_ratio": 0.9144
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "009BQE010001.webp",
+    "normalized_bytes": 26884,
+    "alpha": {
+      "fully_transparent_pct": 89.76,
+      "fully_opaque_pct": 8.18,
+      "partial_alpha_pct": 2.07
+    }
+  },
+  {
+    "stock_code": "009BQE010002",
+    "root_name": "Buffet & Banquet",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/009BQE010002/009BQE010002_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        66,
+        162,
+        538,
+        450
+      ],
+      "fill_ratio": 0.3776,
+      "transparent_ratio": 0.9181
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "009BQE010002.webp",
+    "normalized_bytes": 26966,
+    "alpha": {
+      "fully_transparent_pct": 89.76,
+      "fully_opaque_pct": 8.14,
+      "partial_alpha_pct": 2.1
+    }
+  },
+  {
+    "stock_code": "009BQE010003",
+    "root_name": "Buffet & Banquet",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/009BQE010003/009BQE010003_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        57,
+        166,
+        542,
+        463
+      ],
+      "fill_ratio": 0.4001,
+      "transparent_ratio": 0.9133
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "009BQE010003.webp",
+    "normalized_bytes": 26976,
+    "alpha": {
+      "fully_transparent_pct": 89.74,
+      "fully_opaque_pct": 8.19,
+      "partial_alpha_pct": 2.07
+    }
+  },
+  {
+    "stock_code": "009BQE010006",
+    "root_name": "Buffet & Banquet",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/009BQE010006/009BQE010006_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        48,
+        251,
+        764,
+        563
+      ],
+      "fill_ratio": 0.3491,
+      "transparent_ratio": 0.936
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "009BQE010006.webp",
+    "normalized_bytes": 15656,
+    "alpha": {
+      "fully_transparent_pct": 93.68,
+      "fully_opaque_pct": 4.88,
+      "partial_alpha_pct": 1.43
+    }
+  },
+  {
+    "stock_code": "009BQE010010",
+    "root_name": "Buffet & Banquet",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/009BQE010010/009BQE010010_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        43,
+        202,
+        565,
+        430
+      ],
+      "fill_ratio": 0.3306,
+      "transparent_ratio": 0.9405
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "009BQE010010.webp",
+    "normalized_bytes": 15818,
+    "alpha": {
+      "fully_transparent_pct": 93.64,
+      "fully_opaque_pct": 4.79,
+      "partial_alpha_pct": 1.57
+    }
+  },
+  {
+    "stock_code": "009BQE010014",
+    "root_name": "Buffet & Banquet",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/009BQE010014/009BQE010014_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        88,
+        170,
+        531,
+        440
+      ],
+      "fill_ratio": 0.3322,
+      "transparent_ratio": 0.9276
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "009BQE010014.webp",
+    "normalized_bytes": 27116,
+    "alpha": {
+      "fully_transparent_pct": 89.71,
+      "fully_opaque_pct": 8.07,
+      "partial_alpha_pct": 2.22
+    }
+  },
+  {
+    "stock_code": "009BQE030001",
+    "root_name": "Buffet & Banquet",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/009BQE030001/009BQE030001_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        28,
+        278,
+        773,
+        531
+      ],
+      "fill_ratio": 0.2945,
+      "transparent_ratio": 0.8763
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "009BQE030001.webp",
+    "normalized_bytes": 27232,
+    "alpha": {
+      "fully_transparent_pct": 88.85,
+      "fully_opaque_pct": 9.3,
+      "partial_alpha_pct": 1.85
+    }
+  },
+  {
+    "stock_code": "043TWD060003",
+    "root_name": "Buffet & Banquet",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/043TWD060003/043TWD060003_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        147,
+        115,
+        649,
+        713
+      ],
+      "fill_ratio": 0.4691,
+      "transparent_ratio": 0.9532
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "043TWD060003.webp",
+    "normalized_bytes": 30108,
+    "alpha": {
+      "fully_transparent_pct": 92.6,
+      "fully_opaque_pct": 5.3,
+      "partial_alpha_pct": 2.1
+    }
+  },
+  {
+    "stock_code": "138FBS040003",
+    "root_name": "F & B Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/138FBS040003/138FBS040003_1.png",
+    "bucket": "B",
+    "source_size": [
+      1087,
+      1055
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 1087,
+      "h": 1055,
+      "alpha": true,
+      "bbox": [
+        47,
+        88,
+        1044,
+        967
+      ],
+      "fill_ratio": 0.7642,
+      "transparent_ratio": 0.5647
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "138FBS040003.webp",
+    "normalized_bytes": 67248,
+    "alpha": {
+      "fully_transparent_pct": 65.74,
+      "fully_opaque_pct": 33.43,
+      "partial_alpha_pct": 0.83
+    }
+  },
+  {
+    "stock_code": "126FBS070010",
+    "root_name": "F & B Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/126FBS070010/126FBS070010_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        154,
+        69,
+        345,
+        446
+      ],
+      "fill_ratio": 0.288,
+      "transparent_ratio": 0.7269
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "126FBS070010.webp",
+    "normalized_bytes": 40756,
+    "alpha": {
+      "fully_transparent_pct": 66.68,
+      "fully_opaque_pct": 31.89,
+      "partial_alpha_pct": 1.43
+    }
+  },
+  {
+    "stock_code": "126FBS070013",
+    "root_name": "F & B Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/126FBS070013/126FBS070013_1.png",
+    "bucket": "C",
+    "source_size": [
+      435,
+      375
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 435,
+      "h": 375,
+      "reason": "low_res_below_floor"
+    },
+    "normalized_path": null,
+    "fallback": "lucide_category_icon",
+    "action": "manual_review_or_replace_source"
+  },
+  {
+    "stock_code": "126FBS070015",
+    "root_name": "F & B Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/126FBS070015/126FBS070015_1.png",
+    "bucket": "C",
+    "source_size": [
+      435,
+      375
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 435,
+      "h": 375,
+      "reason": "low_res_below_floor"
+    },
+    "normalized_path": null,
+    "fallback": "lucide_category_icon",
+    "action": "manual_review_or_replace_source"
+  },
+  {
+    "stock_code": "128FBS021005-1",
+    "root_name": "F & B Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/128FBS021005-1/128FBS021005.png",
+    "bucket": "B",
+    "source_size": [
+      1080,
+      1080
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 1080,
+      "h": 1080,
+      "alpha": true,
+      "bbox": [
+        92,
+        68,
+        980,
+        957
+      ],
+      "fill_ratio": 0.6768,
+      "transparent_ratio": 0.4805
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "128FBS021005-1.webp",
+    "normalized_bytes": 53246,
+    "alpha": {
+      "fully_transparent_pct": 47.6,
+      "fully_opaque_pct": 51.32,
+      "partial_alpha_pct": 1.08
+    }
+  },
+  {
+    "stock_code": "128FBS021006",
+    "root_name": "F & B Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/128FBS021006/128FBS021006.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        78,
+        64,
+        719,
+        724
+      ],
+      "fill_ratio": 0.661,
+      "transparent_ratio": 0.4897
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "128FBS021006.webp",
+    "normalized_bytes": 48394,
+    "alpha": {
+      "fully_transparent_pct": 47.75,
+      "fully_opaque_pct": 50.12,
+      "partial_alpha_pct": 2.13
+    }
+  },
+  {
+    "stock_code": "128FBS021011-1",
+    "root_name": "F & B Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/128FBS021011-1/128FBS021011-1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        38,
+        133,
+        760,
+        717
+      ],
+      "fill_ratio": 0.6588,
+      "transparent_ratio": 0.5554
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "128FBS021011-1.webp",
+    "normalized_bytes": 82414,
+    "alpha": {
+      "fully_transparent_pct": 62.34,
+      "fully_opaque_pct": 36.48,
+      "partial_alpha_pct": 1.18
+    }
+  },
+  {
+    "stock_code": "128FBS021012-1",
+    "root_name": "F & B Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/128FBS021012-1/128FBS021012-1.png",
+    "bucket": "C",
+    "source_size": [
+      400,
+      360
+    ],
+    "source_mode": "P",
+    "meta": {
+      "w": 400,
+      "h": 360,
+      "reason": "low_res_below_floor"
+    },
+    "normalized_path": null,
+    "fallback": "lucide_category_icon",
+    "action": "manual_review_or_replace_source"
+  },
+  {
+    "stock_code": "128FBS021015",
+    "root_name": "F & B Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/128FBS021015/128FBS021015.png",
+    "bucket": "B",
+    "source_size": [
+      1000,
+      1000
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 1000,
+      "h": 1000,
+      "alpha": true,
+      "bbox": [
+        106,
+        95,
+        898,
+        908
+      ],
+      "fill_ratio": 0.6439,
+      "transparent_ratio": 0.545
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "128FBS021015.webp",
+    "normalized_bytes": 55258,
+    "alpha": {
+      "fully_transparent_pct": 53.15,
+      "fully_opaque_pct": 45.87,
+      "partial_alpha_pct": 0.98
+    }
+  },
+  {
+    "stock_code": "128FBS021016",
+    "root_name": "F & B Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/128FBS021016/128FBS021016_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "P",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        63,
+        102,
+        698,
+        702
+      ],
+      "fill_ratio": 0.5953,
+      "transparent_ratio": 0.5491
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "128FBS021016.webp",
+    "normalized_bytes": 81876,
+    "alpha": {
+      "fully_transparent_pct": 51.35,
+      "fully_opaque_pct": 47.27,
+      "partial_alpha_pct": 1.38
+    }
+  },
+  {
+    "stock_code": "007FSR050002",
+    "root_name": "Food Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007FSR050002/007FSR050002_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        130,
+        194,
+        621,
+        658
+      ],
+      "fill_ratio": 0.356,
+      "transparent_ratio": 0.7572
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "007FSR050002.webp",
+    "normalized_bytes": 36380,
+    "alpha": {
+      "fully_transparent_pct": 55.53,
+      "fully_opaque_pct": 42.68,
+      "partial_alpha_pct": 1.79
+    }
+  },
+  {
+    "stock_code": "007FSR050003",
+    "root_name": "Food Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007FSR050003/007FSR050003_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        154,
+        202,
+        632,
+        653
+      ],
+      "fill_ratio": 0.3368,
+      "transparent_ratio": 0.77
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "007FSR050003.webp",
+    "normalized_bytes": 36094,
+    "alpha": {
+      "fully_transparent_pct": 55.55,
+      "fully_opaque_pct": 42.63,
+      "partial_alpha_pct": 1.82
+    }
+  },
+  {
+    "stock_code": "007FSR040001",
+    "root_name": "Food Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007FSR040001/007FSR040001_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        233,
+        139,
+        546,
+        661
+      ],
+      "fill_ratio": 0.2553,
+      "transparent_ratio": 0.8615
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "007FSR040001.webp",
+    "normalized_bytes": 40460,
+    "alpha": {
+      "fully_transparent_pct": 77.13,
+      "fully_opaque_pct": 21.53,
+      "partial_alpha_pct": 1.34
+    }
+  },
+  {
+    "stock_code": "011FSR010001",
+    "root_name": "Food Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011FSR010001/011FSR010001_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        105,
+        124,
+        713,
+        716
+      ],
+      "fill_ratio": 0.5624,
+      "transparent_ratio": 0.5894
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011FSR010001.webp",
+    "normalized_bytes": 30542,
+    "alpha": {
+      "fully_transparent_pct": 50.94,
+      "fully_opaque_pct": 47.44,
+      "partial_alpha_pct": 1.62
+    }
+  },
+  {
+    "stock_code": "011FSR010002",
+    "root_name": "Food Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011FSR010002/011FSR010002_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        82,
+        166,
+        717,
+        678
+      ],
+      "fill_ratio": 0.508,
+      "transparent_ratio": 0.5986
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011FSR010002.webp",
+    "normalized_bytes": 65346,
+    "alpha": {
+      "fully_transparent_pct": 56.23,
+      "fully_opaque_pct": 42.55,
+      "partial_alpha_pct": 1.23
+    }
+  },
+  {
+    "stock_code": "011FSR040001",
+    "root_name": "Food Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011FSR040001/011FSR040001_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        170,
+        107,
+        630,
+        721
+      ],
+      "fill_ratio": 0.4413,
+      "transparent_ratio": 0.7126
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011FSR040001.webp",
+    "normalized_bytes": 51548,
+    "alpha": {
+      "fully_transparent_pct": 66.11,
+      "fully_opaque_pct": 32.43,
+      "partial_alpha_pct": 1.46
+    }
+  },
+  {
+    "stock_code": "011FSR040002",
+    "root_name": "Food Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011FSR040002/011FSR040002_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        156,
+        111,
+        640,
+        713
+      ],
+      "fill_ratio": 0.4553,
+      "transparent_ratio": 0.705
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011FSR040002.webp",
+    "normalized_bytes": 53600,
+    "alpha": {
+      "fully_transparent_pct": 63.73,
+      "fully_opaque_pct": 34.68,
+      "partial_alpha_pct": 1.6
+    }
+  },
+  {
+    "stock_code": "011FSR040003",
+    "root_name": "Food Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011FSR040003/011FSR040003_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        188,
+        113,
+        622,
+        713
+      ],
+      "fill_ratio": 0.4069,
+      "transparent_ratio": 0.7388
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011FSR040003.webp",
+    "normalized_bytes": 39626,
+    "alpha": {
+      "fully_transparent_pct": 67.47,
+      "fully_opaque_pct": 30.86,
+      "partial_alpha_pct": 1.67
+    }
+  },
+  {
+    "stock_code": "011FSR040018",
+    "root_name": "Food Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011FSR040018/011FSR040018_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        135,
+        110,
+        680,
+        718
+      ],
+      "fill_ratio": 0.5178,
+      "transparent_ratio": 0.6566
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011FSR040018.webp",
+    "normalized_bytes": 55350,
+    "alpha": {
+      "fully_transparent_pct": 58.84,
+      "fully_opaque_pct": 39.61,
+      "partial_alpha_pct": 1.55
+    }
+  },
+  {
+    "stock_code": "011FSR040019",
+    "root_name": "Food Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011FSR040019/011FSR040019_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        164,
+        100,
+        627,
+        725
+      ],
+      "fill_ratio": 0.4521,
+      "transparent_ratio": 0.7243
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011FSR040019.webp",
+    "normalized_bytes": 49662,
+    "alpha": {
+      "fully_transparent_pct": 68.55,
+      "fully_opaque_pct": 29.99,
+      "partial_alpha_pct": 1.46
+    }
+  },
+  {
+    "stock_code": "112HKG030023",
+    "root_name": "Housekeeping Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/112HKG030023/112HKG030023_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        46,
+        267,
+        756,
+        588
+      ],
+      "fill_ratio": 0.3561,
+      "transparent_ratio": 0.8878
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "112HKG030023.webp",
+    "normalized_bytes": 20408,
+    "alpha": {
+      "fully_transparent_pct": 89.44,
+      "fully_opaque_pct": 9.37,
+      "partial_alpha_pct": 1.18
+    }
+  },
+  {
+    "stock_code": "112HKG030026",
+    "root_name": "Housekeeping Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/112HKG030026/112HKG030026_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        133,
+        150,
+        671,
+        676
+      ],
+      "fill_ratio": 0.4422,
+      "transparent_ratio": 0.8742
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "112HKG030026.webp",
+    "normalized_bytes": 31502,
+    "alpha": {
+      "fully_transparent_pct": 80.09,
+      "fully_opaque_pct": 18.36,
+      "partial_alpha_pct": 1.54
+    }
+  },
+  {
+    "stock_code": "199HKG040001",
+    "root_name": "Housekeeping Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/199HKG040001/199HKG040001_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        205,
+        87,
+        295,
+        413
+      ],
+      "fill_ratio": 0.1174,
+      "transparent_ratio": 0.9217
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "199HKG040001.webp",
+    "normalized_bytes": 19112,
+    "alpha": {
+      "fully_transparent_pct": 86.26,
+      "fully_opaque_pct": 11.92,
+      "partial_alpha_pct": 1.83
+    }
+  },
+  {
+    "stock_code": "000HKG020001",
+    "root_name": "Housekeeping Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000HKG020001/000HKG020001_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        202,
+        146,
+        604,
+        689
+      ],
+      "fill_ratio": 0.3411,
+      "transparent_ratio": 0.7362
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000HKG020001.webp",
+    "normalized_bytes": 42100,
+    "alpha": {
+      "fully_transparent_pct": 59.99,
+      "fully_opaque_pct": 38.21,
+      "partial_alpha_pct": 1.8
+    }
+  },
+  {
+    "stock_code": "001HKG020001",
+    "root_name": "Housekeeping Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001HKG020001/001HKG020001_1.png",
+    "bucket": "C",
+    "source_size": [
+      575,
+      434
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 575,
+      "h": 434,
+      "reason": "low_res_below_floor"
+    },
+    "normalized_path": null,
+    "fallback": "lucide_category_icon",
+    "action": "manual_review_or_replace_source"
+  },
+  {
+    "stock_code": "001HKG020003",
+    "root_name": "Housekeeping Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001HKG020003/001HKG020003_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        154,
+        151,
+        652,
+        663
+      ],
+      "fill_ratio": 0.3984,
+      "transparent_ratio": 0.6696
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001HKG020003.webp",
+    "normalized_bytes": 28976,
+    "alpha": {
+      "fully_transparent_pct": 43.29,
+      "fully_opaque_pct": 53.74,
+      "partial_alpha_pct": 2.97
+    }
+  },
+  {
+    "stock_code": "001HKG030012",
+    "root_name": "Housekeeping Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/001HKG030012/001HKG030012_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        141,
+        166,
+        665,
+        659
+      ],
+      "fill_ratio": 0.4036,
+      "transparent_ratio": 0.9309
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "001HKG030012.webp",
+    "normalized_bytes": 72214,
+    "alpha": {
+      "fully_transparent_pct": 84.71,
+      "fully_opaque_pct": 9.78,
+      "partial_alpha_pct": 5.51
+    }
+  },
+  {
+    "stock_code": "026HKG020004",
+    "root_name": "Housekeeping Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/026HKG020004/026HKG020004_1.png",
+    "bucket": "C",
+    "source_size": [
+      577,
+      433
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 577,
+      "h": 433,
+      "reason": "low_res_below_floor"
+    },
+    "normalized_path": null,
+    "fallback": "lucide_category_icon",
+    "action": "manual_review_or_replace_source"
+  },
+  {
+    "stock_code": "026HKG040024",
+    "root_name": "Housekeeping Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/026HKG040024/026HKG040024_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        130,
+        94,
+        387,
+        436
+      ],
+      "fill_ratio": 0.3516,
+      "transparent_ratio": 0.8256
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "026HKG040024.webp",
+    "normalized_bytes": 57814,
+    "alpha": {
+      "fully_transparent_pct": 72.99,
+      "fully_opaque_pct": 24.38,
+      "partial_alpha_pct": 2.63
+    }
+  },
+  {
+    "stock_code": "026HKG040025",
+    "root_name": "Housekeeping Supplies",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/026HKG040025/026HKG040025_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        158,
+        200,
+        800,
+        679
+      ],
+      "fill_ratio": 0.4805,
+      "transparent_ratio": 0.8682
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "026HKG040025.webp",
+    "normalized_bytes": 48760,
+    "alpha": {
+      "fully_transparent_pct": 84.73,
+      "fully_opaque_pct": 13.39,
+      "partial_alpha_pct": 1.87
+    }
+  },
+  {
+    "stock_code": "000KSR040009",
+    "root_name": "Kitchen Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000KSR040009/000KSR040009_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        184,
+        94,
+        622,
+        744
+      ],
+      "fill_ratio": 0.4448,
+      "transparent_ratio": 0.6061
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000KSR040009.webp",
+    "normalized_bytes": 26682,
+    "alpha": {
+      "fully_transparent_pct": 58.79,
+      "fully_opaque_pct": 39.81,
+      "partial_alpha_pct": 1.4
+    }
+  },
+  {
+    "stock_code": "051KSR080021",
+    "root_name": "Kitchen Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/051KSR080021/051KSR080021_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        147,
+        73,
+        345,
+        436
+      ],
+      "fill_ratio": 0.2875,
+      "transparent_ratio": 0.7444
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "051KSR080021.webp",
+    "normalized_bytes": 19156,
+    "alpha": {
+      "fully_transparent_pct": 66.29,
+      "fully_opaque_pct": 32.07,
+      "partial_alpha_pct": 1.64
+    }
+  },
+  {
+    "stock_code": "060KSR040002",
+    "root_name": "Kitchen Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/060KSR040002/060KSR040002_1.png",
+    "bucket": "C",
+    "source_size": [
+      400,
+      400
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 400,
+      "h": 400,
+      "reason": "low_res_below_floor"
+    },
+    "normalized_path": null,
+    "fallback": "lucide_category_icon",
+    "action": "manual_review_or_replace_source"
+  },
+  {
+    "stock_code": "051KSR081022",
+    "root_name": "Kitchen Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/051KSR081022/051KSR081022_1.jpg",
+    "bucket": "C",
+    "source_size": [
+      250,
+      201
+    ],
+    "source_mode": "RGB",
+    "meta": {
+      "w": 250,
+      "h": 201,
+      "reason": "low_res_below_floor"
+    },
+    "normalized_path": null,
+    "fallback": "lucide_category_icon",
+    "action": "manual_review_or_replace_source"
+  },
+  {
+    "stock_code": "000HKG010003",
+    "root_name": "Kitchen Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000HKG010003/000HKG010003_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        162,
+        135,
+        637,
+        681
+      ],
+      "fill_ratio": 0.4052,
+      "transparent_ratio": 0.6646
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000HKG010003.webp",
+    "normalized_bytes": 47066,
+    "alpha": {
+      "fully_transparent_pct": 50.52,
+      "fully_opaque_pct": 47.98,
+      "partial_alpha_pct": 1.5
+    }
+  },
+  {
+    "stock_code": "000HKG010004",
+    "root_name": "Kitchen Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000HKG010004/000HKG010004_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        135,
+        172,
+        671,
+        697
+      ],
+      "fill_ratio": 0.4397,
+      "transparent_ratio": 0.6338
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000HKG010004.webp",
+    "normalized_bytes": 68662,
+    "alpha": {
+      "fully_transparent_pct": 44.1,
+      "fully_opaque_pct": 54.44,
+      "partial_alpha_pct": 1.46
+    }
+  },
+  {
+    "stock_code": "000KSR010001",
+    "root_name": "Kitchen Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000KSR010001/000KSR010001_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        120,
+        96,
+        477,
+        531
+      ],
+      "fill_ratio": 0.4314,
+      "transparent_ratio": 0.6328
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000KSR010001.webp",
+    "normalized_bytes": 34070,
+    "alpha": {
+      "fully_transparent_pct": 52.07,
+      "fully_opaque_pct": 46.35,
+      "partial_alpha_pct": 1.58
+    }
+  },
+  {
+    "stock_code": "000KSR010002",
+    "root_name": "Kitchen Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000KSR010002/000KSR010002_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        79,
+        113,
+        519,
+        503
+      ],
+      "fill_ratio": 0.4767,
+      "transparent_ratio": 0.6266
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000KSR010002.webp",
+    "normalized_bytes": 57458,
+    "alpha": {
+      "fully_transparent_pct": 52.04,
+      "fully_opaque_pct": 46.19,
+      "partial_alpha_pct": 1.76
+    }
+  },
+  {
+    "stock_code": "000KSR010004",
+    "root_name": "Kitchen Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000KSR010004/000KSR010004_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        90,
+        147,
+        517,
+        472
+      ],
+      "fill_ratio": 0.3855,
+      "transparent_ratio": 0.6662
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000KSR010004.webp",
+    "normalized_bytes": 48208,
+    "alpha": {
+      "fully_transparent_pct": 54.43,
+      "fully_opaque_pct": 43.77,
+      "partial_alpha_pct": 1.8
+    }
+  },
+  {
+    "stock_code": "000KSR010005",
+    "root_name": "Kitchen Services",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000KSR010005/000KSR010005_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        94,
+        149,
+        511,
+        463
+      ],
+      "fill_ratio": 0.3637,
+      "transparent_ratio": 0.6778
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000KSR010005.webp",
+    "normalized_bytes": 25496,
+    "alpha": {
+      "fully_transparent_pct": 54.11,
+      "fully_opaque_pct": 44.37,
+      "partial_alpha_pct": 1.52
+    }
+  },
+  {
+    "stock_code": "010KUT050175",
+    "root_name": "Kitchen Utensils",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/010KUT050175/010KUT050175_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        29,
+        166,
+        571,
+        461
+      ],
+      "fill_ratio": 0.4441,
+      "transparent_ratio": 0.8542
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "010KUT050175.webp",
+    "normalized_bytes": 20086,
+    "alpha": {
+      "fully_transparent_pct": 87.33,
+      "fully_opaque_pct": 11.77,
+      "partial_alpha_pct": 0.9
+    }
+  },
+  {
+    "stock_code": "010KUT050176",
+    "root_name": "Kitchen Utensils",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/010KUT050176/010KUT050176_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        29,
+        166,
+        571,
+        461
+      ],
+      "fill_ratio": 0.4441,
+      "transparent_ratio": 0.8542
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "010KUT050176.webp",
+    "normalized_bytes": 20086,
+    "alpha": {
+      "fully_transparent_pct": 87.33,
+      "fully_opaque_pct": 11.77,
+      "partial_alpha_pct": 0.9
+    }
+  },
+  {
+    "stock_code": "010KUT050182",
+    "root_name": "Kitchen Utensils",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/010KUT050182/010KUT050182_1.png",
+    "bucket": "C",
+    "source_size": [
+      483,
+      516
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 483,
+      "h": 516,
+      "reason": "low_res_below_floor"
+    },
+    "normalized_path": null,
+    "fallback": "lucide_category_icon",
+    "action": "manual_review_or_replace_source"
+  },
+  {
+    "stock_code": "011KUT020002",
+    "root_name": "Kitchen Utensils",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011KUT020002/011KUT020002_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        69,
+        189,
+        519,
+        446
+      ],
+      "fill_ratio": 0.3212,
+      "transparent_ratio": 0.8299
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011KUT020002.webp",
+    "normalized_bytes": 21386,
+    "alpha": {
+      "fully_transparent_pct": 78.87,
+      "fully_opaque_pct": 20.03,
+      "partial_alpha_pct": 1.1
+    }
+  },
+  {
+    "stock_code": "011KUT020005",
+    "root_name": "Kitchen Utensils",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011KUT020005/011KUT020005_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        76,
+        202,
+        523,
+        397
+      ],
+      "fill_ratio": 0.2421,
+      "transparent_ratio": 0.8591
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011KUT020005.webp",
+    "normalized_bytes": 24720,
+    "alpha": {
+      "fully_transparent_pct": 82.21,
+      "fully_opaque_pct": 16.74,
+      "partial_alpha_pct": 1.05
+    }
+  },
+  {
+    "stock_code": "011KUT020006",
+    "root_name": "Kitchen Utensils",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011KUT020006/011KUT020006_1.png",
+    "bucket": "B",
+    "source_size": [
+      600,
+      600
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 600,
+      "h": 600,
+      "alpha": true,
+      "bbox": [
+        65,
+        185,
+        535,
+        429
+      ],
+      "fill_ratio": 0.3186,
+      "transparent_ratio": 0.8004
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011KUT020006.webp",
+    "normalized_bytes": 28786,
+    "alpha": {
+      "fully_transparent_pct": 77.43,
+      "fully_opaque_pct": 21.54,
+      "partial_alpha_pct": 1.04
+    }
+  },
+  {
+    "stock_code": "011KUT020010",
+    "root_name": "Kitchen Utensils",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011KUT020010/011KUT020010_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        68,
+        123,
+        433,
+        391
+      ],
+      "fill_ratio": 0.3913,
+      "transparent_ratio": 0.7684
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011KUT020010.webp",
+    "normalized_bytes": 28974,
+    "alpha": {
+      "fully_transparent_pct": 70.02,
+      "fully_opaque_pct": 28.76,
+      "partial_alpha_pct": 1.22
+    }
+  },
+  {
+    "stock_code": "011KUT020012",
+    "root_name": "Kitchen Utensils",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011KUT020012/011KUT020012_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        40,
+        175,
+        451,
+        329
+      ],
+      "fill_ratio": 0.2532,
+      "transparent_ratio": 0.8761
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011KUT020012.webp",
+    "normalized_bytes": 19672,
+    "alpha": {
+      "fully_transparent_pct": 87.1,
+      "fully_opaque_pct": 12.03,
+      "partial_alpha_pct": 0.87
+    }
+  },
+  {
+    "stock_code": "011KUT020013",
+    "root_name": "Kitchen Utensils",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011KUT020013/011KUT020013_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        56,
+        136,
+        448,
+        374
+      ],
+      "fill_ratio": 0.3732,
+      "transparent_ratio": 0.812
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011KUT020013.webp",
+    "normalized_bytes": 24174,
+    "alpha": {
+      "fully_transparent_pct": 78.86,
+      "fully_opaque_pct": 20.18,
+      "partial_alpha_pct": 0.96
+    }
+  },
+  {
+    "stock_code": "011KUT020016",
+    "root_name": "Kitchen Utensils",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011KUT020016/011KUT020016_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        56,
+        179,
+        446,
+        330
+      ],
+      "fill_ratio": 0.2356,
+      "transparent_ratio": 0.8637
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011KUT020016.webp",
+    "normalized_bytes": 23262,
+    "alpha": {
+      "fully_transparent_pct": 84.27,
+      "fully_opaque_pct": 14.69,
+      "partial_alpha_pct": 1.03
+    }
+  },
+  {
+    "stock_code": "055LPR040005",
+    "root_name": "Laundry Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/055LPR040005/055LPR040005_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        71,
+        110,
+        429,
+        408
+      ],
+      "fill_ratio": 0.4267,
+      "transparent_ratio": 0.8138
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "055LPR040005.webp",
+    "normalized_bytes": 42736,
+    "alpha": {
+      "fully_transparent_pct": 73.95,
+      "fully_opaque_pct": 23.36,
+      "partial_alpha_pct": 2.69
+    }
+  },
+  {
+    "stock_code": "055LPR040006",
+    "root_name": "Laundry Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/055LPR040006/055LPR040006_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        194,
+        61,
+        295,
+        409
+      ],
+      "fill_ratio": 0.1406,
+      "transparent_ratio": 0.9583
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "055LPR040006.webp",
+    "normalized_bytes": 27746,
+    "alpha": {
+      "fully_transparent_pct": 93.48,
+      "fully_opaque_pct": 5.02,
+      "partial_alpha_pct": 1.5
+    }
+  },
+  {
+    "stock_code": "143LPR030002",
+    "root_name": "Laundry Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/143LPR030002/143LPR030002_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        79,
+        109,
+        421,
+        362
+      ],
+      "fill_ratio": 0.3461,
+      "transparent_ratio": 0.8247
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "143LPR030002.webp",
+    "normalized_bytes": 22304,
+    "alpha": {
+      "fully_transparent_pct": 73.49,
+      "fully_opaque_pct": 24.2,
+      "partial_alpha_pct": 2.3
+    }
+  },
+  {
+    "stock_code": "143LPR011001",
+    "root_name": "Laundry Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/143LPR011001/143LPR011001_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        109,
+        138,
+        416,
+        357
+      ],
+      "fill_ratio": 0.2689,
+      "transparent_ratio": 0.8269
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "143LPR011001.webp",
+    "normalized_bytes": 32902,
+    "alpha": {
+      "fully_transparent_pct": 67.71,
+      "fully_opaque_pct": 29.87,
+      "partial_alpha_pct": 2.41
+    }
+  },
+  {
+    "stock_code": "055LPR040003",
+    "root_name": "Laundry Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/055LPR040003/055LPR040003_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        200,
+        57,
+        287,
+        424
+      ],
+      "fill_ratio": 0.1277,
+      "transparent_ratio": 0.9614
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "055LPR040003.webp",
+    "normalized_bytes": 30094,
+    "alpha": {
+      "fully_transparent_pct": 93.97,
+      "fully_opaque_pct": 4.24,
+      "partial_alpha_pct": 1.79
+    }
+  },
+  {
+    "stock_code": "055LPR040004",
+    "root_name": "Laundry Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/055LPR040004/055LPR040004_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        78,
+        101,
+        407,
+        372
+      ],
+      "fill_ratio": 0.3566,
+      "transparent_ratio": 0.8211
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "055LPR040004.webp",
+    "normalized_bytes": 44770,
+    "alpha": {
+      "fully_transparent_pct": 70.05,
+      "fully_opaque_pct": 25.91,
+      "partial_alpha_pct": 4.03
+    }
+  },
+  {
+    "stock_code": "055LPR040008",
+    "root_name": "Laundry Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/055LPR040008/055LPR040008_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        150,
+        94,
+        339,
+        404
+      ],
+      "fill_ratio": 0.2344,
+      "transparent_ratio": 0.9076
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "055LPR040008.webp",
+    "normalized_bytes": 49806,
+    "alpha": {
+      "fully_transparent_pct": 82.32,
+      "fully_opaque_pct": 14.44,
+      "partial_alpha_pct": 3.23
+    }
+  },
+  {
+    "stock_code": "143LPR020009",
+    "root_name": "Laundry Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/143LPR020009/143LPR020009_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        139,
+        101,
+        359,
+        406
+      ],
+      "fill_ratio": 0.2684,
+      "transparent_ratio": 0.7467
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "143LPR020009.webp",
+    "normalized_bytes": 15534,
+    "alpha": {
+      "fully_transparent_pct": 52.91,
+      "fully_opaque_pct": 45.0,
+      "partial_alpha_pct": 2.09
+    }
+  },
+  {
+    "stock_code": "055LPR040010",
+    "root_name": "Laundry Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/055LPR040010/055LPR040010_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        172,
+        91,
+        316,
+        405
+      ],
+      "fill_ratio": 0.1809,
+      "transparent_ratio": 0.9528
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "055LPR040010.webp",
+    "normalized_bytes": 46988,
+    "alpha": {
+      "fully_transparent_pct": 90.01,
+      "fully_opaque_pct": 7.0,
+      "partial_alpha_pct": 2.99
+    }
+  },
+  {
+    "stock_code": "143LPR021001",
+    "root_name": "Laundry Solutions",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/143LPR021001/143LPR021001_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        76,
+        122,
+        423,
+        370
+      ],
+      "fill_ratio": 0.3442,
+      "transparent_ratio": 0.7742
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "143LPR021001.webp",
+    "normalized_bytes": 34968,
+    "alpha": {
+      "fully_transparent_pct": 67.21,
+      "fully_opaque_pct": 30.61,
+      "partial_alpha_pct": 2.18
+    }
+  },
+  {
+    "stock_code": "011KUT020051",
+    "root_name": "Spare Parts",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/011KUT020051/011KUT020051_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        14,
+        94,
+        484,
+        407
+      ],
+      "fill_ratio": 0.5884,
+      "transparent_ratio": 0.8147
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "011KUT020051.webp",
+    "normalized_bytes": 79942,
+    "alpha": {
+      "fully_transparent_pct": 83.32,
+      "fully_opaque_pct": 12.62,
+      "partial_alpha_pct": 4.06
+    }
+  },
+  {
+    "stock_code": "000SPS020001",
+    "root_name": "Spare Parts",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000SPS020001/000SPS020001_1.png",
+    "bucket": "D",
+    "source_size": [
+      598,
+      598
+    ],
+    "source_mode": "RGB",
+    "meta": {
+      "w": 598,
+      "h": 598,
+      "alpha": false
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000SPS020001.webp",
+    "normalized_bytes": 20072,
+    "alpha": {
+      "fully_transparent_pct": 88.14,
+      "fully_opaque_pct": 10.08,
+      "partial_alpha_pct": 1.77
+    },
+    "remove_bg_latency_s": 0.56
+  },
+  {
+    "stock_code": "000SPS020005",
+    "root_name": "Spare Parts",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000SPS020005/000SPS020005_1.png",
+    "bucket": "D",
+    "source_size": [
+      560,
+      560
+    ],
+    "source_mode": "RGB",
+    "meta": {
+      "w": 560,
+      "h": 560,
+      "alpha": false
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000SPS020005.webp",
+    "normalized_bytes": 31708,
+    "alpha": {
+      "fully_transparent_pct": 88.95,
+      "fully_opaque_pct": 8.71,
+      "partial_alpha_pct": 2.34
+    },
+    "remove_bg_latency_s": 1.11
+  },
+  {
+    "stock_code": "000SPS020006",
+    "root_name": "Spare Parts",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000SPS020006/000SPS020006_1.png",
+    "bucket": "D",
+    "source_size": [
+      560,
+      560
+    ],
+    "source_mode": "RGB",
+    "meta": {
+      "w": 560,
+      "h": 560,
+      "alpha": false
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000SPS020006.webp",
+    "normalized_bytes": 30340,
+    "alpha": {
+      "fully_transparent_pct": 86.19,
+      "fully_opaque_pct": 11.62,
+      "partial_alpha_pct": 2.19
+    },
+    "remove_bg_latency_s": 0.48
+  },
+  {
+    "stock_code": "000SPS020008",
+    "root_name": "Spare Parts",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000SPS020008/000SPS020008_1.png",
+    "bucket": "D",
+    "source_size": [
+      702,
+      727
+    ],
+    "source_mode": "RGB",
+    "meta": {
+      "w": 702,
+      "h": 727,
+      "alpha": false
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000SPS020008.webp",
+    "normalized_bytes": 40164,
+    "alpha": {
+      "fully_transparent_pct": 51.77,
+      "fully_opaque_pct": 46.07,
+      "partial_alpha_pct": 2.17
+    },
+    "remove_bg_latency_s": 0.66
+  },
+  {
+    "stock_code": "000SPS020009",
+    "root_name": "Spare Parts",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000SPS020009/000SPS020009_1.png",
+    "bucket": "D",
+    "source_size": [
+      702,
+      709
+    ],
+    "source_mode": "RGB",
+    "meta": {
+      "w": 702,
+      "h": 709,
+      "alpha": false
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000SPS020009.webp",
+    "normalized_bytes": 48324,
+    "alpha": {
+      "fully_transparent_pct": 60.67,
+      "fully_opaque_pct": 38.21,
+      "partial_alpha_pct": 1.12
+    },
+    "remove_bg_latency_s": 0.57
+  },
+  {
+    "stock_code": "000SPS020010",
+    "root_name": "Spare Parts",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000SPS020010/000SPS020010_1.png",
+    "bucket": "D",
+    "source_size": [
+      702,
+      627
+    ],
+    "source_mode": "RGB",
+    "meta": {
+      "w": 702,
+      "h": 627,
+      "alpha": false
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000SPS020010.webp",
+    "normalized_bytes": 39800,
+    "alpha": {
+      "fully_transparent_pct": 60.05,
+      "fully_opaque_pct": 38.15,
+      "partial_alpha_pct": 1.8
+    },
+    "remove_bg_latency_s": 0.54
+  },
+  {
+    "stock_code": "000SPS020011",
+    "root_name": "Spare Parts",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000SPS020011/000SPS020011_1.png",
+    "bucket": "C",
+    "source_size": [
+      225,
+      225
+    ],
+    "source_mode": "RGB",
+    "meta": {
+      "w": 225,
+      "h": 225,
+      "reason": "low_res_below_floor"
+    },
+    "normalized_path": null,
+    "fallback": "lucide_category_icon",
+    "action": "manual_review_or_replace_source"
+  },
+  {
+    "stock_code": "000SPS020012",
+    "root_name": "Spare Parts",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000SPS020012/000SPS020012_1.png",
+    "bucket": "D",
+    "source_size": [
+      702,
+      560
+    ],
+    "source_mode": "RGB",
+    "meta": {
+      "w": 702,
+      "h": 560,
+      "alpha": false
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000SPS020012.webp",
+    "normalized_bytes": 63540,
+    "alpha": {
+      "fully_transparent_pct": 77.37,
+      "fully_opaque_pct": 19.16,
+      "partial_alpha_pct": 3.46
+    },
+    "remove_bg_latency_s": 0.51
+  },
+  {
+    "stock_code": "000SPS020013",
+    "root_name": "Spare Parts",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/000SPS020013/000SPS020013_1.png",
+    "bucket": "D",
+    "source_size": [
+      550,
+      550
+    ],
+    "source_mode": "RGB",
+    "meta": {
+      "w": 550,
+      "h": 550,
+      "alpha": false
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "000SPS020013.webp",
+    "normalized_bytes": 54014,
+    "alpha": {
+      "fully_transparent_pct": 53.02,
+      "fully_opaque_pct": 44.67,
+      "partial_alpha_pct": 2.3
+    },
+    "remove_bg_latency_s": 0.45
+  },
+  {
+    "stock_code": "112FSR060022",
+    "root_name": "Tableware",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/112FSR060022/112FSR060022_1.png",
+    "bucket": "B",
+    "source_size": [
+      1080,
+      1080
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 1080,
+      "h": 1080,
+      "alpha": true,
+      "bbox": [
+        492,
+        149,
+        566,
+        870
+      ],
+      "fill_ratio": 0.0457,
+      "transparent_ratio": 0.9753
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "112FSR060022.webp",
+    "normalized_bytes": 11806,
+    "alpha": {
+      "fully_transparent_pct": 95.56,
+      "fully_opaque_pct": 3.6,
+      "partial_alpha_pct": 0.84
+    }
+  },
+  {
+    "stock_code": "112FSR060056",
+    "root_name": "Tableware",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/112FSR060056/112FSR060056_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        93,
+        238,
+        727,
+        598
+      ],
+      "fill_ratio": 0.3566,
+      "transparent_ratio": 0.9448
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "112FSR060056.webp",
+    "normalized_bytes": 22364,
+    "alpha": {
+      "fully_transparent_pct": 92.8,
+      "fully_opaque_pct": 5.62,
+      "partial_alpha_pct": 1.58
+    }
+  },
+  {
+    "stock_code": "112FSR060017",
+    "root_name": "Tableware",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/112FSR060017/112FSR060017_1.png",
+    "bucket": "B",
+    "source_size": [
+      1080,
+      1080
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 1080,
+      "h": 1080,
+      "alpha": true,
+      "bbox": [
+        145,
+        97,
+        935,
+        985
+      ],
+      "fill_ratio": 0.6014,
+      "transparent_ratio": 0.9319
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "112FSR060017.webp",
+    "normalized_bytes": 33788,
+    "alpha": {
+      "fully_transparent_pct": 91.88,
+      "fully_opaque_pct": 6.56,
+      "partial_alpha_pct": 1.56
+    }
+  },
+  {
+    "stock_code": "007TWD010005",
+    "root_name": "Tableware",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010005/007TWD010005_1.png",
+    "bucket": "B",
+    "source_size": [
+      1080,
+      1080
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 1080,
+      "h": 1080,
+      "alpha": true,
+      "bbox": [
+        498,
+        185,
+        582,
+        895
+      ],
+      "fill_ratio": 0.0511,
+      "transparent_ratio": 0.973
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "007TWD010005.webp",
+    "normalized_bytes": 12636,
+    "alpha": {
+      "fully_transparent_pct": 94.95,
+      "fully_opaque_pct": 4.05,
+      "partial_alpha_pct": 1.0
+    }
+  },
+  {
+    "stock_code": "007TWD010006",
+    "root_name": "Tableware",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010006/007TWD010006_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        348,
+        82,
+        432,
+        720
+      ],
+      "fill_ratio": 0.0837,
+      "transparent_ratio": 0.967
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "007TWD010006.webp",
+    "normalized_bytes": 23038,
+    "alpha": {
+      "fully_transparent_pct": 95.37,
+      "fully_opaque_pct": 3.21,
+      "partial_alpha_pct": 1.42
+    }
+  },
+  {
+    "stock_code": "007TWD010007",
+    "root_name": "Tableware",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010007/007TWD010007_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        334,
+        69,
+        475,
+        739
+      ],
+      "fill_ratio": 0.1476,
+      "transparent_ratio": 0.9401
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "007TWD010007.webp",
+    "normalized_bytes": 17600,
+    "alpha": {
+      "fully_transparent_pct": 93.5,
+      "fully_opaque_pct": 5.58,
+      "partial_alpha_pct": 0.92
+    }
+  },
+  {
+    "stock_code": "007TWD010008",
+    "root_name": "Tableware",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010008/007TWD010008_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        348,
+        82,
+        432,
+        720
+      ],
+      "fill_ratio": 0.0837,
+      "transparent_ratio": 0.967
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "007TWD010008.webp",
+    "normalized_bytes": 23038,
+    "alpha": {
+      "fully_transparent_pct": 95.37,
+      "fully_opaque_pct": 3.21,
+      "partial_alpha_pct": 1.42
+    }
+  },
+  {
+    "stock_code": "007TWD010009",
+    "root_name": "Tableware",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010009/007TWD010009_1.png",
+    "bucket": "B",
+    "source_size": [
+      800,
+      800
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 800,
+      "h": 800,
+      "alpha": true,
+      "bbox": [
+        93,
+        238,
+        727,
+        598
+      ],
+      "fill_ratio": 0.3566,
+      "transparent_ratio": 0.9448
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "007TWD010009.webp",
+    "normalized_bytes": 22364,
+    "alpha": {
+      "fully_transparent_pct": 92.8,
+      "fully_opaque_pct": 5.62,
+      "partial_alpha_pct": 1.58
+    }
+  },
+  {
+    "stock_code": "007TWD010010",
+    "root_name": "Tableware",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010010/007TWD010010_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        187,
+        41,
+        313,
+        459
+      ],
+      "fill_ratio": 0.2107,
+      "transparent_ratio": 0.9209
+    },
+    "upload_ok": true,
+    "upload_error": null,
+    "normalized_path": "007TWD010010.webp",
+    "normalized_bytes": 21338,
+    "alpha": {
+      "fully_transparent_pct": 91.68,
+      "fully_opaque_pct": 7.3,
+      "partial_alpha_pct": 1.03
+    }
+  },
+  {
+    "stock_code": "007TWD010012",
+    "root_name": "Tableware",
+    "source_url": "https://fqabwolwhrtrygmhaipg.supabase.co/storage/v1/object/public/product-images/007TWD010012/007TWD010012_1.png",
+    "bucket": "B",
+    "source_size": [
+      500,
+      500
+    ],
+    "source_mode": "RGBA",
+    "meta": {
+      "w": 500,
+      "h": 500,
+      "alpha": true,
+      "bbox": [
+        179,
+        18,
+        307,
+        486
+      ],
+      "fill_ratio": 0.2396
+    },
+    "normalized_path": "007TWD010012.webp",
+    "normalized_bytes": 17092,
+    "upload_ok": true,
+    "upload_error": null,
+    "alpha": {
+      "fully_transparent_pct": 91.87,
+      "fully_opaque_pct": 7.25,
+      "partial_alpha_pct": 0.87
+    }
+  }
+]
