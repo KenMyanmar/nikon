@@ -41,9 +41,9 @@ const Index = () => {
     <MainLayout>
       <HeroBannerSection />
       <CategoryQuickNav />
+      <BestSellers />
       <ShopByBusinessType />
       <QuoteCTA />
-      <BestSellers />
       <FlashDealsRow />
       <TrustBadgeBar />
       <HoReCaResources />
