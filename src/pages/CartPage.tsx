@@ -177,10 +177,12 @@ const CartPage = () => {
   );
 
   const handleRemoveUnavailable = async () => {
+    const removedCount = orphanedItems.length;
     for (const item of orphanedItems) {
       await removeItem.mutateAsync(item.id);
     }
-    toast({ title: "Removed unavailable items", description: `${orphanedItems.length} item(s) removed from cart` });
+    queryClient.invalidateQueries({ queryKey: ["cart-count"] });
+    toast({ title: "Removed unavailable items", description: `${removedCount} item(s) removed from cart` });
   };
 
   const couponDiscount = useMemo(() => {
