@@ -1,84 +1,64 @@
-# Reorder Category Navigation — Spare Parts to End
+# Banner Carousel Consumer — Hero
 
-## Audit results — every `.from("categories")` query
+Wire the existing CRM-managed `banners` table (3 active hero rows) into the homepage as an auto-rotating carousel. Preserve the marathon's locked static `Hero` as the fallback for empty/error states.
 
-Project-wide search surfaced 12 category queries across 8 files. Classified below.
+Storefront-only. No DB changes. No CRM changes. No new dependencies (no Embla).
 
-### Top-level (depth=0) display lists — CHANGE to `sort_order` ASC
+## Files
 
-| File | Line | Current | Notes |
-|---|---|---|---|
-| `src/components/layout/MegaMenu.tsx` | 44 | `.order("name", { ascending: true })` | **LOCKED component** — desktop nav `mainCategories` |
-| `src/components/layout/Footer.tsx` | 128 | `.order("name", { ascending: true })` | **LOCKED component** — footer "Shop by Category" column |
-| `src/pages/AllCategoriesPage.tsx` | 17 | `.order("name")` | Standalone /categories page header order |
+### 1. CREATE `src/hooks/useBanners.ts`
+React Query hook returning active banners for a position.
+- Filter: `is_active = true`, `position = <arg>`, date window via two `.or()` chains (`starts_at` null/≤now, `ends_at` null/≥now)
+- Sort: `sort_order` ASC
+- `staleTime: 5 * 60 * 1000` (matches Core caching policy)
+- Exports `Banner` type with `id`, `title`, `subtitle`, `image_url`, `link_url`, `position`, `sort_order`
 
-### Already correct — NO change
+### 2. CREATE `src/components/home/HeroBannerCarousel.tsx`
+Self-contained carousel, props: `{ banners: Banner[] }`.
 
-| File | Line | Sort | Status |
-|---|---|---|---|
-| `src/components/home/CategoryQuickNav.tsx` | 50 | `sort_order` ASC | **LOCKED** — already correct, do not touch |
-| `src/components/home/FeaturedCategories.tsx` | 16 | `sort_order` | Already correct |
-| `src/pages/CategoryPage.tsx` | 62–63 | `sort_order` then `name` | Sub-categories of a parent — already correct |
+**Behavior**
+- Active index in `useState`, advances every 7s via `setInterval`
+- Pause on `:hover` / `:focus-within` (track via `onMouseEnter/Leave`, `onFocus/Blur` on root)
+- `prefers-reduced-motion` via `window.matchMedia` → disables auto-rotate, manual nav still works
+- Keyboard: `onKeyDown` ArrowLeft/ArrowRight on root (tabIndex=0)
+- Dots: bottom-center, amber for active, neutral white/60 for inactive, click sets index
+- Arrows: chevron buttons, `hidden md:flex` group-hover visible, click prev/next with wrap
+- ARIA: root `role="region"` `aria-roledescription="carousel"` `aria-label="Promotional banners"`; each slide `aria-roledescription="slide"` `aria-label="Slide N of M"`; inactive slides `aria-hidden`
 
-### Sub-categories only (depth=1) — LEAVE as-is per spec
+**Visuals**
+- Root: `relative w-full aspect-[16/5] overflow-hidden bg-muted`
+- Slides stacked absolutely with opacity transitions (simpler than scroll-snap for 3 slides + reliable index control); `transition-opacity duration-500`
+- Image: `object-cover w-full h-full`, `loading="eager"` for first slide only
+- Scrim: bottom-left gradient, `bg-gradient-to-tr from-black/55 via-black/30 to-transparent`, ~50% height / 60% width
+- Title: `text-[22px] md:text-[36px] font-bold text-white leading-[1.1]`
+- Subtitle: `text-sm md:text-lg text-white/85 mt-2 leading-snug` — only rendered when truthy
+- Text container: `absolute bottom-0 left-0 max-w-[90%] md:max-w-[60%] p-5 md:p-8`
 
-| File | Line | Filter | Notes |
-|---|---|---|---|
-| `src/components/layout/MegaMenu.tsx` | 59 | `depth=1` | Sub-categories shown inside hover dropdowns, grouped by parent client-side. Spec says depth=1 queries leave existing sort. |
-| `src/pages/AllCategoriesPage.tsx` | 31 | `depth=1` | Sub-categories listed under each parent section. Same rationale. |
+**Link wrapper (per-slide)** using `parseLink` helper:
+- `STOREFRONT_HOSTS = ["ucogold.com", "www.ucogold.com"]`
+- `null` / unparseable → render `<div>` (no pointer)
+- starts with `/` OR host matches storefront/window → `<Link to={path+search+hash}>` with `cursor-pointer`
+- otherwise → `<a href target="_blank" rel="noopener noreferrer">`
 
-### Not in scope — single-row lookups or non-categories
+### 3. MODIFY `src/pages/Index.tsx`
+- Add a local `HeroBannerSection` component in the same file (cleaner than IIFE)
+- It calls `useBanners('hero')`:
+  - loading → `<Skeleton className="w-full aspect-[16/5]" />` (import from `@/components/ui/skeleton`)
+  - error / empty array → `<Hero />` (existing static, untouched)
+  - otherwise → `<HeroBannerCarousel banners={data} />`
+- Replace `<Hero />` in the JSX with `<HeroBannerSection />`
+- Keep `Hero` import — it's used as the fallback. Section order unchanged.
 
-`src/pages/CategoryPage.tsx` lines 27, 43 (single-row lookups, no `.order`), `src/pages/ProductDetail.tsx` line 179 (single-row lookup), `src/pages/AllBrandsPage.tsx` (brands query at line 26).
-
-### No mixed depth=0+depth=1 queries found
-
-Nothing to flag. Every query that currently controls top-level order can be cleanly switched.
-
-## Locked-component disclosure (Rule 18 transparency)
-
-Per the post-marathon locked list, this fix touches **two locked components**:
-
-1. **`src/components/layout/MegaMenu.tsx`** — single-line change to the `mainCategories` query order clause (line 44). No layout, font-size, or padding changes. `text-[12px]` and `px-2.5` preserved (Rule 20).
-2. **`src/components/layout/Footer.tsx`** — single-line change to the footer-categories query order clause (line 128). No structural or token changes.
-
-`CategoryQuickNav.tsx` (also locked) is already on `sort_order` and will not be touched.
-
-## Changes (3 lines, 3 files)
-
-```text
-src/components/layout/MegaMenu.tsx:44
-- .order("name", { ascending: true });
-+ .order("sort_order", { ascending: true });
-
-src/components/layout/Footer.tsx:128
-- .order("name", { ascending: true });
-+ .order("sort_order", { ascending: true });
-
-src/pages/AllCategoriesPage.tsx:17
-- .order("name");
-+ .order("sort_order", { ascending: true });
-```
-
-No DB migration (already applied separately). No other code changes.
-
-## Acceptance evidence (Rule 12)
-
-Capture and commit to `docs/build-screenshots/post-marathon/category-sort-order/`:
-
-- `desktop-nav-1366x768.png` — full nav row, expected order: Tableware → Kitchen Utensils → Housekeeping Supplies → Food Services → Kitchen Services → Bedroom Supplies → Buffet & Banquet → Food & Beverage → Laundry Solutions → Spare Parts
-- `footer-categories.png` — same order in footer column
-- `mobile-drawer.png` — mobile hamburger Categories list in same order
-- `actual-viewport-truncation-check.png` — capture at Ken's actual viewport (`window.innerWidth` reported in build report)
-- `README.md` — Rule 18 two-column gate + Rule 14 copy verification
-
-## Truncation rule
-
-If "Spare Parts" (11 chars, +2 vs prior rightmost "Tableware") truncates at Ken's viewport: STOP, report viewport width and clip amount. Do NOT alter font size, padding, or layout to compensate — that's a separate re-lock decision.
+## Edge cases handled
+- Internal links stored as `https://ucogold.com/...` are extracted to pathname and routed via `<Link>` — no full page reload (Test 6)
+- Slides without `link_url` are non-interactive — no `<Link>`, no `cursor-pointer` (Test 7)
+- Empty result set → static Hero fallback (Test 8)
+- Single banner → auto-rotate is a no-op (interval still set but `next === current`); arrows/dots hidden when `banners.length <= 1`
 
 ## Out of scope
+- No DB migration, no CRM changes, no `Hero.tsx` edits, no deletion of static hero
+- No Embla / new carousel dependency
+- No analytics events on slide click (not requested)
 
-- Sub-category sort order inside dropdowns (left as `name` ASC per spec)
-- Any token, font, padding, or layout change
-- Brands queries
-- Database changes (already applied)
+## Verification
+Manual against the 10 test items in the prompt. No screenshot commit requested for this prompt — will capture if user asks for the marathon evidence pattern.
