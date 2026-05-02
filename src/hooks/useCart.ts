@@ -18,7 +18,7 @@ export const useCartCount = () => {
       if (!customerId) return 0;
       const { count } = await supabase
         .from("cart_items")
-        .select("*", { count: "exact", head: true })
+        .select("*, product:products_public!inner(id)", { count: "exact", head: true })
         .eq("customer_id", customerId);
       return count || 0;
     },

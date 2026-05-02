@@ -1,48 +1,56 @@
-## Plan — Business Types from DB + Section Reorder
+## Cart Orphan Bug — Remaining Fix (Part 3 only)
 
-Two scoped changes, no DB work, no design changes.
+### Status of the prompt
 
-### 1. `src/components/home/ShopByBusinessType.tsx` — DB-driven
+On inspecting `src/pages/CartPage.tsx`, **Parts 1 and 2 are already implemented**:
 
-- Remove hardcoded `businessTypes` array and `STORAGE` constant.
-- Add `useBusinessTypes` React Query hook in the same file:
-  - Selects `id, label, image_url, link_url, sort_order` from `business_types`
-  - Filters `is_active = true`, orders by `sort_order` ASC
-  - `staleTime: 5 * 60 * 1000` (matches project caching policy)
-- Component behavior:
-  - **Loading:** render section heading + 5 `<Skeleton>` cards in the same `grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4` grid with `aspect-[3/2]` to prevent layout shift.
-  - **Error / empty (`data.length === 0`):** return `null` — no heading, no empty section.
-  - **Success:** map `data` → cards using `biz.label`, `biz.image_url`, `biz.link_url`.
-- Link handling (mirrors `HeroBannerCarousel.parseLink` pattern):
-  - `link_url` starts with `/` → `<Link to={link_url}>`
-  - starts with `http` → `<a href target="_blank" rel="noopener noreferrer">`
-  - Otherwise fall back to `<Link to={link_url}>` defensively.
-- Visuals unchanged: same `aspect-[3/2]` tile, same gradient scrim, same hover scale, same focus ring, same typography. No design tokens touched.
+- Validation `useMemo` blocks (lines 144–172) already skip orphans via `if (!item.product) return;`
+- `orphanedItems` detection (lines 174–177), `handleRemoveUnavailable` handler (lines 179–184), and the amber "Remove unavailable" notice (lines 290–305) all exist
+- `AlertTriangle` is already imported (line 9)
 
-### 2. `src/pages/Index.tsx` — reorder
+**Only Part 3 (cart count badge) remains outstanding.** Without it, the header cart badge stays inflated by orphan rows until the next refetch, even after the user clicks "Remove unavailable."
 
-Move `<BestSellers />` above `<ShopByBusinessType />`. New order:
+### Changes
 
-```text
-HeroBannerSection
-CategoryQuickNav
-BestSellers
-ShopByBusinessType
-QuoteCTA
-FlashDealsRow
-TrustBadgeBar
-HoReCaResources
+**1. `src/hooks/useCart.ts` — make `useCartCount` exclude orphans**
+
+Update the count query in `useCartCount` to use an `!inner` join against `products_public`, so deactivated products are filtered out at the DB level:
+
+```ts
+const { count } = await supabase
+  .from("cart_items")
+  .select("*, product:products_public!inner(id)", { count: "exact", head: true })
+  .eq("customer_id", customerId);
+return count || 0;
 ```
 
-No other changes to the page.
+This matches how the cart page itself loads products (via `products_public`), so the badge count will always equal the number of items the user can actually see.
+
+**2. `src/pages/CartPage.tsx` — invalidate `cart-count` after removing orphans**
+
+In `handleRemoveUnavailable` (lines 179–184), after the removal loop, invalidate the cart-count query so the header badge refreshes immediately rather than waiting for the next refetch:
+
+```ts
+const handleRemoveUnavailable = async () => {
+  for (const item of orphanedItems) {
+    await removeItem.mutateAsync(item.id);
+  }
+  queryClient.invalidateQueries({ queryKey: ["cart-count"] });
+  toast({ title: "Removed unavailable items", description: `${orphanedItems.length} item(s) removed from cart` });
+};
+```
+
+`queryClient` is already in scope (line 23: `const queryClient = useQueryClient();`).
 
 ### Files changed
-- `src/components/home/ShopByBusinessType.tsx` (modify)
-- `src/pages/Index.tsx` (modify)
+- `src/hooks/useCart.ts` — inner join in `useCartCount`
+- `src/pages/CartPage.tsx` — invalidate `cart-count` in `handleRemoveUnavailable`
+
+### Not changed
+- No DB changes
+- No changes to validation logic, orphan detection, notice UI, or `useAddToCart` (already invalidates `cart-count` correctly)
 
 ### Verification
-1. Same 5 cards render from DB in the seeded `sort_order`.
-2. Deactivating a row in `business_types` removes that card on refresh; deactivating all hides the entire section (returns `null`).
-3. Best Sellers now sits between Category Rail and Business Types.
-4. Internal `/...` links use SPA nav; `http(s)://` links open in a new tab with `noopener noreferrer`.
-5. No layout shift while loading (skeletons hold the 3:2 grid).
+1. With an orphaned cart item present, header badge count should match the visible item count (no inflation).
+2. Click "Remove unavailable" → notice disappears, badge updates immediately without page refresh.
+3. Refresh the page → still clean state, badge accurate, Checkout enabled.
