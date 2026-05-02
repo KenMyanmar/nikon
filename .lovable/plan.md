@@ -1,56 +1,41 @@
-## Cart Orphan Bug — Remaining Fix (Part 3 only)
+## Wire Download Invoice Button to `generate-invoice` Edge Function
 
-### Status of the prompt
+### Important precondition (please confirm)
+The prompt states the `generate-invoice` edge function is "already deployed", but it does **not** exist in this project's `supabase/functions/` directory (only `import-products`, `normalize-upload`, `send-order-email` are present). Before wiring the button, please confirm one of:
+- (A) The function is deployed in Supabase but not committed here — proceed with frontend wiring only (this plan).
+- (B) It needs to be created — I'll add a follow-up plan to scaffold the edge function (PDF generation, ownership/staff check, IKON branding).
 
-On inspecting `src/pages/CartPage.tsx`, **Parts 1 and 2 are already implemented**:
-
-- Validation `useMemo` blocks (lines 144–172) already skip orphans via `if (!item.product) return;`
-- `orphanedItems` detection (lines 174–177), `handleRemoveUnavailable` handler (lines 179–184), and the amber "Remove unavailable" notice (lines 290–305) all exist
-- `AlertTriangle` is already imported (line 9)
-
-**Only Part 3 (cart count badge) remains outstanding.** Without it, the header cart badge stays inflated by orphan rows until the next refetch, even after the user clicks "Remove unavailable."
+The plan below covers frontend wiring only, per the prompt scope.
 
 ### Changes
+Single file: `src/pages/Checkout.tsx`
 
-**1. `src/hooks/useCart.ts` — make `useCartCount` exclude orphans**
+1. **Add `handleDownloadInvoice` handler** (near `handleInvoiceToast` around line 1030).
+   - Get current session via `supabase.auth.getSession()`. If no session → "Please sign in" destructive toast and return.
+   - Show "Generating invoice…" toast.
+   - `fetch` POST to `${VITE_SUPABASE_URL}/functions/v1/generate-invoice` with `Authorization: Bearer <access_token>`, `Content-Type: application/json`, body `{ order_id }`.
+   - On non-OK: parse JSON error and throw.
+   - On OK: read `blob()`, parse filename from `Content-Disposition` (fallback `invoice-<orderId8>.pdf`), trigger anchor download, revoke object URL.
+   - Success/failure toasts.
 
-Update the count query in `useCartCount` to use an `!inner` join against `products_public`, so deactivated products are filtered out at the DB level:
+2. **Wire both existing buttons** (both currently call `handleInvoiceToast`):
+   - Line ~1095 (Thank You header, primary CTA row) → `onClick={() => handleDownloadInvoice(order.id)}`
+   - Line ~1248 (Order Summary action row) → same.
+   - Order id is available in the confirmation scope as `order.id` (loaded via the order query after `place_order` returns `orderData.order_id`).
 
-```ts
-const { count } = await supabase
-  .from("cart_items")
-  .select("*, product:products_public!inner(id)", { count: "exact", head: true })
-  .eq("customer_id", customerId);
-return count || 0;
-```
+3. **Remove `handleInvoiceToast`** (no longer referenced after step 2).
 
-This matches how the cart page itself loads products (via `products_public`), so the badge count will always equal the number of items the user can actually see.
+4. **Imports**: `Download` from `lucide-react` is already imported; `supabase` and `toast` are already imported. No new imports needed.
 
-**2. `src/pages/CartPage.tsx` — invalidate `cart-count` after removing orphans**
+### Styling
+Keep the current button markup (custom Tailwind classes matching the page's existing visual rhythm — emerald Track Order + neutral outline Download). The prompt's optional shadcn `<Button variant="outline">` swap is **not** applied to preserve consistency with surrounding buttons (Print, Send to Procurement, Service message). If you'd prefer the shadcn variant, say so and I'll switch all four to match.
 
-In `handleRemoveUnavailable` (lines 179–184), after the removal loop, invalidate the cart-count query so the header badge refreshes immediately rather than waiting for the next refetch:
-
-```ts
-const handleRemoveUnavailable = async () => {
-  for (const item of orphanedItems) {
-    await removeItem.mutateAsync(item.id);
-  }
-  queryClient.invalidateQueries({ queryKey: ["cart-count"] });
-  toast({ title: "Removed unavailable items", description: `${orphanedItems.length} item(s) removed from cart` });
-};
-```
-
-`queryClient` is already in scope (line 23: `const queryClient = useQueryClient();`).
+### Testing checklist
+1. Complete a COD checkout → on Thank You page, click Download Invoice → PDF downloads.
+2. Filename comes from `Content-Disposition` (e.g. `INV-20260501-0001.pdf`).
+3. Logged-out edge case: trigger via direct route w/ `?orderId=` while signed out → "Please sign in" toast.
+4. Foreign order id → edge function returns 403, toast shows server error message.
+5. Both buttons (header + summary row) work identically.
 
 ### Files changed
-- `src/hooks/useCart.ts` — inner join in `useCartCount`
-- `src/pages/CartPage.tsx` — invalidate `cart-count` in `handleRemoveUnavailable`
-
-### Not changed
-- No DB changes
-- No changes to validation logic, orphan detection, notice UI, or `useAddToCart` (already invalidates `cart-count` correctly)
-
-### Verification
-1. With an orphaned cart item present, header badge count should match the visible item count (no inflation).
-2. Click "Remove unavailable" → notice disappears, badge updates immediately without page refresh.
-3. Refresh the page → still clean state, badge accurate, Checkout enabled.
+- `src/pages/Checkout.tsx` — add handler, wire two buttons, remove unused toast helper.

@@ -1027,8 +1027,61 @@ const StepConfirmation = ({ orderResult, paymentMethod, customerEmail, estimated
     return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
   })();
 
-  const handleInvoiceToast = () =>
-    toast({ title: "Invoice download coming soon", description: "We'll email your invoice once payment is finalized." });
+  const handleDownloadInvoice = async (orderId: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Please sign in",
+          description: "You need to be signed in to download invoices.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({ title: "Generating invoice...", description: "Please wait a moment." });
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL || "https://fqabwolwhrtrygmhaipg.supabase.co"}/functions/v1/generate-invoice`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ order_id: orderId }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to generate invoice");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+
+      const disposition = response.headers.get("Content-Disposition");
+      const filenameMatch = disposition?.match(/filename="(.+)"/);
+      link.download = filenameMatch ? filenameMatch[1] : `invoice-${orderId.slice(0, 8)}.pdf`;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({ title: "Invoice downloaded", description: "Your invoice PDF has been saved." });
+    } catch (error: any) {
+      console.error("Invoice download error:", error);
+      toast({
+        title: "Download failed",
+        description: error.message || "Could not generate invoice. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
   const handleProcurementToast = () =>
     toast({ title: "Coming soon", description: "Sending orders to procurement teams will be available shortly." });
   const handleBundleToast = () =>
