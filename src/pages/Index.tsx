@@ -1,24 +1,43 @@
 import MainLayout from "@/components/layout/MainLayout";
 import Hero from "@/components/home/Hero";
+import HeroBannerCarousel from "@/components/home/HeroBannerCarousel";
 import CategoryQuickNav from "@/components/home/CategoryQuickNav";
 import FlashDealsRow from "@/components/home/FlashDealsRow";
 import BestSellers from "@/components/home/BestSellers";
 import TrustBadgeBar from "@/components/home/TrustBadgeBar";
 import HoReCaResources from "@/components/home/HoReCaResources";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useBanners } from "@/hooks/useBanners";
 
 /**
- * Homepage section order (Prompt 6):
- *   PromoBanner (in Header) → Header → Hero → Category Rail
- *   → Best Sellers → Flash Deals → TrustBadgeBar
+ * Homepage section order:
+ *   PromoBanner (in Header) → Header → Hero (carousel or static fallback)
+ *   → Category Rail → Best Sellers → Flash Deals → TrustBadgeBar
  *   → Articles (HoReCaResources) → Footer
  *
- * Removed in Prompt 6: ClientLogos (DB-driven hand-curated marquee, decorative
- * motion violation, redundant against TrustBadgeBar's "160+ Brands" signal).
+ * Hero behavior: when CRM-managed `banners` (position='hero') exist and are
+ * active, render the rotating HeroBannerCarousel. Otherwise (loading handled
+ * with a skeleton; error/empty falls back) render the marathon's locked
+ * static <Hero /> exactly as before — Prompt 1 spec preserved as fallback.
  */
+function HeroBannerSection() {
+  const { data: heroBanners, isLoading, error } = useBanners("hero");
+
+  if (isLoading) {
+    return <Skeleton className="w-full aspect-[16/5]" />;
+  }
+
+  if (error || !heroBanners || heroBanners.length === 0) {
+    return <Hero />;
+  }
+
+  return <HeroBannerCarousel banners={heroBanners} />;
+}
+
 const Index = () => {
   return (
     <MainLayout>
-      <Hero />
+      <HeroBannerSection />
       <CategoryQuickNav />
       <BestSellers />
       <FlashDealsRow />
