@@ -1298,7 +1298,7 @@ const StepConfirmation = ({ orderResult, paymentMethod, customerEmail, estimated
             <Printer className="w-4 h-4" /> Print Order
           </button>
           <button
-            onClick={handleInvoiceToast}
+            onClick={() => handleDownloadInvoice(order.id)}
             className="inline-flex items-center gap-2 border border-border bg-background text-foreground px-4 py-2 rounded-button text-sm font-medium hover:bg-muted/50 transition"
           >
             <Download className="w-4 h-4" /> Download Invoice
