@@ -1,107 +1,57 @@
 import { Link } from "react-router-dom";
-import {
-  UtensilsCrossed, Settings, ChefHat, SprayCan, Bed,
-  Coffee, Flame, Soup, Armchair, WashingMachine,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * Category Rail (Prompt 2 — Path A: neutral icon tiles)
+ * Category Rail — photographic tiles.
  *
- * Design Contract compliance:
- *   - Tile: bg-card, 1px border, 8px radius, no resting shadow
- *   - Icon chip: 48×48, bg-muted, 8px radius
- *   - Icon: Lucide line, 24px, text-primary, strokeWidth 1.75
- *   - Hover: border primary/30, chip primary/10
- *   - Focus-visible: hover state + 2px navy outline at offset 2
- *   - No per-tile accent colors, no pastels, no badges, no emoji
+ * Data: parent categories (depth=0, is_active=true), ordered by sort_order ASC.
+ * Each tile uses categories.image_url as a full-bleed background with a
+ * gradient scrim, the full category name and product count.
+ *
+ * Design Contract: 1px border, 8px radius (rounded-xl), no resting shadow.
+ * Hover scale on the image is interaction feedback (allowed), not ambient
+ * decorative motion.
  */
 
-interface CategoryConfig {
-  icon: LucideIcon;
+interface ParentCategory {
   name: string;
   slug: string;
+  image_url: string | null;
+  product_count: number | null;
 }
 
-const categoryConfig: Record<string, CategoryConfig> = {
-  TWD: { icon: UtensilsCrossed, name: "Tableware", slug: "tableware" },
-  SPS: { icon: Settings, name: "Spare Parts", slug: "spare-parts" },
-  KUT: { icon: ChefHat, name: "Kitchen Utensils", slug: "kitchen-utensils" },
-  HKG: { icon: SprayCan, name: "Housekeeping", slug: "housekeeping-supplies" },
-  ABL: { icon: Bed, name: "Bedroom", slug: "bedroom-supplies" },
-  FBS: { icon: Coffee, name: "Food & Beverage", slug: "f-and-b-solutions" },
-  KSR: { icon: Flame, name: "Kitchen Services", slug: "kitchen-services" },
-  FSR: { icon: Soup, name: "Food Services", slug: "food-services" },
-  BQE: { icon: Armchair, name: "Buffet & Banquet", slug: "buffet-and-banquet" },
-  LPR: { icon: WashingMachine, name: "Laundry", slug: "laundry-solutions" },
-};
-
 const CategoryQuickNav = () => {
-  const { data: groups = [], isLoading: loadingGroups } = useQuery({
-    queryKey: ["product-groups-nav"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("product_groups")
-        .select("id, code, name, sort_order")
-        .neq("code", "MKM")
-        .order("sort_order", { ascending: true });
-      if (error) throw error;
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: parentCategories = [], isLoading: loadingCats } = useQuery({
-    queryKey: ["parent-categories-counts"],
+  const { data: categories = [], isLoading } = useQuery<ParentCategory[]>({
+    queryKey: ["parent-categories-rail"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("categories")
-        .select("name, slug, product_count")
+        .select("name, slug, image_url, product_count")
         .eq("depth", 0)
-        .eq("is_active", true);
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
       if (error) throw error;
-      return data || [];
+      return (data || []) as ParentCategory[];
     },
     staleTime: 5 * 60 * 1000,
   });
-
-  const isLoading = loadingGroups || loadingCats;
 
   if (isLoading) {
     return (
       <section className="container mx-auto px-4 py-10">
-        <div className="h-7 w-48 mb-6">
-          <Skeleton className="h-7 w-48" />
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <Skeleton className="h-7 w-48 mb-6" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {Array.from({ length: 10 }).map((_, i) => (
-            <Skeleton key={i} className="h-24 rounded-lg" />
+            <Skeleton key={i} className="aspect-[4/3] rounded-xl" />
           ))}
         </div>
       </section>
     );
   }
 
-  const countBySlug = new Map(
-    parentCategories.map((c) => [c.slug, c.product_count ?? 0])
-  );
-
-  const cards = groups
-    .map((g) => {
-      const config = categoryConfig[g.code];
-      if (!config) return null;
-      return {
-        config,
-        count: countBySlug.get(config.slug) ?? 0,
-      };
-    })
-    .filter((c): c is { config: CategoryConfig; count: number } => c !== null)
-    .sort((a, b) => a.config.name.localeCompare(b.config.name));
-
-  if (cards.length === 0) return null;
+  if (categories.length === 0) return null;
 
   return (
     <section className="container mx-auto px-4 py-10">
@@ -109,60 +59,51 @@ const CategoryQuickNav = () => {
         Shop by category
       </h2>
 
-      {/* Desktop / Tablet flat grid */}
-      <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {cards.map(({ config, count }) => (
-          <CategoryCard key={config.slug} config={config} count={count} />
-        ))}
-      </div>
-
-      {/* Mobile horizontal snap-scroll */}
-      <div className="flex md:hidden gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 no-scrollbar">
-        {cards.map(({ config, count }) => (
-          <CategoryCard key={config.slug} config={config} count={count} mobile />
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        {categories.map((cat) => (
+          <CategoryTile key={cat.slug} category={cat} />
         ))}
       </div>
     </section>
   );
 };
 
-const CategoryCard = ({
-  config,
-  count,
-  mobile,
-}: {
-  config: CategoryConfig;
-  count: number;
-  mobile?: boolean;
-}) => {
-  const Icon = config.icon;
+const CategoryTile = ({ category }: { category: ParentCategory }) => {
+  const count = category.product_count ?? 0;
 
   return (
     <Link
-      to={`/category/${config.slug}`}
-      className={[
-        "group flex items-center h-24 rounded-lg p-4 bg-card border border-border",
-        "transition-colors duration-200",
-        "hover:border-primary/30",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:border-primary/30",
-        mobile ? "min-w-[200px] snap-start flex-shrink-0" : "",
-      ].join(" ")}
+      to={`/category/${category.slug}`}
+      className="group relative block overflow-hidden rounded-xl aspect-[4/3] border border-border bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
     >
-      <div
-        className={[
-          "flex items-center justify-center w-12 h-12 rounded-lg flex-shrink-0 bg-muted",
-          "transition-colors duration-200",
-          "group-hover:bg-primary/10 group-focus-visible:bg-primary/10",
-        ].join(" ")}
-      >
-        <Icon size={24} strokeWidth={1.75} className="text-primary" />
-      </div>
-      <div className="ml-4 min-w-0">
-        <p className="font-semibold text-sm text-foreground truncate">{config.name}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          {count.toLocaleString()} items
-        </p>
-      </div>
+      {category.image_url ? (
+        <>
+          <img
+            src={category.image_url}
+            alt={category.name}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <p className="text-lg font-semibold text-white leading-tight">
+              {category.name}
+            </p>
+            <p className="text-sm text-white/80 mt-0.5">
+              {count.toLocaleString()} items
+            </p>
+          </div>
+        </>
+      ) : (
+        <div className="absolute inset-0 flex flex-col justify-end p-4">
+          <p className="text-lg font-semibold text-foreground leading-tight">
+            {category.name}
+          </p>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {count.toLocaleString()} items
+          </p>
+        </div>
+      )}
     </Link>
   );
 };

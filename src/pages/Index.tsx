@@ -2,6 +2,8 @@ import MainLayout from "@/components/layout/MainLayout";
 import Hero from "@/components/home/Hero";
 import HeroBannerCarousel from "@/components/home/HeroBannerCarousel";
 import CategoryQuickNav from "@/components/home/CategoryQuickNav";
+import ShopByBusinessType from "@/components/home/ShopByBusinessType";
+import QuoteCTA from "@/components/home/QuoteCTA";
 import FlashDealsRow from "@/components/home/FlashDealsRow";
 import BestSellers from "@/components/home/BestSellers";
 import TrustBadgeBar from "@/components/home/TrustBadgeBar";
@@ -39,6 +41,8 @@ const Index = () => {
     <MainLayout>
       <HeroBannerSection />
       <CategoryQuickNav />
+      <ShopByBusinessType />
+      <QuoteCTA />
       <BestSellers />
       <FlashDealsRow />
       <TrustBadgeBar />
