@@ -230,8 +230,34 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
 
   const sorted = mainCategories;
 
+  // Version A: Pages group mirrors the desktop utility row.
+  // Order is locked: HOME, ABOUT US, ARTICLES, CONTACT US.
+  // E-SHOP / OUR SERVICES / OUR PRODUCTS are intentionally deferred.
+  const PAGES = [
+    { label: "HOME", to: "/" },
+    { label: "ABOUT US", to: "/about" },
+    { label: "ARTICLES", to: "/articles" },
+    { label: "CONTACT US", to: "/contact" },
+  ];
+
   return (
     <div className="px-4 py-3">
+      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 px-1">
+        Pages
+      </p>
+      <div className="mb-4 space-y-0.5">
+        {PAGES.map((p) => (
+          <Link
+            key={p.to}
+            to={p.to}
+            onClick={onClose}
+            className="block py-2 px-3 text-sm font-medium text-foreground hover:text-accent"
+          >
+            {p.label}
+          </Link>
+        ))}
+      </div>
+
       {/* Browse Brands — sub-heading-level treatment, solo (post Flash Deals removal) */}
       <Link
         to="/brands"
