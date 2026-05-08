@@ -90,17 +90,17 @@ const Header = () => {
                 style={{
                   width: BADGE_W,
                   height: BADGE_H,
-                  borderBottomLeftRadius: 12,
-                  borderBottomRightRadius: 12,
-                  borderTopLeftRadius: 4,
-                  borderTopRightRadius: 4,
-                  boxShadow: "0 6px 14px -6px rgba(0,0,0,0.25)",
+                  borderBottomLeftRadius: 14,
+                  borderBottomRightRadius: 14,
+                  borderTopLeftRadius: 3,
+                  borderTopRightRadius: 3,
+                  boxShadow: "0 4px 10px -6px rgba(0,0,0,0.22)",
                 }}
               >
                 <img
                   src={ikonMartLogo}
                   alt="IKON Mart"
-                  className="block max-h-[32px] w-auto object-contain"
+                  className="block max-h-[26px] w-auto object-contain"
                 />
               </Link>
             </div>
