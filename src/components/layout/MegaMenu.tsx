@@ -195,7 +195,7 @@ export const DesktopMegaNav = ({ centerGapWidth = 0 }: { centerGapWidth?: number
     >
       <Link
         to={`/category/${cat.slug}`}
-        className={`flex items-center gap-0.5 px-2 h-[28px] text-primary-foreground text-[11px] font-medium whitespace-nowrap ${
+        className={`flex items-center gap-0.5 px-2 h-[32px] text-primary-foreground text-[12px] font-medium whitespace-nowrap ${
           activeId === cat.id ? "bg-primary/85" : "hover:bg-primary/85"
         }`}
       >
@@ -208,7 +208,7 @@ export const DesktopMegaNav = ({ centerGapWidth = 0 }: { centerGapWidth?: number
   return (
     <nav className="hidden lg:block bg-primary relative">
       <div className="container mx-auto px-3">
-        <div className="flex items-stretch h-[28px]">
+        <div className="flex items-stretch h-[32px]">
           {centerGapWidth > 0 ? (
             <>
               <div className="flex items-stretch flex-1 justify-start min-w-0 overflow-hidden">

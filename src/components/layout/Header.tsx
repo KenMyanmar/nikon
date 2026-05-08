@@ -26,10 +26,11 @@ const UTILITY_LINKS = [
   { label: "CONTACT US", to: "/contact" },
 ] as const;
 
-/** Compact tab-style badge: slim, flat, navy, dipping into the category bar. */
-const BADGE_W = 112;
-const BADGE_H = 38;
-const BADGE_DIP = 24;
+/** Embedded logo dimensions — the logo lives in-flow as the center column and
+ *  the image itself dips slightly into the navy category bar below. */
+const BADGE_H = 72;
+const BADGE_W = Math.round(BADGE_H * 2.13);
+const BADGE_DIP = 10;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -59,9 +60,8 @@ const Header = () => {
       {/* ─── Desktop utility row (lg+) ──────────────────────────────── */}
       <div className="hidden lg:block relative bg-card border-b border-border z-20 overflow-visible">
         <div className="container mx-auto px-6 relative">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-6 h-[52px] overflow-visible">
-            {/* LEFT: utility links */}
-            <nav aria-label="Primary" className="flex items-center gap-5 min-w-0 justify-self-start">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-4 h-[52px] overflow-visible">
+            <nav aria-label="Primary" className="flex h-[52px] items-center gap-5 min-w-0 justify-self-start">
               {UTILITY_LINKS.map((link) => (
                 <NavLink
                   key={link.to}
@@ -78,35 +78,39 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* CENTER: tab-style logo badge dipping into navy bar */}
-            <div
-              className="relative z-50 flex items-start justify-center overflow-visible"
-              style={{ transform: `translateY(${BADGE_DIP}px)` }}
-            >
+            <div className="flex h-[52px] items-start justify-center overflow-visible">
               <Link
                 to="/"
                 aria-label="IKON Mart — Home"
-                className="flex items-center justify-center bg-primary shrink-0"
-                style={{
-                  width: BADGE_W,
-                  height: BADGE_H,
-                  borderBottomLeftRadius: 14,
-                  borderBottomRightRadius: 14,
-                  borderTopLeftRadius: 3,
-                  borderTopRightRadius: 3,
-                  boxShadow: "0 4px 10px -6px rgba(0,0,0,0.22)",
-                }}
+                className="z-30 block shrink-0"
+                style={{ width: BADGE_W }}
               >
                 <img
                   src={ikonMartLogo}
                   alt="IKON Mart"
-                  className="block max-h-[26px] w-auto object-contain"
+                  className="block w-full object-contain"
+                  style={{ height: BADGE_H, transform: `translateY(${BADGE_DIP}px)`, filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.18))" }}
                 />
               </Link>
             </div>
 
-            {/* RIGHT: icons + search + account */}
-            <div className="flex items-center gap-3 min-w-0 w-full justify-self-end">
+            {/* Right cluster: expansive search + icons */}
+            <div className="flex h-[52px] items-center gap-3 min-w-0 w-full justify-self-stretch">
+              <div className="flex-1 min-w-0 h-[34px] flex rounded-md overflow-hidden border border-border bg-card">
+                <SearchAutocomplete
+                  className="flex-1 h-full min-w-0"
+                  hideLeftIcon
+                  placeholder="What are you looking for?"
+                  inputClassName="w-full h-full px-3 text-[12px] bg-card outline-none placeholder:text-muted-foreground/70"
+                  showButton
+                  buttonClassName="w-10 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
+                  buttonContent={<Search className="w-3.5 h-3.5" />}
+                />
+              </div>
+
+              <Link to="/account" aria-label="Notifications" className="relative text-foreground/80 hover:text-primary transition shrink-0">
+                <Bell className="w-[18px] h-[18px]" />
+              </Link>
               <Link to="/account" aria-label="Wishlist" className="relative text-foreground/80 hover:text-primary transition shrink-0">
                 <Heart className="w-[18px] h-[18px]" />
                 <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center font-bold">0</span>
@@ -115,22 +119,6 @@ const Header = () => {
                 <ShoppingCart className="w-[18px] h-[18px]" />
                 <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center font-bold">{cartCount ?? 0}</span>
               </Link>
-              <Link to="/account" aria-label="Notifications" className="relative text-foreground/80 hover:text-primary transition shrink-0">
-                <Bell className="w-[18px] h-[18px]" />
-              </Link>
-
-              {/* Search unit: input + visible navy button */}
-              <div className="flex-1 min-w-[220px] max-w-[360px] h-[32px] flex rounded-md overflow-hidden border border-border bg-card">
-                <SearchAutocomplete
-                  className="flex-1 h-full min-w-0 flex"
-                  hideLeftIcon
-                  placeholder="Search products..."
-                  inputClassName="flex-1 h-full px-3 text-[12px] bg-card outline-none placeholder:text-muted-foreground/70 min-w-0"
-                  showButton
-                  buttonClassName="w-10 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
-                  buttonContent={<Search className="w-3.5 h-3.5" />}
-                />
-              </div>
 
               <div className="shrink-0">
               {user ? (
@@ -138,7 +126,7 @@ const Header = () => {
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                     aria-label="Account"
-                    className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
+                    className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
                   >
                     <User className="w-4 h-4" />
                   </button>
@@ -164,7 +152,7 @@ const Header = () => {
                 <button
                   onClick={openAuthModal}
                   aria-label="Sign in"
-                  className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
+                  className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
                 >
                   <User className="w-4 h-4" />
                 </button>
@@ -176,7 +164,7 @@ const Header = () => {
       </div>
 
       {/* ─── Desktop category bar ────────────────────────────────────── */}
-      <div className="hidden lg:block relative z-10">
+      <div className="hidden lg:block">
         <DesktopMegaNav centerGapWidth={BADGE_W + 24} />
       </div>
 
