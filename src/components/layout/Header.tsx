@@ -27,9 +27,9 @@ const UTILITY_LINKS = [
 ] as const;
 
 /** Compact tab-style badge: slim, flat, navy, dipping into the category bar. */
-const BADGE_W = 132;
-const BADGE_H = 44;
-const BADGE_DIP = 16;
+const BADGE_W = 112;
+const BADGE_H = 38;
+const BADGE_DIP = 8;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -59,7 +59,7 @@ const Header = () => {
       {/* ─── Desktop utility row (lg+) ──────────────────────────────── */}
       <div className="hidden lg:block relative bg-card border-b border-border z-20 overflow-visible">
         <div className="container mx-auto px-6 relative">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-6 h-[60px] overflow-visible">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-6 h-[52px] overflow-visible">
             {/* LEFT: utility links */}
             <nav aria-label="Primary" className="flex items-center gap-5 min-w-0 justify-self-start">
               {UTILITY_LINKS.map((link) => (
@@ -90,17 +90,17 @@ const Header = () => {
                 style={{
                   width: BADGE_W,
                   height: BADGE_H,
-                  borderBottomLeftRadius: 12,
-                  borderBottomRightRadius: 12,
-                  borderTopLeftRadius: 4,
-                  borderTopRightRadius: 4,
-                  boxShadow: "0 6px 14px -6px rgba(0,0,0,0.25)",
+                  borderBottomLeftRadius: 14,
+                  borderBottomRightRadius: 14,
+                  borderTopLeftRadius: 3,
+                  borderTopRightRadius: 3,
+                  boxShadow: "0 4px 10px -6px rgba(0,0,0,0.22)",
                 }}
               >
                 <img
                   src={ikonMartLogo}
                   alt="IKON Mart"
-                  className="block max-h-[32px] w-auto object-contain"
+                  className="block max-h-[26px] w-auto object-contain"
                 />
               </Link>
             </div>
@@ -120,15 +120,15 @@ const Header = () => {
               </Link>
 
               {/* Search unit: input + visible navy button */}
-              <div className="flex-1 min-w-[220px] max-w-[360px] h-[36px] flex rounded-md overflow-hidden border border-border bg-card">
+              <div className="flex-1 min-w-[220px] max-w-[360px] h-[32px] flex rounded-md overflow-hidden border border-border bg-card">
                 <SearchAutocomplete
                   className="flex-1 h-full min-w-0 flex"
                   hideLeftIcon
                   placeholder="Search products..."
-                  inputClassName="flex-1 h-full px-3 text-[13px] bg-card outline-none placeholder:text-muted-foreground/70 min-w-0"
+                  inputClassName="flex-1 h-full px-3 text-[12px] bg-card outline-none placeholder:text-muted-foreground/70 min-w-0"
                   showButton
-                  buttonClassName="w-11 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
-                  buttonContent={<Search className="w-4 h-4" />}
+                  buttonClassName="w-10 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
+                  buttonContent={<Search className="w-3.5 h-3.5" />}
                 />
               </div>
 
@@ -138,7 +138,7 @@ const Header = () => {
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                     aria-label="Account"
-                    className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
+                    className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
                   >
                     <User className="w-4 h-4" />
                   </button>
@@ -164,7 +164,7 @@ const Header = () => {
                 <button
                   onClick={openAuthModal}
                   aria-label="Sign in"
-                  className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
+                  className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
                 >
                   <User className="w-4 h-4" />
                 </button>
