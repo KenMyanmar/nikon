@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { User, ShoppingCart, Menu, X, ChevronDown, LogOut, Package, Heart, Search } from "lucide-react";
+import { User, ShoppingCart, Menu, X, ChevronDown, LogOut, Package, Heart, Search, Bell } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import { DesktopMegaNav, MobileMegaNav } from "./MegaMenu";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
