@@ -186,7 +186,7 @@ export const DesktopMegaNav = () => {
     <nav className="hidden lg:block bg-primary relative">
       <div className="container mx-auto px-4">
         <div className="flex items-center">
-          {/* All 10 categories — full names, no abbreviations */}
+          {/* All categories — full names, no abbreviations */}
           {mainCategories.map((cat) => (
             <div
               key={cat.id}
@@ -195,7 +195,7 @@ export const DesktopMegaNav = () => {
             >
               <Link
                 to={`/category/${cat.slug}`}
-                className={`flex items-center gap-1 px-2.5 py-3 text-primary-foreground text-[12px] font-medium whitespace-nowrap ${
+                className={`flex items-center gap-1 px-3 py-2 text-primary-foreground text-[13px] font-medium whitespace-nowrap ${
                   activeId === cat.id ? "bg-primary/85" : "hover:bg-primary/85"
                 }`}
               >

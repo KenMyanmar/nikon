@@ -9,6 +9,9 @@ interface SearchAutocompleteProps {
   inputClassName?: string;
   placeholder?: string;
   showButton?: boolean;
+  buttonClassName?: string;
+  buttonContent?: React.ReactNode;
+  hideLeftIcon?: boolean;
 }
 
 type SearchResult = SearchProductRow;
@@ -18,6 +21,9 @@ const SearchAutocomplete = ({
   inputClassName = "",
   placeholder = "Search by product name, brand, or SKU...",
   showButton = true,
+  buttonClassName,
+  buttonContent,
+  hideLeftIcon = false,
 }: SearchAutocompleteProps) => {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -76,7 +82,9 @@ const SearchAutocomplete = ({
 
   return (
     <div ref={wrapperRef} className={`relative ${className}`}>
-      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-ikon-text-tertiary z-10" />
+      {!hideLeftIcon && (
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-ikon-text-tertiary z-10" />
+      )}
       <input
         type="text"
         value={query}
@@ -89,9 +97,13 @@ const SearchAutocomplete = ({
       {showButton && (
         <button
           onClick={handleSubmit}
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground px-6 py-2 rounded-md font-semibold hover:bg-accent/90 transition text-sm"
+          aria-label="Search"
+          className={
+            buttonClassName ??
+            "absolute right-2 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground px-6 py-2 rounded-md font-semibold hover:bg-accent/90 transition text-sm"
+          }
         >
-          Search
+          {buttonContent ?? "Search"}
         </button>
       )}
 

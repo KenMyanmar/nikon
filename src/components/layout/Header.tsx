@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { User, ShoppingCart, Menu, X, ChevronDown, LogOut, Package, Heart } from "lucide-react";
+import { User, ShoppingCart, Menu, X, ChevronDown, LogOut, Package, Heart, Search } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import { DesktopMegaNav, MobileMegaNav } from "./MegaMenu";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
@@ -7,17 +7,16 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { useCartCount } from "@/hooks/useCart";
 
 /**
- * Version A header (old-style marketplace concept).
+ * Version A.4 header (old-style marketplace concept).
  *
  * Top utility menu — rendered order is locked:
  *   HOME · ABOUT US · ARTICLES · CONTACT US
  *
  * Intentionally deferred (product decision, NOT missing):
  *   E-SHOP · OUR SERVICES · OUR PRODUCTS
- *   → re-add only when destination pages exist.
  *
- * Notification bell: removed — no real notifications behavior exists.
- * Wishlist/cart badge behavior: unchanged from prior pass.
+ * Desktop: announcement bar hidden; clean 2-band header with custom SVG
+ * shouldered badge straddling the seam between utility row and navy bar.
  */
 const UTILITY_LINKS = [
   { label: "HOME", to: "/" },
@@ -26,14 +25,48 @@ const UTILITY_LINKS = [
   { label: "CONTACT US", to: "/contact" },
 ] as const;
 
+/** Custom shouldered/curved-skirt badge silhouette, white fill + navy stroke. */
+const BadgeShape = () => (
+  <svg
+    viewBox="0 0 200 72"
+    width="200"
+    height="72"
+    aria-hidden="true"
+    className="block"
+    style={{ filter: "drop-shadow(0 6px 14px rgba(27,42,78,0.18))" }}
+  >
+    {/* Shouldered top with curved skirt that flares wider at the bottom. */}
+    <path
+      d="
+        M 16 4
+        Q 28 0 40 4
+        L 160 4
+        Q 172 0 184 4
+        Q 196 8 196 24
+        L 196 44
+        Q 196 56 188 60
+        Q 176 66 160 66
+        Q 130 70 100 70
+        Q 70 70 40 66
+        Q 24 66 12 60
+        Q 4 56 4 44
+        L 4 24
+        Q 4 8 16 4
+        Z
+      "
+      fill="hsl(var(--card))"
+      stroke="hsl(var(--primary))"
+      strokeWidth="1.5"
+    />
+  </svg>
+);
+
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, openAuthModal, signOut } = useAuthContext();
   const { data: cartCount } = useCartCount();
-
-  const firstName = user?.user_metadata?.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "Account";
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -47,30 +80,28 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-card shadow-nav">
-      {/* Announcement Bar — preserved */}
-      <div className="bg-secondary text-foreground text-center py-2 text-sm font-medium">
+      {/* Announcement Bar — mobile only on Version A.4 */}
+      <div className="lg:hidden bg-secondary text-foreground text-center py-2 text-sm font-medium">
         Free delivery on orders over MMK 500,000 in Yangon Metro
         <Link to="/flash-deals" className="underline ml-2 text-primary">Shop Deals →</Link>
-        <span className="mx-2 text-muted-foreground">|</span>
-        <Link to="/promotions" className="underline text-primary">Promotions</Link>
       </div>
 
       {/* ─── Desktop utility row (lg+) ─────────────────────────────── */}
       <div className="hidden lg:block relative bg-card border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-6 h-14">
+        <div className="container mx-auto px-6">
+          <div className="flex items-center h-[48px]">
             {/* Left — utility text menu */}
-            <nav aria-label="Primary" className="flex items-center gap-5">
+            <nav aria-label="Primary" className="flex items-center gap-6">
               {UTILITY_LINKS.map((link) => (
                 <NavLink
                   key={link.to}
                   to={link.to}
                   end={link.to === "/"}
                   className={({ isActive }) =>
-                    `text-[12px] tracking-[0.08em] font-medium uppercase transition-colors ${
+                    `text-[12px] tracking-[0.06em] font-semibold uppercase transition-colors ${
                       isActive
                         ? "text-primary border-b-2 border-accent pb-0.5"
-                        : "text-foreground hover:text-primary"
+                        : "text-foreground/85 hover:text-primary"
                     }`
                   }
                 >
@@ -79,45 +110,50 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* Right — compact actions */}
+            {/* Right — icons + search + account */}
             <div className="ml-auto flex items-center gap-4">
-              <div className="w-72">
-                <SearchAutocomplete
-                  inputClassName="w-full pl-10 pr-3 py-2 rounded-md border border-input focus:border-primary focus:ring-2 focus:ring-ring/20 text-sm outline-none transition bg-card"
-                  placeholder="Search products..."
-                  showButton={false}
-                />
-              </div>
-
               <Link
                 to="/account"
                 aria-label="Wishlist"
-                className="text-muted-foreground hover:text-primary transition"
+                className="text-foreground/80 hover:text-primary transition"
               >
-                <Heart className="w-5 h-5" />
+                <Heart className="w-[18px] h-[18px]" />
               </Link>
 
               <Link
                 to="/cart"
                 aria-label="Cart"
-                className="relative text-muted-foreground hover:text-primary transition"
+                className="relative text-foreground/80 hover:text-primary transition"
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-[18px] h-[18px]" />
                 {cartCount && cartCount > 0 ? (
-                  <span className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground text-[10px] min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center font-bold">
+                  <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center font-bold">
                     {cartCount}
                   </span>
                 ) : null}
               </Link>
 
+              {/* Search unit — input + navy submit, single 32px tall unit */}
+              <div className="w-[260px] h-[32px] flex rounded-md overflow-hidden border border-border bg-card">
+                <SearchAutocomplete
+                  className="flex-1 h-full"
+                  hideLeftIcon
+                  placeholder="What are you looking for?"
+                  inputClassName="w-full h-full px-3 text-[13px] bg-card outline-none placeholder:text-muted-foreground/70"
+                  showButton
+                  buttonClassName="w-10 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
+                  buttonContent={<Search className="w-4 h-4" />}
+                />
+              </div>
+
               {user ? (
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition"
+                    aria-label="Account"
+                    className="flex items-center gap-1 text-foreground/80 hover:text-primary transition"
                   >
-                    <User className="w-5 h-5" />
-                    <span className="hidden xl:block max-w-[80px] truncate">{firstName}</span>
+                    <User className="w-[18px] h-[18px]" />
                     <ChevronDown className="w-3 h-3" />
                   </button>
                   {dropdownOpen && (
@@ -142,9 +178,9 @@ const Header = () => {
                 <button
                   onClick={openAuthModal}
                   aria-label="Sign in"
-                  className="text-muted-foreground hover:text-primary transition"
+                  className="text-foreground/80 hover:text-primary transition"
                 >
-                  <User className="w-5 h-5" />
+                  <User className="w-[18px] h-[18px]" />
                 </button>
               )}
             </div>
@@ -152,17 +188,24 @@ const Header = () => {
         </div>
       </div>
 
-      {/* ─── Desktop centered logo pill (overlaps category bar) ─────── */}
+      {/* ─── Desktop centered logo badge (overlaps category bar seam) ─ */}
       <div className="hidden lg:block relative">
-        {/* Category nav rendered first so the pill can overlap its top edge */}
         <DesktopMegaNav />
         <Link
           to="/"
           aria-label="IKON Mart — Home"
-          className="absolute left-1/2 -translate-x-1/2 -top-7 z-40 flex items-center gap-2 bg-card rounded-full border border-border shadow-card-hover px-5 py-2"
+          className="absolute left-1/2 -translate-x-1/2 -top-[6px] z-40"
+          style={{ width: 200, height: 72 }}
         >
-          <img src="/favicon.png" alt="" className="h-8 w-auto object-contain" />
-          <span className="text-sm font-semibold tracking-wide text-primary">IKON Mart</span>
+          <div className="relative w-[200px] h-[72px]">
+            <BadgeShape />
+            <div className="absolute inset-0 flex items-center justify-center gap-2 px-4">
+              <img src="/favicon.png" alt="" className="h-9 w-auto object-contain" />
+              <span className="text-base font-extrabold tracking-wide text-primary leading-none">
+                IKON Mart
+              </span>
+            </div>
+          </div>
         </Link>
       </div>
 
