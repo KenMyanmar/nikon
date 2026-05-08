@@ -138,7 +138,7 @@ const Header = () => {
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                     aria-label="Account"
-                    className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
+                    className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
                   >
                     <User className="w-4 h-4" />
                   </button>
@@ -164,7 +164,7 @@ const Header = () => {
                 <button
                   onClick={openAuthModal}
                   aria-label="Sign in"
-                  className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
+                  className="flex items-center justify-center w-7 h-7 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
                 >
                   <User className="w-4 h-4" />
                 </button>
