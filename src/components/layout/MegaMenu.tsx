@@ -195,12 +195,12 @@ export const DesktopMegaNav = ({ centerGapWidth = 0 }: { centerGapWidth?: number
     >
       <Link
         to={`/category/${cat.slug}`}
-        className={`flex items-center gap-1 px-2.5 h-[32px] text-primary-foreground text-[12px] font-medium whitespace-nowrap ${
+        className={`flex items-center gap-0.5 px-2 h-[32px] text-primary-foreground text-[12px] font-medium whitespace-nowrap ${
           activeId === cat.id ? "bg-primary/85" : "hover:bg-primary/85"
         }`}
       >
         {cat.name}
-        <ChevronDown className="w-3 h-3 opacity-60" />
+        <ChevronDown className="w-3 h-3 opacity-50 ml-0.5" />
       </Link>
     </div>
   );
