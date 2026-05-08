@@ -5,6 +5,7 @@ import { DesktopMegaNav, MobileMegaNav } from "./MegaMenu";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useCartCount } from "@/hooks/useCart";
+import ikonMartLogo from "@/assets/ikon-mart-logo.png";
 
 /**
  * Version A.4 header (old-style marketplace concept).
@@ -25,9 +26,11 @@ const UTILITY_LINKS = [
   { label: "CONTACT US", to: "/contact" },
 ] as const;
 
-/** Embedded logo tab dimensions — bridges utility row and category bar. */
-const BADGE_W = 150;
-const BADGE_H = 64;
+/** Embedded logo tab dimensions — bridges utility row and category bar.
+ *  Logo aspect ~2.13:1 (1920x900). Height covers utility row (52px) + ~10px
+ *  dip into the navy category bar below. */
+const BADGE_H = 72;
+const BADGE_W = Math.round(BADGE_H * 2.13);
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -75,21 +78,19 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* Centered embedded logo tab — dips into navy bar below */}
+            {/* Centered embedded logo tab — natural silhouette dips into navy bar */}
             <Link
               to="/"
               aria-label="IKON Mart — Home"
-              className="absolute left-1/2 -translate-x-1/2 z-30 bg-primary text-primary-foreground flex flex-col items-center justify-center shadow-md"
-              style={{
-                width: BADGE_W,
-                height: BADGE_H,
-                top: 0,
-                borderBottomLeftRadius: 14,
-                borderBottomRightRadius: 14,
-              }}
+              className="absolute left-1/2 -translate-x-1/2 z-30 flex items-center justify-center"
+              style={{ width: BADGE_W, height: BADGE_H, top: 0 }}
             >
-              <span className="text-[18px] font-extrabold tracking-[0.18em] leading-none">IKON</span>
-              <span className="text-[10px] font-semibold tracking-[0.2em] mt-1 opacity-90">MART</span>
+              <img
+                src={ikonMartLogo}
+                alt="IKON Mart"
+                className="w-full h-full object-contain"
+                style={{ filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.18))" }}
+              />
             </Link>
 
             {/* Spacer reserving the badge's center footprint */}
