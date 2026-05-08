@@ -108,7 +108,7 @@ const Header = () => {
               to="/"
               aria-label="IKON Mart — Home"
               className="absolute left-1/2 -translate-x-1/2 z-30 block"
-              style={{ width: BADGE_W, height: BADGE_H, top: 6 }}
+              style={{ width: BADGE_W, height: BADGE_H, top: 0 }}
             >
               <div className="relative" style={{ width: BADGE_W, height: BADGE_H }}>
                 <BadgeShape />
