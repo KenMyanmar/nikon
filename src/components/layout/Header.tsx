@@ -114,8 +114,8 @@ const Header = () => {
             <Link
               to="/"
               aria-label="IKON Mart — Home"
-              className="relative ml-6 shrink-0 block"
-              style={{ width: 200, height: 64, marginBottom: -16 }}
+              className="relative ml-6 shrink-0 block self-end translate-y-3"
+              style={{ width: 200, height: 64 }}
             >
               <div className="relative w-[200px] h-[64px]">
                 <BadgeShape />
