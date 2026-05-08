@@ -25,38 +25,9 @@ const UTILITY_LINKS = [
   { label: "CONTACT US", to: "/contact" },
 ] as const;
 
-/** Refined shouldered badge silhouette — flatter, lighter, slightly skirted. */
-const BADGE_W = 158;
-const BADGE_H = 56;
-const BadgeShape = () => (
-  <svg
-    viewBox="0 0 158 58"
-    width={BADGE_W}
-    height={BADGE_H}
-    aria-hidden="true"
-    className="block"
-    style={{ filter: "drop-shadow(0 4px 10px rgba(27,42,78,0.12))" }}
-  >
-    <path
-      d="
-        M 12 3
-        L 146 3
-        Q 155 3 155 14
-        L 155 38
-        Q 155 47 147 50
-        Q 130 55 79 55
-        Q 28 55 11 50
-        Q 3 47 3 38
-        L 3 14
-        Q 3 3 12 3
-        Z
-      "
-      fill="hsl(var(--card))"
-      stroke="hsl(var(--primary))"
-      strokeWidth="1"
-    />
-  </svg>
-);
+/** Embedded logo tab dimensions — bridges utility row and category bar. */
+const BADGE_W = 150;
+const BADGE_H = 64;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
