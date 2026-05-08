@@ -27,7 +27,7 @@ const UTILITY_LINKS = [
 
 /** Refined shouldered badge silhouette — flatter, lighter, slightly skirted. */
 const BADGE_W = 158;
-const BADGE_H = 58;
+const BADGE_H = 56;
 const BadgeShape = () => (
   <svg
     viewBox="0 0 158 58"
