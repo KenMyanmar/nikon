@@ -87,62 +87,10 @@ const Header = () => {
       </div>
 
       {/* ─── Desktop utility row (lg+) ──────────────────────────────── */}
-      <div className="hidden lg:block relative bg-card border-b border-border z-20">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center gap-5 h-[56px]">
-            {/* Search unit (left) */}
-            <div className="w-[300px] h-[36px] flex rounded-md overflow-hidden border border-border bg-card shrink-0">
-              <SearchAutocomplete
-                className="flex-1 h-full"
-                hideLeftIcon
-                placeholder="What are you looking for?"
-                inputClassName="w-full h-full px-3 text-[13px] bg-card outline-none placeholder:text-muted-foreground/70"
-                showButton
-                buttonClassName="w-11 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
-                buttonContent={<Search className="w-4 h-4" />}
-              />
-            </div>
-
-            {/* IKON badge */}
-            <Link
-              to="/"
-              aria-label="IKON Mart — Home"
-              className="relative shrink-0 block self-end translate-y-2"
-              style={{ width: 180, height: 60 }}
-            >
-              <div className="relative w-[180px] h-[60px]">
-                <svg viewBox="0 0 200 72" width="180" height="60" aria-hidden="true" className="block" style={{ filter: "drop-shadow(0 6px 14px rgba(27,42,78,0.18))" }}>
-                  <path
-                    d="M 16 4 Q 28 0 40 4 L 160 4 Q 172 0 184 4 Q 196 8 196 24 L 196 44 Q 196 56 188 60 Q 176 66 160 66 Q 130 70 100 70 Q 70 70 40 66 Q 24 66 12 60 Q 4 56 4 44 L 4 24 Q 4 8 16 4 Z"
-                    fill="hsl(var(--primary))"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth="1.5"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
-                  <span className="text-base font-extrabold tracking-[0.15em] text-destructive">IKON</span>
-                  <span className="text-[10px] font-bold tracking-wider text-primary-foreground mt-0.5">Mart</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Quick action icons */}
-            <div className="flex items-center gap-4 shrink-0">
-              <Link to="/account" aria-label="Wishlist" className="relative text-foreground/80 hover:text-primary transition">
-                <Heart className="w-[20px] h-[20px]" />
-                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center font-bold">0</span>
-              </Link>
-              <Link to="/cart" aria-label="Cart" className="relative text-foreground/80 hover:text-primary transition">
-                <ShoppingCart className="w-[20px] h-[20px]" />
-                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center font-bold">{cartCount ?? 0}</span>
-              </Link>
-              <button aria-label="Notifications" className="text-foreground/80 hover:text-primary transition">
-                <Bell className="w-[20px] h-[20px]" />
-              </button>
-            </div>
-
-            {/* Utility text menu */}
-            <nav aria-label="Primary" className="ml-auto flex items-center gap-5 shrink-0">
+      <div className="hidden lg:block relative bg-card border-b border-border z-20 overflow-visible">
+        <div className="container mx-auto px-6 relative">
+          <div className="flex items-center justify-between h-[48px] overflow-visible">
+            <nav aria-label="Primary" className="flex items-center gap-6 shrink-0 pr-[220px]">
               {UTILITY_LINKS.map((link) => (
                 <NavLink
                   key={link.to}
@@ -159,8 +107,43 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* Account icon (far right) */}
-            <div className="shrink-0">
+            <Link
+              to="/"
+              aria-label="IKON Mart — Home"
+              className="absolute left-1/2 top-[6px] -translate-x-1/2 z-20 block"
+              style={{ width: 200, height: 72 }}
+            >
+              <div className="relative w-[200px] h-[72px]">
+                <BadgeShape />
+                <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
+                  <span className="text-base font-extrabold tracking-[0.15em] text-primary">IKON</span>
+                  <span className="text-[10px] font-bold tracking-wider text-primary mt-0.5">Mart</span>
+                </div>
+              </div>
+            </Link>
+
+            <div className="flex items-center gap-4 shrink-0 pl-[220px]">
+              <Link to="/account" aria-label="Wishlist" className="relative text-foreground/80 hover:text-primary transition">
+                <Heart className="w-[18px] h-[18px]" />
+                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center font-bold">0</span>
+              </Link>
+              <Link to="/cart" aria-label="Cart" className="relative text-foreground/80 hover:text-primary transition">
+                <ShoppingCart className="w-[18px] h-[18px]" />
+                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center font-bold">{cartCount ?? 0}</span>
+              </Link>
+              <div className="w-[260px] h-[32px] flex rounded-md overflow-hidden border border-border bg-card shrink-0">
+                <SearchAutocomplete
+                  className="flex-1 h-full"
+                  hideLeftIcon
+                  placeholder="What are you looking for?"
+                  inputClassName="w-full h-full px-3 text-[13px] bg-card outline-none placeholder:text-muted-foreground/70"
+                  showButton
+                  buttonClassName="w-10 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
+                  buttonContent={<Search className="w-4 h-4" />}
+                />
+              </div>
+
+              <div className="shrink-0">
               {user ? (
                 <div className="relative" ref={dropdownRef}>
                   <button
@@ -197,6 +180,7 @@ const Header = () => {
                   <User className="w-5 h-5" />
                 </button>
               )}
+              </div>
             </div>
           </div>
         </div>
