@@ -26,11 +26,10 @@ const UTILITY_LINKS = [
   { label: "CONTACT US", to: "/contact" },
 ] as const;
 
-/** Embedded logo dimensions — the logo lives in-flow as the center column and
- *  the image itself dips slightly into the navy category bar below. */
-const BADGE_H = 72;
-const BADGE_W = Math.round(BADGE_H * 2.13);
-const BADGE_DIP = 10;
+/** Compact tab-style badge: slim, flat, navy, dipping into the category bar. */
+const BADGE_W = 132;
+const BADGE_H = 44;
+const BADGE_DIP = 14;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
