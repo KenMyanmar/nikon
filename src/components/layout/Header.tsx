@@ -86,12 +86,12 @@ const Header = () => {
         <Link to="/flash-deals" className="underline ml-2 text-primary">Shop Deals →</Link>
       </div>
 
-      {/* ─── Desktop utility row (lg+) ─────────────────────────────── */}
-      <div className="hidden lg:block relative bg-card border-b border-border">
+      {/* ─── Desktop utility row (lg+) — badge sits inline after links ─ */}
+      <div className="hidden lg:block relative bg-card border-b border-border z-20">
         <div className="container mx-auto px-6">
           <div className="flex items-center h-[48px]">
             {/* Left — utility text menu */}
-            <nav aria-label="Primary" className="flex items-center gap-6">
+            <nav aria-label="Primary" className="flex items-center gap-5 shrink-0">
               {UTILITY_LINKS.map((link) => (
                 <NavLink
                   key={link.to}
@@ -109,6 +109,24 @@ const Header = () => {
                 </NavLink>
               ))}
             </nav>
+
+            {/* Inline IKON badge — sits after links, skirt overflows into navy bar below */}
+            <Link
+              to="/"
+              aria-label="IKON Mart — Home"
+              className="relative ml-6 shrink-0 block self-end translate-y-3"
+              style={{ width: 200, height: 64 }}
+            >
+              <div className="relative w-[200px] h-[64px]">
+                <BadgeShape />
+                <div className="absolute inset-0 flex items-center justify-center gap-2 px-4">
+                  <img src="/favicon.png" alt="" className="h-8 w-auto object-contain" />
+                  <span className="text-base font-extrabold tracking-wide text-primary leading-none">
+                    IKON Mart
+                  </span>
+                </div>
+              </div>
+            </Link>
 
             {/* Right — icons + search + account */}
             <div className="ml-auto flex items-center gap-4">
@@ -188,25 +206,9 @@ const Header = () => {
         </div>
       </div>
 
-      {/* ─── Desktop centered logo badge (overlaps category bar seam) ─ */}
-      <div className="hidden lg:block relative">
+      {/* ─── Desktop category bar (untouched, no overlay) ────────────── */}
+      <div className="hidden lg:block">
         <DesktopMegaNav />
-        <Link
-          to="/"
-          aria-label="IKON Mart — Home"
-          className="absolute left-1/2 -translate-x-1/2 -top-[6px] z-40"
-          style={{ width: 200, height: 72 }}
-        >
-          <div className="relative w-[200px] h-[72px]">
-            <BadgeShape />
-            <div className="absolute inset-0 flex items-center justify-center gap-2 px-4">
-              <img src="/favicon.png" alt="" className="h-9 w-auto object-contain" />
-              <span className="text-base font-extrabold tracking-wide text-primary leading-none">
-                IKON Mart
-              </span>
-            </div>
-          </div>
-        </Link>
       </div>
 
       {/* ─── Mobile header (<lg) ────────────────────────────────────── */}
