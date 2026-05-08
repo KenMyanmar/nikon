@@ -120,15 +120,15 @@ const Header = () => {
               </Link>
 
               {/* Search unit: input + visible navy button */}
-              <div className="flex-1 min-w-[220px] max-w-[360px] h-[36px] flex rounded-md overflow-hidden border border-border bg-card">
+              <div className="flex-1 min-w-[220px] max-w-[360px] h-[32px] flex rounded-md overflow-hidden border border-border bg-card">
                 <SearchAutocomplete
                   className="flex-1 h-full min-w-0 flex"
                   hideLeftIcon
                   placeholder="Search products..."
-                  inputClassName="flex-1 h-full px-3 text-[13px] bg-card outline-none placeholder:text-muted-foreground/70 min-w-0"
+                  inputClassName="flex-1 h-full px-3 text-[12px] bg-card outline-none placeholder:text-muted-foreground/70 min-w-0"
                   showButton
-                  buttonClassName="w-11 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
-                  buttonContent={<Search className="w-4 h-4" />}
+                  buttonClassName="w-10 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
+                  buttonContent={<Search className="w-3.5 h-3.5" />}
                 />
               </div>
 
