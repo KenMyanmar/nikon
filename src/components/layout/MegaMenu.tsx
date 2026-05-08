@@ -206,15 +206,17 @@ export const DesktopMegaNav = ({ centerGapWidth = 0 }: { centerGapWidth?: number
 
   return (
     <nav className="hidden lg:block bg-primary relative">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center h-[32px]">
+      <div className="container mx-auto px-3">
+        <div className="flex items-stretch h-[32px]">
           {centerGapWidth > 0 ? (
             <>
-              <div className="flex items-center flex-1 justify-start min-w-0">
+              <div className="flex items-stretch flex-1 justify-start min-w-0 overflow-hidden">
                 {leftCats.map(renderItem)}
               </div>
-              <div aria-hidden="true" className="shrink-0" style={{ width: centerGapWidth }} />
-              <div className="flex items-center flex-1 justify-end min-w-0">
+              {/* Min reserved gap shown only when there's room (2xl+) — at smaller
+                  widths the natural justify-start/end already produces a soft gap. */}
+              <div aria-hidden="true" className="shrink-0 hidden 2xl:block" style={{ width: centerGapWidth }} />
+              <div className="flex items-stretch flex-1 justify-end min-w-0 overflow-hidden">
                 {rightCats.map(renderItem)}
               </div>
             </>
