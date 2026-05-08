@@ -59,57 +59,49 @@ const Header = () => {
       {/* ─── Desktop utility row (lg+) ──────────────────────────────── */}
       <div className="hidden lg:block relative bg-card border-b border-border z-20 overflow-visible">
         <div className="container mx-auto px-6 relative">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-4 h-[52px] overflow-visible">
-            <nav aria-label="Primary" className="flex h-[52px] items-center gap-5 min-w-0 justify-self-start">
-              {UTILITY_LINKS.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  end={link.to === "/"}
-                  className={({ isActive }) =>
-                    `text-[11px] tracking-[0.08em] font-medium uppercase transition-colors ${
-                      isActive ? "text-primary" : "text-foreground/80 hover:text-primary"
-                    }`
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-            </nav>
-
-            <div className="flex h-[52px] items-start justify-center overflow-visible">
-              <Link
-                to="/"
-                aria-label="IKON Mart — Home"
-                className="z-30 block shrink-0"
-                style={{ width: BADGE_W }}
-              >
-                <img
-                  src={ikonMartLogo}
-                  alt="IKON Mart"
-                  className="block w-full object-contain"
-                  style={{ height: BADGE_H, transform: `translateY(${BADGE_DIP}px)`, filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.18))" }}
-                />
-              </Link>
-            </div>
-
-            {/* Right cluster: expansive search + icons */}
-            <div className="flex h-[52px] items-center gap-3 min-w-0 w-full justify-self-stretch">
-              <div className="flex-1 min-w-0 h-[34px] flex rounded-md overflow-hidden border border-border bg-card">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-6 h-[60px] overflow-visible">
+            {/* LEFT: expansive search bar */}
+            <div className="flex items-center min-w-0 w-full justify-self-stretch">
+              <div className="flex-1 min-w-0 h-[38px] flex rounded-md overflow-hidden border border-border bg-card">
                 <SearchAutocomplete
                   className="flex-1 h-full min-w-0"
                   hideLeftIcon
                   placeholder="What are you looking for?"
-                  inputClassName="w-full h-full px-3 text-[12px] bg-card outline-none placeholder:text-muted-foreground/70"
+                  inputClassName="w-full h-full px-3 text-[13px] bg-card outline-none placeholder:text-muted-foreground/70"
                   showButton
-                  buttonClassName="w-10 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
-                  buttonContent={<Search className="w-3.5 h-3.5" />}
+                  buttonClassName="w-11 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
+                  buttonContent={<Search className="w-4 h-4" />}
                 />
               </div>
+            </div>
 
-              <Link to="/account" aria-label="Notifications" className="relative text-foreground/80 hover:text-primary transition shrink-0">
-                <Bell className="w-[18px] h-[18px]" />
+            {/* CENTER: tab-style logo badge dipping into navy bar */}
+            <div className="flex items-start justify-center overflow-visible">
+              <Link
+                to="/"
+                aria-label="IKON Mart — Home"
+                className="relative z-50 flex items-center justify-center bg-primary shrink-0"
+                style={{
+                  width: BADGE_W,
+                  height: BADGE_H,
+                  top: BADGE_DIP,
+                  borderBottomLeftRadius: 12,
+                  borderBottomRightRadius: 12,
+                  borderTopLeftRadius: 4,
+                  borderTopRightRadius: 4,
+                  boxShadow: "0 6px 14px -6px rgba(0,0,0,0.25)",
+                }}
+              >
+                <img
+                  src={ikonMartLogo}
+                  alt="IKON Mart"
+                  className="block max-h-[32px] w-auto object-contain"
+                />
               </Link>
+            </div>
+
+            {/* RIGHT: icons + utility links */}
+            <div className="flex items-center gap-4 min-w-0 w-full justify-self-end">
               <Link to="/account" aria-label="Wishlist" className="relative text-foreground/80 hover:text-primary transition shrink-0">
                 <Heart className="w-[18px] h-[18px]" />
                 <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center font-bold">0</span>
@@ -118,6 +110,26 @@ const Header = () => {
                 <ShoppingCart className="w-[18px] h-[18px]" />
                 <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center font-bold">{cartCount ?? 0}</span>
               </Link>
+              <Link to="/account" aria-label="Notifications" className="relative text-foreground/80 hover:text-primary transition shrink-0">
+                <Bell className="w-[18px] h-[18px]" />
+              </Link>
+
+              <nav aria-label="Primary" className="flex items-center gap-4 shrink-0">
+                {UTILITY_LINKS.map((link) => (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    end={link.to === "/"}
+                    className={({ isActive }) =>
+                      `text-[11px] tracking-[0.08em] font-medium uppercase transition-colors ${
+                        isActive ? "text-primary" : "text-foreground/80 hover:text-primary"
+                      }`
+                    }
+                  >
+                    {link.label}
+                  </NavLink>
+                ))}
+              </nav>
 
               <div className="shrink-0">
               {user ? (
