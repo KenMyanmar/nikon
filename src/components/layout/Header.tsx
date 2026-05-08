@@ -29,7 +29,7 @@ const UTILITY_LINKS = [
 /** Compact tab-style badge: slim, flat, navy, dipping into the category bar. */
 const BADGE_W = 132;
 const BADGE_H = 44;
-const BADGE_DIP = 14;
+const BADGE_DIP = 16;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -76,15 +76,17 @@ const Header = () => {
             </div>
 
             {/* CENTER: tab-style logo badge dipping into navy bar */}
-            <div className="flex items-start justify-center overflow-visible">
+            <div
+              className="relative z-50 flex items-start justify-center overflow-visible"
+              style={{ transform: `translateY(${BADGE_DIP}px)` }}
+            >
               <Link
                 to="/"
                 aria-label="IKON Mart — Home"
-                className="relative z-50 flex items-center justify-center bg-primary shrink-0"
+                className="flex items-center justify-center bg-primary shrink-0"
                 style={{
                   width: BADGE_W,
                   height: BADGE_H,
-                  top: BADGE_DIP,
                   borderBottomLeftRadius: 12,
                   borderBottomRightRadius: 12,
                   borderTopLeftRadius: 4,
@@ -175,7 +177,7 @@ const Header = () => {
       </div>
 
       {/* ─── Desktop category bar ────────────────────────────────────── */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block relative z-10">
         <DesktopMegaNav centerGapWidth={BADGE_W + 24} />
       </div>
 
