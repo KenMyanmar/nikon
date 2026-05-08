@@ -26,11 +26,11 @@ const UTILITY_LINKS = [
   { label: "CONTACT US", to: "/contact" },
 ] as const;
 
-/** Embedded logo dimensions — the logo lives in-flow as the center column and
- *  the image itself dips slightly into the navy category bar below. */
+/** Embedded logo tab dimensions — bridges utility row and category bar.
+ *  Logo aspect ~2.13:1 (1920x900). Height covers utility row (52px) + ~10px
+ *  dip into the navy category bar below. */
 const BADGE_H = 72;
 const BADGE_W = Math.round(BADGE_H * 2.13);
-const BADGE_DIP = 10;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -60,8 +60,8 @@ const Header = () => {
       {/* ─── Desktop utility row (lg+) ──────────────────────────────── */}
       <div className="hidden lg:block relative bg-card border-b border-border z-20 overflow-visible">
         <div className="container mx-auto px-6 relative">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-4 h-[52px] overflow-visible">
-            <nav aria-label="Primary" className="flex h-[52px] items-center gap-5 min-w-0 justify-self-start">
+          <div className="flex items-center gap-5 h-[52px] overflow-visible">
+            <nav aria-label="Primary" className="flex items-center gap-5 shrink-0">
               {UTILITY_LINKS.map((link) => (
                 <NavLink
                   key={link.to}
@@ -78,24 +78,26 @@ const Header = () => {
               ))}
             </nav>
 
-            <div className="flex h-[52px] items-start justify-center overflow-visible">
-              <Link
-                to="/"
-                aria-label="IKON Mart — Home"
-                className="z-30 block shrink-0"
-                style={{ width: BADGE_W }}
-              >
-                <img
-                  src={ikonMartLogo}
-                  alt="IKON Mart"
-                  className="block w-full object-contain"
-                  style={{ height: BADGE_H, transform: `translateY(${BADGE_DIP}px)`, filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.18))" }}
-                />
-              </Link>
-            </div>
+            {/* Centered embedded logo tab — natural silhouette dips into navy bar */}
+            <Link
+              to="/"
+              aria-label="IKON Mart — Home"
+              className="absolute left-1/2 -translate-x-1/2 z-30 flex items-center justify-center"
+              style={{ width: BADGE_W, height: BADGE_H, top: 0 }}
+            >
+              <img
+                src={ikonMartLogo}
+                alt="IKON Mart"
+                className="w-full h-full object-contain"
+                style={{ filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.18))" }}
+              />
+            </Link>
+
+            {/* Spacer reserving the badge's center footprint */}
+            <div className="shrink-0" style={{ width: BADGE_W + 24 }} aria-hidden="true" />
 
             {/* Right cluster: expansive search + icons */}
-            <div className="flex h-[52px] items-center gap-3 min-w-0 w-full justify-self-stretch">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
               <div className="flex-1 min-w-0 h-[34px] flex rounded-md overflow-hidden border border-border bg-card">
                 <SearchAutocomplete
                   className="flex-1 h-full min-w-0"
