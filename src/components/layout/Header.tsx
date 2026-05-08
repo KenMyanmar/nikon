@@ -60,20 +60,23 @@ const Header = () => {
       <div className="hidden lg:block relative bg-card border-b border-border z-20 overflow-visible">
         <div className="container mx-auto px-6 relative">
           <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-6 h-[60px] overflow-visible">
-            {/* LEFT: expansive search bar */}
-            <div className="flex items-center min-w-0 w-full justify-self-stretch">
-              <div className="flex-1 min-w-0 h-[38px] flex rounded-md overflow-hidden border border-border bg-card">
-                <SearchAutocomplete
-                  className="flex-1 h-full min-w-0"
-                  hideLeftIcon
-                  placeholder="What are you looking for?"
-                  inputClassName="w-full h-full px-3 text-[13px] bg-card outline-none placeholder:text-muted-foreground/70"
-                  showButton
-                  buttonClassName="w-11 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
-                  buttonContent={<Search className="w-4 h-4" />}
-                />
-              </div>
-            </div>
+            {/* LEFT: utility links */}
+            <nav aria-label="Primary" className="flex items-center gap-5 min-w-0 justify-self-start">
+              {UTILITY_LINKS.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  end={link.to === "/"}
+                  className={({ isActive }) =>
+                    `text-[11px] tracking-[0.08em] font-medium uppercase transition-colors ${
+                      isActive ? "text-primary" : "text-foreground/80 hover:text-primary"
+                    }`
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </nav>
 
             {/* CENTER: tab-style logo badge dipping into navy bar */}
             <div
@@ -102,8 +105,8 @@ const Header = () => {
               </Link>
             </div>
 
-            {/* RIGHT: icons + utility links */}
-            <div className="flex items-center gap-4 min-w-0 w-full justify-self-end">
+            {/* RIGHT: icons + search + account */}
+            <div className="flex items-center gap-3 min-w-0 w-full justify-self-end">
               <Link to="/account" aria-label="Wishlist" className="relative text-foreground/80 hover:text-primary transition shrink-0">
                 <Heart className="w-[18px] h-[18px]" />
                 <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center font-bold">0</span>
@@ -116,22 +119,18 @@ const Header = () => {
                 <Bell className="w-[18px] h-[18px]" />
               </Link>
 
-              <nav aria-label="Primary" className="flex items-center gap-4 shrink-0">
-                {UTILITY_LINKS.map((link) => (
-                  <NavLink
-                    key={link.to}
-                    to={link.to}
-                    end={link.to === "/"}
-                    className={({ isActive }) =>
-                      `text-[11px] tracking-[0.08em] font-medium uppercase transition-colors ${
-                        isActive ? "text-primary" : "text-foreground/80 hover:text-primary"
-                      }`
-                    }
-                  >
-                    {link.label}
-                  </NavLink>
-                ))}
-              </nav>
+              {/* Search unit: input + visible navy button */}
+              <div className="flex-1 min-w-[220px] max-w-[360px] h-[36px] flex rounded-md overflow-hidden border border-border bg-card">
+                <SearchAutocomplete
+                  className="flex-1 h-full min-w-0 flex"
+                  hideLeftIcon
+                  placeholder="Search products..."
+                  inputClassName="flex-1 h-full px-3 text-[13px] bg-card outline-none placeholder:text-muted-foreground/70 min-w-0"
+                  showButton
+                  buttonClassName="w-11 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
+                  buttonContent={<Search className="w-4 h-4" />}
+                />
+              </div>
 
               <div className="shrink-0">
               {user ? (
