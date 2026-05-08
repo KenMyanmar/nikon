@@ -189,6 +189,7 @@ export const DesktopMegaNav = ({ centerGapWidth = 0 }: { centerGapWidth?: number
   const renderItem = (cat: MainCategory) => (
     <div
       key={cat.id}
+      className="shrink-0"
       onMouseEnter={() => handleMouseEnter(cat.id)}
       onMouseLeave={handleMouseLeave}
     >
