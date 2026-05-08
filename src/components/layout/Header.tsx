@@ -25,38 +25,35 @@ const UTILITY_LINKS = [
   { label: "CONTACT US", to: "/contact" },
 ] as const;
 
-/** Custom shouldered/curved-skirt badge silhouette, white fill + navy stroke. */
+/** Refined shouldered badge silhouette — flatter, lighter, slightly skirted. */
+const BADGE_W = 158;
+const BADGE_H = 56;
 const BadgeShape = () => (
   <svg
-    viewBox="0 0 200 72"
-    width="200"
-    height="72"
+    viewBox="0 0 158 58"
+    width={BADGE_W}
+    height={BADGE_H}
     aria-hidden="true"
     className="block"
-    style={{ filter: "drop-shadow(0 6px 14px rgba(27,42,78,0.18))" }}
+    style={{ filter: "drop-shadow(0 4px 10px rgba(27,42,78,0.12))" }}
   >
-    {/* Shouldered top with curved skirt that flares wider at the bottom. */}
     <path
       d="
-        M 16 4
-        Q 28 0 40 4
-        L 160 4
-        Q 172 0 184 4
-        Q 196 8 196 24
-        L 196 44
-        Q 196 56 188 60
-        Q 176 66 160 66
-        Q 130 70 100 70
-        Q 70 70 40 66
-        Q 24 66 12 60
-        Q 4 56 4 44
-        L 4 24
-        Q 4 8 16 4
+        M 12 3
+        L 146 3
+        Q 155 3 155 14
+        L 155 38
+        Q 155 47 147 50
+        Q 130 55 79 55
+        Q 28 55 11 50
+        Q 3 47 3 38
+        L 3 14
+        Q 3 3 12 3
         Z
       "
       fill="hsl(var(--card))"
       stroke="hsl(var(--primary))"
-      strokeWidth="1.5"
+      strokeWidth="1"
     />
   </svg>
 );
@@ -89,16 +86,16 @@ const Header = () => {
       {/* ─── Desktop utility row (lg+) ──────────────────────────────── */}
       <div className="hidden lg:block relative bg-card border-b border-border z-20 overflow-visible">
         <div className="container mx-auto px-6 relative">
-          <div className="flex items-center justify-between h-[48px] overflow-visible">
-            <nav aria-label="Primary" className="flex items-center gap-6 shrink-0 pr-[220px]">
+          <div className="flex items-center justify-between h-[46px] overflow-visible">
+            <nav aria-label="Primary" className="flex items-center gap-5 shrink-0 pr-[180px]">
               {UTILITY_LINKS.map((link) => (
                 <NavLink
                   key={link.to}
                   to={link.to}
                   end={link.to === "/"}
                   className={({ isActive }) =>
-                    `text-[12px] tracking-[0.06em] font-semibold uppercase transition-colors ${
-                      isActive ? "text-primary" : "text-foreground/85 hover:text-primary"
+                    `text-[11px] tracking-[0.08em] font-medium uppercase transition-colors ${
+                      isActive ? "text-primary" : "text-foreground/80 hover:text-primary"
                     }`
                   }
                 >
@@ -110,36 +107,36 @@ const Header = () => {
             <Link
               to="/"
               aria-label="IKON Mart — Home"
-              className="absolute left-1/2 top-[6px] -translate-x-1/2 z-20 block"
-              style={{ width: 200, height: 72 }}
+              className="absolute left-1/2 -translate-x-1/2 z-30 block"
+              style={{ width: BADGE_W, height: BADGE_H, top: 0 }}
             >
-              <div className="relative w-[200px] h-[72px]">
+              <div className="relative" style={{ width: BADGE_W, height: BADGE_H }}>
                 <BadgeShape />
                 <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
-                  <span className="text-base font-extrabold tracking-[0.15em] text-primary">IKON</span>
-                  <span className="text-[10px] font-bold tracking-wider text-primary mt-0.5">Mart</span>
+                  <span className="text-[13px] font-bold tracking-[0.18em] text-primary">IKON</span>
+                  <span className="text-[9px] font-semibold tracking-[0.15em] text-primary mt-0.5">Mart</span>
                 </div>
               </div>
             </Link>
 
-            <div className="flex items-center gap-4 shrink-0 pl-[220px]">
+            <div className="flex items-center gap-3 shrink-0 pl-[180px]">
               <Link to="/account" aria-label="Wishlist" className="relative text-foreground/80 hover:text-primary transition">
-                <Heart className="w-[18px] h-[18px]" />
-                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center font-bold">0</span>
+                <Heart className="w-[17px] h-[17px]" />
+                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center font-bold">0</span>
               </Link>
               <Link to="/cart" aria-label="Cart" className="relative text-foreground/80 hover:text-primary transition">
-                <ShoppingCart className="w-[18px] h-[18px]" />
-                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center font-bold">{cartCount ?? 0}</span>
+                <ShoppingCart className="w-[17px] h-[17px]" />
+                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center font-bold">{cartCount ?? 0}</span>
               </Link>
-              <div className="w-[260px] h-[32px] flex rounded-md overflow-hidden border border-border bg-card shrink-0">
+              <div className="w-[240px] h-[30px] flex rounded-md overflow-hidden border border-border bg-card shrink-0">
                 <SearchAutocomplete
                   className="flex-1 h-full"
                   hideLeftIcon
                   placeholder="What are you looking for?"
-                  inputClassName="w-full h-full px-3 text-[13px] bg-card outline-none placeholder:text-muted-foreground/70"
+                  inputClassName="w-full h-full px-3 text-[12px] bg-card outline-none placeholder:text-muted-foreground/70"
                   showButton
-                  buttonClassName="w-10 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
-                  buttonContent={<Search className="w-4 h-4" />}
+                  buttonClassName="w-9 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
+                  buttonContent={<Search className="w-3.5 h-3.5" />}
                 />
               </div>
 
@@ -149,9 +146,9 @@ const Header = () => {
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                     aria-label="Account"
-                    className="flex items-center justify-center w-9 h-9 rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
+                    className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
                   >
-                    <User className="w-5 h-5" />
+                    <User className="w-4 h-4" />
                   </button>
                   {dropdownOpen && (
                     <div className="absolute right-0 top-full mt-2 w-48 bg-card rounded-card shadow-card-hover border border-border py-1 z-50">
@@ -175,9 +172,9 @@ const Header = () => {
                 <button
                   onClick={openAuthModal}
                   aria-label="Sign in"
-                  className="flex items-center justify-center w-9 h-9 rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
+                  className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
                 >
-                  <User className="w-5 h-5" />
+                  <User className="w-4 h-4" />
                 </button>
               )}
               </div>
@@ -186,9 +183,9 @@ const Header = () => {
         </div>
       </div>
 
-      {/* ─── Desktop category bar (untouched, no overlay) ────────────── */}
+      {/* ─── Desktop category bar ────────────────────────────────────── */}
       <div className="hidden lg:block">
-        <DesktopMegaNav />
+        <DesktopMegaNav centerGapWidth={BADGE_W + 24} />
       </div>
 
       {/* ─── Mobile header (<lg) ────────────────────────────────────── */}
