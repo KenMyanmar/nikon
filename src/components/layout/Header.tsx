@@ -25,38 +25,35 @@ const UTILITY_LINKS = [
   { label: "CONTACT US", to: "/contact" },
 ] as const;
 
-/** Custom shouldered/curved-skirt badge silhouette, white fill + navy stroke. */
+/** Refined shouldered badge silhouette — flatter, lighter, slightly skirted. */
+const BADGE_W = 158;
+const BADGE_H = 58;
 const BadgeShape = () => (
   <svg
-    viewBox="0 0 200 72"
-    width="200"
-    height="72"
+    viewBox="0 0 158 58"
+    width={BADGE_W}
+    height={BADGE_H}
     aria-hidden="true"
     className="block"
-    style={{ filter: "drop-shadow(0 6px 14px rgba(27,42,78,0.18))" }}
+    style={{ filter: "drop-shadow(0 4px 10px rgba(27,42,78,0.12))" }}
   >
-    {/* Shouldered top with curved skirt that flares wider at the bottom. */}
     <path
       d="
-        M 16 4
-        Q 28 0 40 4
-        L 160 4
-        Q 172 0 184 4
-        Q 196 8 196 24
-        L 196 44
-        Q 196 56 188 60
-        Q 176 66 160 66
-        Q 130 70 100 70
-        Q 70 70 40 66
-        Q 24 66 12 60
-        Q 4 56 4 44
-        L 4 24
-        Q 4 8 16 4
+        M 12 3
+        L 146 3
+        Q 155 3 155 14
+        L 155 38
+        Q 155 47 147 50
+        Q 130 55 79 55
+        Q 28 55 11 50
+        Q 3 47 3 38
+        L 3 14
+        Q 3 3 12 3
         Z
       "
       fill="hsl(var(--card))"
       stroke="hsl(var(--primary))"
-      strokeWidth="1.5"
+      strokeWidth="1"
     />
   </svg>
 );
