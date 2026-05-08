@@ -168,7 +168,7 @@ const MegaMenuDropdown = ({
 };
 
 // ─── Desktop Nav Bar ─────────────────────────────────────────────────────
-export const DesktopMegaNav = () => {
+export const DesktopMegaNav = ({ centerGapWidth = 0 }: { centerGapWidth?: number }) => {
   const { mainCategories, subCategories, topBrands } = useNavData();
   const [activeId, setActiveId] = useState<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -182,32 +182,48 @@ export const DesktopMegaNav = () => {
     timeoutRef.current = setTimeout(() => setActiveId(null), 150);
   };
 
+  const mid = Math.ceil(mainCategories.length / 2);
+  const leftCats = mainCategories.slice(0, mid);
+  const rightCats = mainCategories.slice(mid);
+
+  const renderItem = (cat: MainCategory) => (
+    <div
+      key={cat.id}
+      onMouseEnter={() => handleMouseEnter(cat.id)}
+      onMouseLeave={handleMouseLeave}
+    >
+      <Link
+        to={`/category/${cat.slug}`}
+        className={`flex items-center gap-1 px-2.5 h-[32px] text-primary-foreground text-[12px] font-medium whitespace-nowrap ${
+          activeId === cat.id ? "bg-primary/85" : "hover:bg-primary/85"
+        }`}
+      >
+        {cat.name}
+        <ChevronDown className="w-3 h-3 opacity-60" />
+      </Link>
+    </div>
+  );
+
   return (
     <nav className="hidden lg:block bg-primary relative">
       <div className="container mx-auto px-4">
-        <div className="flex items-center">
-          {/* All categories — full names, no abbreviations */}
-          {mainCategories.map((cat) => (
-            <div
-              key={cat.id}
-              onMouseEnter={() => handleMouseEnter(cat.id)}
-              onMouseLeave={handleMouseLeave}
-            >
-              <Link
-                to={`/category/${cat.slug}`}
-                className={`flex items-center gap-1 px-3 py-2 text-primary-foreground text-[13px] font-medium whitespace-nowrap ${
-                  activeId === cat.id ? "bg-primary/85" : "hover:bg-primary/85"
-                }`}
-              >
-                {cat.name}
-                <ChevronDown className="w-3 h-3 opacity-60" />
-              </Link>
-            </div>
-          ))}
+        <div className="flex items-center h-[32px]">
+          {centerGapWidth > 0 ? (
+            <>
+              <div className="flex items-center flex-1 justify-start min-w-0">
+                {leftCats.map(renderItem)}
+              </div>
+              <div aria-hidden="true" className="shrink-0" style={{ width: centerGapWidth }} />
+              <div className="flex items-center flex-1 justify-end min-w-0">
+                {rightCats.map(renderItem)}
+              </div>
+            </>
+          ) : (
+            mainCategories.map(renderItem)
+          )}
         </div>
       </div>
 
-      {/* Category hover dropdown */}
       {activeId && (
         <div
           onMouseEnter={() => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }}
