@@ -25,38 +25,9 @@ const UTILITY_LINKS = [
   { label: "CONTACT US", to: "/contact" },
 ] as const;
 
-/** Refined shouldered badge silhouette — flatter, lighter, slightly skirted. */
-const BADGE_W = 158;
-const BADGE_H = 56;
-const BadgeShape = () => (
-  <svg
-    viewBox="0 0 158 58"
-    width={BADGE_W}
-    height={BADGE_H}
-    aria-hidden="true"
-    className="block"
-    style={{ filter: "drop-shadow(0 4px 10px rgba(27,42,78,0.12))" }}
-  >
-    <path
-      d="
-        M 12 3
-        L 146 3
-        Q 155 3 155 14
-        L 155 38
-        Q 155 47 147 50
-        Q 130 55 79 55
-        Q 28 55 11 50
-        Q 3 47 3 38
-        L 3 14
-        Q 3 3 12 3
-        Z
-      "
-      fill="hsl(var(--card))"
-      stroke="hsl(var(--primary))"
-      strokeWidth="1"
-    />
-  </svg>
-);
+/** Embedded logo tab dimensions — bridges utility row and category bar. */
+const BADGE_W = 150;
+const BADGE_H = 64;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -86,8 +57,8 @@ const Header = () => {
       {/* ─── Desktop utility row (lg+) ──────────────────────────────── */}
       <div className="hidden lg:block relative bg-card border-b border-border z-20 overflow-visible">
         <div className="container mx-auto px-6 relative">
-          <div className="flex items-center justify-between h-[46px] overflow-visible">
-            <nav aria-label="Primary" className="flex items-center gap-5 shrink-0 pr-[180px]">
+          <div className="flex items-center gap-5 h-[52px] overflow-visible">
+            <nav aria-label="Primary" className="flex items-center gap-5 shrink-0">
               {UTILITY_LINKS.map((link) => (
                 <NavLink
                   key={link.to}
@@ -104,41 +75,51 @@ const Header = () => {
               ))}
             </nav>
 
+            {/* Centered embedded logo tab — dips into navy bar below */}
             <Link
               to="/"
               aria-label="IKON Mart — Home"
-              className="absolute left-1/2 -translate-x-1/2 z-30 block"
-              style={{ width: BADGE_W, height: BADGE_H, top: 0 }}
+              className="absolute left-1/2 -translate-x-1/2 z-30 bg-primary text-primary-foreground flex flex-col items-center justify-center shadow-md"
+              style={{
+                width: BADGE_W,
+                height: BADGE_H,
+                top: 0,
+                borderBottomLeftRadius: 14,
+                borderBottomRightRadius: 14,
+              }}
             >
-              <div className="relative" style={{ width: BADGE_W, height: BADGE_H }}>
-                <BadgeShape />
-                <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
-                  <span className="text-[13px] font-bold tracking-[0.18em] text-primary">IKON</span>
-                  <span className="text-[9px] font-semibold tracking-[0.15em] text-primary mt-0.5">Mart</span>
-                </div>
-              </div>
+              <span className="text-[18px] font-extrabold tracking-[0.18em] leading-none">IKON</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em] mt-1 opacity-90">MART</span>
             </Link>
 
-            <div className="flex items-center gap-3 shrink-0 pl-[180px]">
-              <Link to="/account" aria-label="Wishlist" className="relative text-foreground/80 hover:text-primary transition">
-                <Heart className="w-[17px] h-[17px]" />
-                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center font-bold">0</span>
-              </Link>
-              <Link to="/cart" aria-label="Cart" className="relative text-foreground/80 hover:text-primary transition">
-                <ShoppingCart className="w-[17px] h-[17px]" />
-                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center font-bold">{cartCount ?? 0}</span>
-              </Link>
-              <div className="w-[240px] h-[30px] flex rounded-md overflow-hidden border border-border bg-card shrink-0">
+            {/* Spacer reserving the badge's center footprint */}
+            <div className="shrink-0" style={{ width: BADGE_W + 24 }} aria-hidden="true" />
+
+            {/* Right cluster: expansive search + icons */}
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="flex-1 min-w-0 h-[34px] flex rounded-md overflow-hidden border border-border bg-card">
                 <SearchAutocomplete
-                  className="flex-1 h-full"
+                  className="flex-1 h-full min-w-0"
                   hideLeftIcon
                   placeholder="What are you looking for?"
                   inputClassName="w-full h-full px-3 text-[12px] bg-card outline-none placeholder:text-muted-foreground/70"
                   showButton
-                  buttonClassName="w-9 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
+                  buttonClassName="w-10 h-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition shrink-0"
                   buttonContent={<Search className="w-3.5 h-3.5" />}
                 />
               </div>
+
+              <Link to="/account" aria-label="Notifications" className="relative text-foreground/80 hover:text-primary transition shrink-0">
+                <Bell className="w-[18px] h-[18px]" />
+              </Link>
+              <Link to="/account" aria-label="Wishlist" className="relative text-foreground/80 hover:text-primary transition shrink-0">
+                <Heart className="w-[18px] h-[18px]" />
+                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center font-bold">0</span>
+              </Link>
+              <Link to="/cart" aria-label="Cart" className="relative text-foreground/80 hover:text-primary transition shrink-0">
+                <ShoppingCart className="w-[18px] h-[18px]" />
+                <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center font-bold">{cartCount ?? 0}</span>
+              </Link>
 
               <div className="shrink-0">
               {user ? (
