@@ -89,24 +89,30 @@ const Header = () => {
               className="relative z-50 flex items-start justify-center overflow-visible"
               style={{ transform: `translateY(${BADGE_DIP}px)` }}
             >
+            {/* CENTER: hump-shaped logo formed by navy bar curving upward */}
+            <div className="relative z-50 flex items-end justify-center self-end overflow-visible" style={{ height: BUMP_H }}>
               <Link
                 to="/"
                 aria-label="IKON Mart — Home"
-                className="flex items-center justify-center bg-primary shrink-0"
-                style={{
-                  width: BADGE_W,
-                  height: BADGE_H,
-                  borderBottomLeftRadius: 12,
-                  borderBottomRightRadius: 12,
-                  borderTopLeftRadius: 4,
-                  borderTopRightRadius: 4,
-                  boxShadow: "0 6px 14px -6px rgba(0,0,0,0.25)",
-                }}
+                className="relative block"
+                style={{ width: SVG_W, height: BUMP_H, filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.18))" }}
               >
+                <svg
+                  viewBox={`0 0 ${SVG_W} ${BUMP_H}`}
+                  className="absolute inset-0 w-full h-full"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d={`M 0 ${BUMP_H} Q ${SHOULDER} ${BUMP_H} ${SHOULDER} ${BUMP_H - SHOULDER} V ${TOP_R} Q ${SHOORDER_PLACEHOLDER} 0 ${SHOULDER + TOP_R} 0 H ${SVG_W - SHOULDER - TOP_R} Q ${SVG_W - SHOULDER} 0 ${SVG_W - SHOULDER} ${TOP_R} V ${BUMP_H - SHOULDER} Q ${SVG_W - SHOULDER} ${BUMP_H} ${SVG_W} ${BUMP_H} Z`}
+                    fill="hsl(var(--primary))"
+                  />
+                </svg>
                 <img
                   src={ikonMartLogo}
                   alt="IKON Mart"
-                  className="block max-h-[32px] w-auto object-contain"
+                  className="absolute left-1/2 -translate-x-1/2 max-h-[28px] w-auto object-contain"
+                  style={{ top: 6 }}
                 />
               </Link>
             </div>
