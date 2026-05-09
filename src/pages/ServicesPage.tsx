@@ -90,10 +90,13 @@ export default function ServicesPage() {
       {/* Trust strip */}
       <section className="border-b border-border bg-muted/40">
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
-          Over 100 laundries delivered · Strand Hotel · Kempinski Naypyidaw ·
-          Novotel Max — main kitchens designed and installed by IKON.
+          Over a hundred turnkey installations across Myanmar's hospitality
+          sector — design, equipment, commissioning, and after-sales support.
         </div>
       </section>
+
+      {/* Featured client logos */}
+      <ClientLogos />
 
       {/* Services grid */}
       <section className="container mx-auto px-4 py-14">
