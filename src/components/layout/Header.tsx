@@ -26,10 +26,13 @@ const UTILITY_LINKS = [
   { label: "CONTACT US", to: "/contact" },
 ] as const;
 
-/** Compact tab-style badge: slim, flat, navy, dipping into the category bar. */
+/** Compact tab-style badge: same visual height as search button (36px),
+ *  with generously rounded top corners that flow smoothly into the navy
+ *  category bar. The bottom of the badge is hidden inside the navy bar so
+ *  the badge reads as one continuous shape with the bar. */
 const BADGE_W = 132;
-const BADGE_H = 44;
-const BADGE_DIP = 16;
+const BADGE_H = 36;
+const BADGE_DIP = 18;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -89,12 +92,13 @@ const Header = () => {
                 className="flex items-center justify-center bg-primary shrink-0"
                 style={{
                   width: BADGE_W,
-                  height: BADGE_H,
-                  borderBottomLeftRadius: 12,
-                  borderBottomRightRadius: 12,
-                  borderTopLeftRadius: 4,
-                  borderTopRightRadius: 4,
-                  boxShadow: "0 6px 14px -6px rgba(0,0,0,0.25)",
+                  height: BADGE_H + BADGE_DIP,
+                  borderTopLeftRadius: 18,
+                  borderTopRightRadius: 18,
+                  borderBottomLeftRadius: 0,
+                  borderBottomRightRadius: 0,
+                  paddingBottom: BADGE_DIP,
+                  boxShadow: "0 6px 14px -8px rgba(0,0,0,0.25)",
                 }}
               >
                 <img
