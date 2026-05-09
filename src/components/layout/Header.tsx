@@ -28,8 +28,8 @@ const UTILITY_LINKS = [
 
 /** Compact tab-style badge: slim, flat, navy, dipping into the category bar. */
 const BADGE_W = 132;
-const BADGE_H = 36;
-const BADGE_DIP = 14;
+const BADGE_H = 44;
+const BADGE_DIP = 16;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -90,10 +90,10 @@ const Header = () => {
                 style={{
                   width: BADGE_W,
                   height: BADGE_H,
-                  borderBottomLeftRadius: 18,
-                  borderBottomRightRadius: 18,
-                  borderTopLeftRadius: 6,
-                  borderTopRightRadius: 6,
+                  borderBottomLeftRadius: 12,
+                  borderBottomRightRadius: 12,
+                  borderTopLeftRadius: 4,
+                  borderTopRightRadius: 4,
                   boxShadow: "0 6px 14px -6px rgba(0,0,0,0.25)",
                 }}
               >
