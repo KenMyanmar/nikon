@@ -47,6 +47,7 @@ const Index = () => {
       <QuoteCTA />
       <FlashDealsRow />
       <TrustBadgeBar />
+      <ClientLogos />
       <HoReCaResources />
     </MainLayout>
   );
