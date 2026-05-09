@@ -84,11 +84,6 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* CENTER: tab-style logo badge dipping into navy bar */}
-            <div
-              className="relative z-50 flex items-start justify-center overflow-visible"
-              style={{ transform: `translateY(${BADGE_DIP}px)` }}
-            >
             {/* CENTER: hump-shaped logo formed by navy bar curving upward */}
             <div className="relative z-50 flex items-end justify-center self-end overflow-visible" style={{ height: BUMP_H }}>
               <Link
@@ -104,7 +99,7 @@ const Header = () => {
                   aria-hidden="true"
                 >
                   <path
-                    d={`M 0 ${BUMP_H} Q ${SHOULDER} ${BUMP_H} ${SHOULDER} ${BUMP_H - SHOULDER} V ${TOP_R} Q ${SHOORDER_PLACEHOLDER} 0 ${SHOULDER + TOP_R} 0 H ${SVG_W - SHOULDER - TOP_R} Q ${SVG_W - SHOULDER} 0 ${SVG_W - SHOULDER} ${TOP_R} V ${BUMP_H - SHOULDER} Q ${SVG_W - SHOULDER} ${BUMP_H} ${SVG_W} ${BUMP_H} Z`}
+                    d={`M 0 ${BUMP_H} Q ${SHOULDER} ${BUMP_H} ${SHOULDER} ${BUMP_H - SHOULDER} V ${TOP_R} Q ${SHOULDER} 0 ${SHOULDER + TOP_R} 0 H ${SVG_W - SHOULDER - TOP_R} Q ${SVG_W - SHOULDER} 0 ${SVG_W - SHOULDER} ${TOP_R} V ${BUMP_H - SHOULDER} Q ${SVG_W - SHOULDER} ${BUMP_H} ${SVG_W} ${BUMP_H} Z`}
                     fill="hsl(var(--primary))"
                   />
                 </svg>
