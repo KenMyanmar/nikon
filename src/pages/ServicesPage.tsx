@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Ear, PenRuler, Wrench } from "lucide-react";
+import { ArrowRight, Ear, Ruler, Wrench } from "lucide-react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,7 +30,7 @@ const STEPS = [
       "We listen carefully to what your goals are and tailor the advice and products we recommend using decades of experience.",
   },
   {
-    icon: PenRuler,
+    icon: Ruler,
     title: "Design & Source",
     body:
       "Our well-trained staff designs the layout and sources the right equipment, building it around how your business actually runs.",
