@@ -189,38 +189,6 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Notable projects */}
-      <section className="container mx-auto px-4 py-14">
-        <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">
-              Notable Projects
-            </h2>
-            <p className="mt-2 text-muted-foreground">
-              Marquee installations across Myanmar's hospitality sector.
-            </p>
-          </div>
-          <Link
-            to="/about#projects"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            See all projects →
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {PROJECTS.map((p) => (
-            <Card key={p}>
-              <CardContent className="p-6">
-                <p className="text-base font-semibold text-foreground">{p}</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Designed and installed by IKON.
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
       {/* CTA banner */}
       <section className="bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 py-14 text-center max-w-3xl">
