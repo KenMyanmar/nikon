@@ -51,7 +51,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 bg-card shadow-nav">
       {/* Announcement Bar — mobile only on Version A.4 */}
-      <div className="lg:hidden bg-secondary text-foreground text-center py-2 text-sm font-medium">
+      <div className="md:hidden bg-secondary text-foreground text-center py-2 text-sm font-medium">
         Free delivery on orders over MMK 500,000 in Yangon Metro
         <Link to="/flash-deals" className="underline ml-2 text-primary">Shop Deals →</Link>
       </div>

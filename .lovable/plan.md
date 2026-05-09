@@ -1,60 +1,32 @@
-## Diagnosis — why it doesn't look like the reference
+## Why preview differs from your real browser
 
-I compared the live render side-by-side with the reference and the gap is **not** about colors, sizes, or shape detail. It's a **layout topology mistake**.
+The recent header rebuilds gated the desktop layout behind Tailwind's `lg` breakpoint = **1024px**. Your Lovable preview pane is **866px wide**, which is below 1024px, so it falls into the **mobile** branch. Your laptop browser is ~1920px, so it renders the **desktop** branch. Same code, two different layouts based on width.
 
-### What the reference actually shows
+Earlier versions used `md` (768px), which is why preview used to match your browser at this width.
 
-```text
-[ HOME  ABOUT US  E-SHOP  OUR SERVICES  ARTICLES  CONTACT US  OUR PRODUCTS   IKON-BADGE   ♡ 🛒 🔔   [ search ]   👤 ] ← single white row
-[ Bedroom Supplies  Buffet & Banquet  F&B Solutions  Food Services …                                                ] ← navy bar (uninterrupted)
-```
+## Fix
 
-- The IKON badge **lives inside the white row**, sitting between the text links and the icons — it is **not** centered on the page.
-- The badge's curved skirt **dips ~10px into the navy bar**, but the navy bar's category labels start to the **right** of the badge. The badge does not float over the middle of the category bar.
-- Total = a single tall horizontal band of content, with the navy bar starting clean below it.
+Switch the desktop/mobile gate from `lg:` → `md:` in two files. After this, any viewport ≥768px (including the 866px preview pane) shows the full desktop header you see on `ucogold.com`. Real phones (<768px) still get the mobile header.
 
-### What we currently render
+### File: `src/components/layout/Header.tsx`
 
-- Badge is `position: absolute; left: 50%; -translate-x-1/2` on the **navy bar**, sitting on the seam. That centers it on the **viewport**, where it lands on top of "Bedroom Supplies / Buffet & Banquet" and visually breaks the category bar.
-- Utility links are flush-left, icons + search are flush-right, and the badge floats in the dead center over the navy bar — so the white row looks empty in the middle and the navy bar looks chopped in half.
+- Line 54 — announcement bar: `lg:hidden` → `md:hidden`
+- Line 60 — desktop utility row wrapper: `hidden lg:block` → `hidden md:block`
+- Line 179 — desktop category bar wrapper: `hidden lg:block` → `hidden md:block`
+- Line 184 — mobile header wrapper: `lg:hidden` → `md:hidden`
 
-That's why every iteration so far has felt "close but wrong" — we've been polishing a layout that doesn't match the reference's structure.
+### File: `src/components/layout/MegaMenu.tsx`
 
-### The fix (Version A.5 — layout topology correction)
+- Line 209 — desktop mega nav: `hidden lg:block` → `hidden md:block`
 
-Single file: `src/components/layout/Header.tsx`.
+### Verification after change
 
-1. **Stop centering the badge on the viewport.** Remove the absolute-positioned badge over the navy bar.
-2. **Move the badge into the utility row's flex flow**, between the left links group and the right action group:
-   ```text
-   <utility-row flex items-center>
-     [ HOME … CONTACT US ]   ← left group
-     [ IKON-BADGE ]          ← inline, NOT absolute, NOT centered
-     <ml-auto />             ← pushes the right group to the edge
-     [ ♡ 🛒 search 👤 ]      ← right group
-   </utility-row>
-   ```
-   Specifically: the left links group keeps its current position; the badge becomes the next sibling with `mx-6` (or sits inside an inline-block); the right action group keeps `ml-auto`. This guarantees the badge sits **after the links** and **before the icons**, exactly like the reference.
-3. **Allow the skirt to overflow into the navy bar** without breaking flow:
-   - Utility row keeps `h-[48px]` but the badge wrapper is taller (`h-[64px]`) and uses `-mb-4` (or `translate-y-2`) to dip below the row.
-   - The parent `header` already stacks utility row → navy bar, so the overflow naturally lands on top of the navy bar's left edge area — but because the badge is now positioned *within* the white-row content flow (after the left links), it lands on the **left portion** of the navy bar, not the center. That matches the reference.
-4. **Tighten the utility row** so the 4 approved links sit close together at the left (ref shows 7 links tightly packed; we have 4, so we use slightly tighter `gap-5` and let the badge follow immediately after to fill the visual weight the missing 3 links would have provided).
-5. **Navy bar stays untouched** — no absolute overlay, no cutout, categories render uninterrupted from the left edge. This also fixes the bug where "Bedroom Supplies" was being hidden behind the badge.
-6. **Keep all current Version A.4 styling** (SVG shape, sizes, search unit, icons, hidden announcement on desktop) — only the badge's positioning model changes.
+- Preview at 866px should show: utility links (HOME · ABOUT US · ARTICLES · CONTACT US) on the left, navy logo tab in center, search + icons on the right, navy category bar below — identical to ucogold.com.
+- A real phone (~390px) should still show the hamburger + small logo + mobile search row (mobile branch unchanged in structure).
+- Tablet range 768–1023px will now use the desktop header. The mega nav has many categories (Tableware, Kitchen Utensils, etc.) — at 866px they may wrap or feel tight. If that's an issue we'll do a tighter spacing pass as a follow-up, but the layout will be the correct desktop one.
 
-### What this does NOT change
+## Out of scope
 
-- Menu names, order, routes — locked.
-- Category names, order, links, hover behavior — locked. The navy bar is now visually cleaner because we stop overlapping it.
-- Mobile structure — untouched.
-- Search behavior — untouched.
-
-### Verification
-
-- Screenshot at 1366×768, header + ~80px hero.
-- Confirm: badge sits left-of-center, categories visible end-to-end with no occlusion, single visual band reads top-to-bottom like the reference.
-- Confirm `MegaMenu.tsx` untouched in this pass.
-
-### Honest note
-
-After this topology fix, the remaining gap to the reference will be cosmetic only (exact badge silhouette curvature, tracking on the wordmark). Those are quick polish iterations once the structure is right.
+- No changes to header structure, menu labels, menu order, category labels/order, routes, or business logic.
+- No changes to the mobile header internals.
+- No design token changes.
