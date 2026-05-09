@@ -56,8 +56,8 @@ const Header = () => {
         <Link to="/flash-deals" className="underline ml-2 text-primary">Shop Deals →</Link>
       </div>
 
-      {/* ─── Desktop utility row (lg+) ──────────────────────────────── */}
-      <div className="hidden lg:block relative bg-card border-b border-border z-20 overflow-visible">
+      {/* ─── Desktop utility row (md+) ──────────────────────────────── */}
+      <div className="hidden md:block relative bg-card border-b border-border z-20 overflow-visible">
         <div className="container mx-auto px-6 relative">
           <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-6 h-[60px] overflow-visible">
             {/* LEFT: utility links */}
