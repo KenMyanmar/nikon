@@ -8,6 +8,7 @@ import FlashDealsRow from "@/components/home/FlashDealsRow";
 import BestSellers from "@/components/home/BestSellers";
 import TrustBadgeBar from "@/components/home/TrustBadgeBar";
 import HoReCaResources from "@/components/home/HoReCaResources";
+import ClientLogos from "@/components/home/ClientLogos";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBanners } from "@/hooks/useBanners";
 
