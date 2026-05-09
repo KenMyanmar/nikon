@@ -206,7 +206,7 @@ export const DesktopMegaNav = ({ centerGapWidth = 0 }: { centerGapWidth?: number
   );
 
   return (
-    <nav className="hidden lg:block bg-primary relative">
+    <nav className="hidden md:block bg-primary relative">
       <div className="container mx-auto px-3">
         <div className="flex items-stretch h-[32px]">
           {centerGapWidth > 0 ? (
