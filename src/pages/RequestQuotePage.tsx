@@ -337,6 +337,14 @@ const RequestQuotePage = () => {
     }
   }, [singleProduct]);
 
+  // Seed notes from service prefill
+  useEffect(() => {
+    if (service && !notes.trim()) {
+      setNotes(`I'd like a quote for: ${service.title}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [service]);
+
   const addRow = () => {
     if (items.length >= MAX_ITEMS) {
       toast({ title: "Limit reached", description: `Maximum ${MAX_ITEMS} items per quote.`, variant: "destructive" });
