@@ -22,6 +22,7 @@ import ikonMartLogo from "@/assets/ikon-mart-logo.png";
 const UTILITY_LINKS = [
   { label: "HOME", to: "/" },
   { label: "ABOUT US", to: "/about" },
+  { label: "SERVICES", to: "/services" },
   { label: "ARTICLES", to: "/articles" },
   { label: "CONTACT US", to: "/contact" },
 ] as const;

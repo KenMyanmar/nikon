@@ -255,6 +255,7 @@ export const MobileMegaNav = ({ onClose }: { onClose: () => void }) => {
   const PAGES = [
     { label: "HOME", to: "/" },
     { label: "ABOUT US", to: "/about" },
+    { label: "SERVICES", to: "/services" },
     { label: "ARTICLES", to: "/articles" },
     { label: "CONTACT US", to: "/contact" },
   ];

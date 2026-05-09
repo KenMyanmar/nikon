@@ -10,6 +10,7 @@ import {
 
 const ABOUT_LINKS = [
   { label: "Our Story", href: "/about" },
+  { label: "Our Services", href: "/services" },
   { label: "Why IKON", href: "/about#why-ikon" },
   { label: "Our Brands", href: "/brands" },
   { label: "Our Projects", href: "/about#projects" },
