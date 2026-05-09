@@ -210,7 +210,7 @@ const RequestQuotePage = () => {
         .eq("slug", serviceSlug as string)
         .eq("is_active", true)
         .maybeSingle();
-      return data as { slug: string; title: string } | null;
+      return (data as unknown as { slug: string; title: string } | null);
     },
   });
   const [bannerDismissed, setBannerDismissed] = useState(false);
