@@ -515,6 +515,23 @@ const RequestQuotePage = () => {
           </div>
         ) : (
           <div className="space-y-8">
+            {service && !bannerDismissed && (
+              <Alert className="relative border-primary/30 bg-primary/5">
+                <ClipboardList className="h-4 w-4" />
+                <AlertTitle>Pre-filled for "{service.title}"</AlertTitle>
+                <AlertDescription>
+                  Add your details below — we'll respond within 24 hours.
+                </AlertDescription>
+                <button
+                  type="button"
+                  onClick={() => setBannerDismissed(true)}
+                  aria-label="Dismiss"
+                  className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </Alert>
+            )}
             {/* Section 1: Contact Information */}
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-4">Contact Information</h2>
