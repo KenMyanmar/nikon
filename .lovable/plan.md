@@ -1,44 +1,54 @@
-# Services Page + Nav Wiring
+## Goal
+When a visitor lands on `/request-quote?service=<slug>` from a Services card, pre-fill the form context (notes seed + tracking source) and show a friendly banner. Silent fallback if slug doesn't match an active service.
 
-Migration 25 is already applied — the `services` table exists with all required columns (slug, title, short_description, long_description, icon, image_url, cta_label, cta_query, sort_order, is_featured, is_active). This is a frontend-only change.
+## Changes
 
-## Part A — Navigation wiring
+### 1. `src/pages/RequestQuotePage.tsx` (modify)
 
-**`src/components/layout/Header.tsx`** — `UTILITY_LINKS` (line 22): insert `{ label: "SERVICES", to: "/services" }` between ABOUT US and ARTICLES. Active highlight is already handled by the existing `NavLink` `isActive` styling.
+- Read `service` slug from existing `useSearchParams()` (already imported, line 194).
+- Add a `useQuery` (`["service-by-slug", slug]`, `enabled: !!slug`, 5-min staleTime) that selects `slug, title` from `services` where `is_active=true`, using `.maybeSingle()`. No error toast on miss — `data` is just `null`.
+- Add a `useEffect` keyed on the fetched service that:
+  - Seeds the existing `notes` state (the "Additional Notes" textarea — this is the form's message field) with `"I'd like a quote for: {title}"` only if `notes` is currently empty/whitespace. Don't clobber user input.
+- Add local state `bannerDismissed` (default `false`).
+- On submit (line ~428), replace the hardcoded `source: "e_mall"` with:
+  - `source: service ? \`services-page:${service.slug}\` : "e_mall"`
+  - Keeps existing default behavior for all non-service entry paths.
 
-**`src/components/layout/MegaMenu.tsx`** — `PAGES` array (line 255) in `MobileMegaNav`: insert the same Services entry between ABOUT US and ARTICLES.
+### 2. Banner (inline, no new file)
 
-**`src/components/layout/Footer.tsx`** — `ABOUT_LINKS` (line 11): insert `{ label: "Our Services", href: "/services" }` after "Our Story". The existing desktop column (line 180) and mobile accordion (line 268) both render `ABOUT_LINKS`, so one edit covers both.
+Render at the top of the form body (just above "Contact Information", inside the `space-y-8` container) — only when `service && !bannerDismissed`:
 
-## Part B — `/services` page
+```tsx
+<Alert className="relative border-primary/30 bg-primary/5">
+  <ClipboardList className="h-4 w-4" />
+  <AlertTitle>Pre-filled for "{service.title}"</AlertTitle>
+  <AlertDescription>
+    Add your details below — we'll respond within 24 hours.
+  </AlertDescription>
+  <button
+    type="button"
+    onClick={() => setBannerDismissed(true)}
+    aria-label="Dismiss"
+    className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
+  >
+    <X className="h-4 w-4" />
+  </button>
+</Alert>
+```
 
-**Files to create**
-- `src/pages/ServicesPage.tsx` — page shell, hero, trust strip, services grid, "How We Deliver" 3-step, notable projects strip, bottom CTA banner. Static copy from Part C of the brief.
-- `src/components/services/ServiceCard.tsx` — card per the spec: image (or icon fallback via dynamic Lucide lookup), title, short description, CTA button linking to `/request-quote?{cta_query}` (or plain `/request-quote`).
-- `src/hooks/useServices.ts` — React Query hook hitting `services` with `is_active=true`, ordered by `is_featured DESC, sort_order ASC`. 5-minute staleTime per project caching policy.
+Uses existing shadcn `Alert/AlertTitle/AlertDescription` (`@/components/ui/alert`), plus `ClipboardList` and `X` from `lucide-react` (X already imported).
 
-**Router** — `src/App.tsx`: add `<Route path="/services" element={<ServicesPage />} />` above the catch-all, alongside the existing `/about`, `/articles`, `/contact` routes.
-
-**States**
-- Loading: 3 skeleton cards.
-- Empty (launch state, all rows `is_active=false`): hero, trust strip, "How We Deliver", projects strip, and bottom CTA still render. Grid section shows a "Services coming soon — get in touch" block with a Contact link.
-- Partial (1–2 rows): render naturally in the grid; no placeholder padding.
-
-**Long description rendering contract** (Part B.1): if/when `long_description` is rendered, use `<div className="whitespace-pre-wrap">{value}</div>`. Never `dangerouslySetInnerHTML`. v1 doesn't show long_description on the index page, but the rule is encoded in `ServiceCard` so future expanded views inherit it.
-
-**SEO** — Set `<title>`, `<meta name="description">`, `og:title`, `og:description` per spec via direct `document.title` / `<meta>` updates in a `useEffect` (matching the pattern used elsewhere in the project — no Helmet dependency added).
-
-**Design tokens** — All colors via semantic tokens (`bg-primary`, `text-foreground`, `bg-muted`, `border-border`, etc.). Inter / Noto Sans Myanmar inherited. No new hexes.
+Spec mentions an optional `src/components/quote/PrefillBanner.tsx`. Since usage is single-site and ~15 lines, keep inline — no new file.
 
 ## Acceptance verification
-- Services link appears in desktop top nav (between About Us and Articles), mobile drawer Pages section, and Footer "About IKON" column.
-- `/services` renders without console errors when logged out and when the table has 0 active rows.
-- Toggling `is_active` on a row reflects within React Query staleTime (5 min) or on refresh; featured rows render first; ties broken by `sort_order` ASC.
-- Each card CTA navigates to `/request-quote?service=<slug>` when `cta_query` is set; otherwise to `/request-quote`.
-- Responsive at 360 / 768 / 1280 (1-col / 2-col / 3-col grid).
+
+- `/request-quote?service=laundry-design-installation` → banner with title "Laundry Design & Installation"; notes textarea seeded with `"I'd like a quote for: Laundry Design & Installation"`; submit writes `source="services-page:laundry-design-installation"`.
+- `/request-quote?service=does-not-exist` → `service` is `null`; no banner, no seed, no error; `source` stays `"e_mall"`.
+- `/request-quote` (no param) → unchanged behavior; query disabled; `source="e_mall"`.
+- Existing `from=cart` and `product=...` entry paths unaffected (they don't set `service`).
 
 ## Out of scope
-- No DB migrations (Migration 25 already applied; verified columns present).
-- No `/services/:slug` detail page, no bilingual toggle, no region filters, no lead-magnet capture.
-- No CRM / admin editor changes.
-- No header structure changes beyond inserting the link.
+- No DB changes (`source` column already exists).
+- No analytics events.
+- No new files / no `PrefillBanner.tsx`.
+- No changes to ServicesPage CTA wiring (already emits `?service=<slug>`).

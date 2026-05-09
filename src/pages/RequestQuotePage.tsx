@@ -7,8 +7,9 @@ import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
 import {
   Trash2, Plus, Send, Loader2, FileText, Upload, X,
-  CheckCircle2, ArrowRight, Search,
+  CheckCircle2, ArrowRight, Search, ClipboardList,
 } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface QuoteItem {
   product_id: string | null;
@@ -195,6 +196,24 @@ const RequestQuotePage = () => {
   const queryClient = useQueryClient();
   const fromCart = searchParams.get("from") === "cart";
   const productId = searchParams.get("product");
+  const serviceSlug = searchParams.get("service");
+
+  // Lookup service by slug for prefill banner
+  const { data: service } = useQuery({
+    queryKey: ["service-by-slug", serviceSlug],
+    enabled: !!serviceSlug,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("services" as any)
+        .select("slug, title")
+        .eq("slug", serviceSlug as string)
+        .eq("is_active", true)
+        .maybeSingle();
+      return (data as unknown as { slug: string; title: string } | null);
+    },
+  });
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   // Contact info
   const [companyName, setCompanyName] = useState("");
@@ -318,6 +337,14 @@ const RequestQuotePage = () => {
     }
   }, [singleProduct]);
 
+  // Seed notes from service prefill
+  useEffect(() => {
+    if (service && !notes.trim()) {
+      setNotes(`I'd like a quote for: ${service.title}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [service]);
+
   const addRow = () => {
     if (items.length >= MAX_ITEMS) {
       toast({ title: "Limit reached", description: `Maximum ${MAX_ITEMS} items per quote.`, variant: "destructive" });
@@ -425,7 +452,7 @@ const RequestQuotePage = () => {
           contact_person: contactPerson || null,
           contact_email: contactEmail || null,
           contact_phone: contactPhone || null,
-          source: "e_mall",
+          source: service ? `services-page:${service.slug}` : "e_mall",
           attachments: uploadedFiles.length > 0
             ? uploadedFiles.map((f) => ({ name: f.name, size: f.size, url: f.url })) as any
             : [],
@@ -488,6 +515,23 @@ const RequestQuotePage = () => {
           </div>
         ) : (
           <div className="space-y-8">
+            {service && !bannerDismissed && (
+              <Alert className="relative border-primary/30 bg-primary/5">
+                <ClipboardList className="h-4 w-4" />
+                <AlertTitle>Pre-filled for "{service.title}"</AlertTitle>
+                <AlertDescription>
+                  Add your details below — we'll respond within 24 hours.
+                </AlertDescription>
+                <button
+                  type="button"
+                  onClick={() => setBannerDismissed(true)}
+                  aria-label="Dismiss"
+                  className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </Alert>
+            )}
             {/* Section 1: Contact Information */}
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-4">Contact Information</h2>
