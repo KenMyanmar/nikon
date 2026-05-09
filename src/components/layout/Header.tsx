@@ -92,12 +92,13 @@ const Header = () => {
                 className="flex items-center justify-center bg-primary shrink-0"
                 style={{
                   width: BADGE_W,
-                  height: BADGE_H,
-                  borderBottomLeftRadius: 12,
-                  borderBottomRightRadius: 12,
-                  borderTopLeftRadius: 4,
-                  borderTopRightRadius: 4,
-                  boxShadow: "0 6px 14px -6px rgba(0,0,0,0.25)",
+                  height: BADGE_H + BADGE_DIP,
+                  borderTopLeftRadius: 18,
+                  borderTopRightRadius: 18,
+                  borderBottomLeftRadius: 0,
+                  borderBottomRightRadius: 0,
+                  paddingBottom: BADGE_DIP,
+                  boxShadow: "0 6px 14px -8px rgba(0,0,0,0.25)",
                 }}
               >
                 <img
