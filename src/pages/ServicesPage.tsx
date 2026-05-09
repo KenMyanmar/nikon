@@ -44,7 +44,7 @@ const STEPS = [
   },
 ];
 
-const PROJECTS = ["Strand Hotel", "Kempinski Naypyidaw", "Novotel Max"];
+
 
 export default function ServicesPage() {
   const { data: services, isLoading } = useServices();
