@@ -7,8 +7,9 @@ import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "@/hooks/use-toast";
 import {
   Trash2, Plus, Send, Loader2, FileText, Upload, X,
-  CheckCircle2, ArrowRight, Search,
+  CheckCircle2, ArrowRight, Search, ClipboardList,
 } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface QuoteItem {
   product_id: string | null;
