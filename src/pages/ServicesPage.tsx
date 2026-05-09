@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useServices } from "@/hooks/useServices";
 import ServiceCard from "@/components/services/ServiceCard";
+import ClientLogos from "@/components/home/ClientLogos";
 
 const TITLE = "Our Services — IKON Mart";
 const DESC =
