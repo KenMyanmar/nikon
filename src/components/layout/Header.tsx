@@ -28,7 +28,7 @@ const UTILITY_LINKS = [
 
 /** Compact tab-style badge: slim, flat, navy, dipping into the category bar. */
 const BADGE_W = 132;
-const BADGE_H = 44;
+const BADGE_H = 36;
 const BADGE_DIP = 16;
 
 const Header = () => {
