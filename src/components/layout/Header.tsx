@@ -26,10 +26,16 @@ const UTILITY_LINKS = [
   { label: "CONTACT US", to: "/contact" },
 ] as const;
 
-/** Compact tab-style badge: slim, flat, navy, dipping into the category bar. */
-const BADGE_W = 132;
-const BADGE_H = 44;
-const BADGE_DIP = 16;
+/** Navy bar curves up into a hump that holds the logo.
+ *  BADGE_W = flat top width of the hump.
+ *  SHOULDER = radius of the concave curve where the hump meets the bar.
+ *  BUMP_H = total height of the hump (top of hump → top of navy bar).
+ *  TOP_R = small radius on the hump's top corners. */
+const BADGE_W = 140;
+const SHOULDER = 16;
+const BUMP_H = 44;
+const TOP_R = 6;
+const SVG_W = BADGE_W + SHOULDER * 2;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
