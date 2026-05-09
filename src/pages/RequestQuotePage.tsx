@@ -452,7 +452,7 @@ const RequestQuotePage = () => {
           contact_person: contactPerson || null,
           contact_email: contactEmail || null,
           contact_phone: contactPhone || null,
-          source: "e_mall",
+          source: service ? `services-page:${service.slug}` : "e_mall",
           attachments: uploadedFiles.length > 0
             ? uploadedFiles.map((f) => ({ name: f.name, size: f.size, url: f.url })) as any
             : [],
