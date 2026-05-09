@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useServices } from "@/hooks/useServices";
 import ServiceCard from "@/components/services/ServiceCard";
+import ClientLogos from "@/components/home/ClientLogos";
 
 const TITLE = "Our Services — IKON Mart";
 const DESC =
@@ -43,7 +44,7 @@ const STEPS = [
   },
 ];
 
-const PROJECTS = ["Strand Hotel", "Kempinski Naypyidaw", "Novotel Max"];
+
 
 export default function ServicesPage() {
   const { data: services, isLoading } = useServices();
@@ -89,10 +90,13 @@ export default function ServicesPage() {
       {/* Trust strip */}
       <section className="border-b border-border bg-muted/40">
         <div className="container mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
-          Over 100 laundries delivered · Strand Hotel · Kempinski Naypyidaw ·
-          Novotel Max — main kitchens designed and installed by IKON.
+          Over a hundred turnkey installations across Myanmar's hospitality
+          sector — design, equipment, commissioning, and after-sales support.
         </div>
       </section>
+
+      {/* Featured client logos */}
+      <ClientLogos />
 
       {/* Services grid */}
       <section className="container mx-auto px-4 py-14">
@@ -182,38 +186,6 @@ export default function ServicesPage() {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* Notable projects */}
-      <section className="container mx-auto px-4 py-14">
-        <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">
-              Notable Projects
-            </h2>
-            <p className="mt-2 text-muted-foreground">
-              Marquee installations across Myanmar's hospitality sector.
-            </p>
-          </div>
-          <Link
-            to="/about#projects"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            See all projects →
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {PROJECTS.map((p) => (
-            <Card key={p}>
-              <CardContent className="p-6">
-                <p className="text-base font-semibold text-foreground">{p}</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Designed and installed by IKON.
-                </p>
-              </CardContent>
-            </Card>
-          ))}
         </div>
       </section>
 
