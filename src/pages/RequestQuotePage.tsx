@@ -196,6 +196,24 @@ const RequestQuotePage = () => {
   const queryClient = useQueryClient();
   const fromCart = searchParams.get("from") === "cart";
   const productId = searchParams.get("product");
+  const serviceSlug = searchParams.get("service");
+
+  // Lookup service by slug for prefill banner
+  const { data: service } = useQuery({
+    queryKey: ["service-by-slug", serviceSlug],
+    enabled: !!serviceSlug,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("services" as any)
+        .select("slug, title")
+        .eq("slug", serviceSlug as string)
+        .eq("is_active", true)
+        .maybeSingle();
+      return data as { slug: string; title: string } | null;
+    },
+  });
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   // Contact info
   const [companyName, setCompanyName] = useState("");
