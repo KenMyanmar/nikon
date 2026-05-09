@@ -176,12 +176,12 @@ const Header = () => {
       </div>
 
       {/* ─── Desktop category bar ────────────────────────────────────── */}
-      <div className="hidden lg:block relative z-10">
+      <div className="hidden md:block relative z-10">
         <DesktopMegaNav centerGapWidth={BADGE_W + 24} />
       </div>
 
-      {/* ─── Mobile header (<lg) ────────────────────────────────────── */}
-      <div className="lg:hidden">
+      {/* ─── Mobile header (<md) ────────────────────────────────────── */}
+      <div className="md:hidden">
         <div className="container mx-auto px-4 py-3 flex items-center gap-3">
           <button
             aria-label="Menu"
