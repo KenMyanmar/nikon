@@ -51,13 +51,13 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 bg-card shadow-nav">
       {/* Announcement Bar — mobile only on Version A.4 */}
-      <div className="lg:hidden bg-secondary text-foreground text-center py-2 text-sm font-medium">
+      <div className="md:hidden bg-secondary text-foreground text-center py-2 text-sm font-medium">
         Free delivery on orders over MMK 500,000 in Yangon Metro
         <Link to="/flash-deals" className="underline ml-2 text-primary">Shop Deals →</Link>
       </div>
 
-      {/* ─── Desktop utility row (lg+) ──────────────────────────────── */}
-      <div className="hidden lg:block relative bg-card border-b border-border z-20 overflow-visible">
+      {/* ─── Desktop utility row (md+) ──────────────────────────────── */}
+      <div className="hidden md:block relative bg-card border-b border-border z-20 overflow-visible">
         <div className="container mx-auto px-6 relative">
           <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-6 h-[60px] overflow-visible">
             {/* LEFT: utility links */}
@@ -176,12 +176,12 @@ const Header = () => {
       </div>
 
       {/* ─── Desktop category bar ────────────────────────────────────── */}
-      <div className="hidden lg:block relative z-10">
+      <div className="hidden md:block relative z-10">
         <DesktopMegaNav centerGapWidth={BADGE_W + 24} />
       </div>
 
-      {/* ─── Mobile header (<lg) ────────────────────────────────────── */}
-      <div className="lg:hidden">
+      {/* ─── Mobile header (<md) ────────────────────────────────────── */}
+      <div className="md:hidden">
         <div className="container mx-auto px-4 py-3 flex items-center gap-3">
           <button
             aria-label="Menu"
