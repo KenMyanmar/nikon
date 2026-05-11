@@ -42,10 +42,10 @@ const Index = () => {
     <MainLayout>
       <HeroBannerSection />
       <CategoryQuickNav />
+      <FlashDealsRow />
       <BestSellers />
       <ShopByBusinessType />
       <QuoteCTA />
-      <FlashDealsRow />
       <TrustBadgeBar />
       <ClientLogos />
       <HoReCaResources />
