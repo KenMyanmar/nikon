@@ -19,10 +19,11 @@ const BrandPage = () => {
   const { data: brand, isLoading: brandLoading } = useQuery({
     queryKey: ["brand", slug],
     queryFn: async () => {
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug!);
       const { data, error } = await supabase
         .from("brands")
         .select("*")
-        .eq("slug", slug!)
+        .eq(isUUID ? "id" : "slug", slug!)
         .single();
       if (error) throw error;
       return data;
@@ -31,17 +32,17 @@ const BrandPage = () => {
   });
 
   const { data: products = [], isLoading: productsLoading } = useQuery({
-    queryKey: ["brand-products", slug],
+    queryKey: ["brand-products", brand?.slug],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products_public")
         .select("*")
-        .eq("brand_slug", slug!)
+        .eq("brand_slug", brand!.slug)
         .eq("is_active", true);
       if (error) throw error;
       return data;
     },
-    enabled: !!slug,
+    enabled: !!brand?.slug,
   });
 
   const categories = useMemo(() => {
