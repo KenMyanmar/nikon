@@ -23,10 +23,11 @@ const CategoryPage = () => {
   const { data: category } = useQuery({
     queryKey: ["category-by-slug", slug],
     queryFn: async () => {
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug!);
       const { data, error } = await supabase
         .from("categories")
         .select("id, name, slug, depth, parent_id")
-        .eq("slug", slug!)
+        .eq(isUUID ? "id" : "slug", slug!)
         .eq("is_active", true)
         .single();
       if (error) throw error;
