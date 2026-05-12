@@ -9,19 +9,22 @@ import BestSellers from "@/components/home/BestSellers";
 import TrustBadgeBar from "@/components/home/TrustBadgeBar";
 import HoReCaResources from "@/components/home/HoReCaResources";
 import ClientLogos from "@/components/home/ClientLogos";
+import PromotionsBanner from "@/components/home/PromotionsBanner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBanners } from "@/hooks/useBanners";
 
 /**
  * Homepage section order:
  *   PromoBanner (in Header) → Header → Hero (carousel or static fallback)
- *   → Category Rail → Best Sellers → Flash Deals → TrustBadgeBar
- *   → Articles (HoReCaResources) → Footer
+ *   → CategoryQuickNav → FlashDealsRow → PromotionsBanner → BestSellers
+ *   → ShopByBusinessType → QuoteCTA → TrustBadgeBar → ClientLogos
+ *   → HoReCaResources → Footer
  *
  * Hero behavior: when CRM-managed `banners` (position='hero') exist and are
- * active, render the rotating HeroBannerCarousel. Otherwise (loading handled
- * with a skeleton; error/empty falls back) render the marathon's locked
- * static <Hero /> exactly as before — Prompt 1 spec preserved as fallback.
+ * active, render HeroBannerCarousel. Otherwise fall back to static <Hero />.
+ *
+ * PromotionsBanner: reads `promotions` table via usePromotions(). Returns
+ * null when no active promos exist — section hides cleanly.
  */
 function HeroBannerSection() {
   const { data: heroBanners, isLoading, error } = useBanners("hero");
@@ -43,6 +46,7 @@ const Index = () => {
       <HeroBannerSection />
       <CategoryQuickNav />
       <FlashDealsRow />
+      <PromotionsBanner />
       <BestSellers />
       <ShopByBusinessType />
       <QuoteCTA />
