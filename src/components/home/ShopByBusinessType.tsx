@@ -74,7 +74,7 @@ const BusinessTypeCard = ({ biz }: { biz: BusinessType }) => {
   if (isExternal) {
     return (
       <a
-        href={biz.link_url}
+        href={href}
         target="_blank"
         rel="noopener noreferrer"
         className={cardClasses}
