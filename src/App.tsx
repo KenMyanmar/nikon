@@ -31,6 +31,7 @@ import WholesaleSignup from "./pages/WholesaleSignup";
 import Products from "./pages/Products";
 import ServicesPage from "./pages/ServicesPage";
 import ServiceDetailPage from "./pages/ServiceDetailPage";
+import BusinessTypeLandingPage from "./pages/BusinessTypeLandingPage";
 import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 
@@ -72,6 +73,9 @@ const App = () => (
             <Route path="/products" element={<Products />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/services/:slug" element={<ServiceDetailPage />} />
+            {import.meta.env.VITE_FEATURE_BUSINESS_LANDING === "true" && (
+              <Route path="/business/:slug" element={<BusinessTypeLandingPage />} />
+            )}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

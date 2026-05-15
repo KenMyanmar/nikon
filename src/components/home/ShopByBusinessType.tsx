@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { slugify } from "@/lib/slugify";
 
 /**
  * Shop by Business Type — DB-driven navigation aid.
@@ -44,7 +45,10 @@ const SectionHeading = () => (
 const GRID_CLASSES = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4";
 
 const BusinessTypeCard = ({ biz }: { biz: BusinessType }) => {
-  const isExternal = /^https?:\/\//i.test(biz.link_url);
+  // Prefer staff-curated link_url; fall back to derived /business/{slug-of-label}
+  // so future rows without link_url still route correctly.
+  const href = biz.link_url?.trim() || `/business/${slugify(biz.label)}`;
+  const isExternal = /^https?:\/\//i.test(href);
   const cardClasses =
     "group relative block overflow-hidden rounded-xl aspect-[3/2] border border-border bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
 
@@ -70,7 +74,7 @@ const BusinessTypeCard = ({ biz }: { biz: BusinessType }) => {
   if (isExternal) {
     return (
       <a
-        href={biz.link_url}
+        href={href}
         target="_blank"
         rel="noopener noreferrer"
         className={cardClasses}
@@ -81,7 +85,7 @@ const BusinessTypeCard = ({ biz }: { biz: BusinessType }) => {
   }
 
   return (
-    <Link to={biz.link_url} className={cardClasses}>
+    <Link to={href} className={cardClasses}>
       {inner}
     </Link>
   );
