@@ -31,6 +31,7 @@ import WholesaleSignup from "./pages/WholesaleSignup";
 import Products from "./pages/Products";
 import ServicesPage from "./pages/ServicesPage";
 import ServiceDetailPage from "./pages/ServiceDetailPage";
+import BusinessTypeLandingPage from "./pages/BusinessTypeLandingPage";
 import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 
