@@ -85,7 +85,7 @@ const BusinessTypeCard = ({ biz }: { biz: BusinessType }) => {
   }
 
   return (
-    <Link to={biz.link_url} className={cardClasses}>
+    <Link to={href} className={cardClasses}>
       {inner}
     </Link>
   );
