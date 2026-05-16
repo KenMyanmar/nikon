@@ -691,18 +691,6 @@ const StepDelivery = ({
       )}
       <p className="text-xs text-muted-foreground mt-1">Estimated: {estimatedDays}</p>
 
-      {!codEligible && (
-        <div className="mt-3 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded p-2">
-          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-700">COD is not available for this delivery zone.</p>
-        </div>
-      )}
-      {codEligible && maxCod && total > maxCod && (
-        <div className="mt-3 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded p-2">
-          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-700">COD is limited to orders under {fmt(maxCod)} for this zone. Online payment recommended.</p>
-        </div>
-      )}
     </div>
 
     <button onClick={onContinue} className="w-full sm:w-auto bg-accent text-accent-foreground py-3 px-8 rounded-lg font-semibold hover:bg-accent/90 transition">
@@ -750,16 +738,11 @@ const StepPayment = ({
   hasUnpricedItems, allUnpriced, unpricedCount,
 }: PaymentProps) => {
   const [summaryOpen, setSummaryOpen] = useState(false);
-  const codDisabled = !codEligible || (maxCod !== null && total > maxCod);
 
   const methods = [
     {
       id: "dinger_prebuilt", label: "Pay with Dinger", icon: CreditCard, disabled: false,
       desc: "KBZ Pay, AYA Pay, Wave, Visa, Mastercard & more",
-    },
-    {
-      id: "cod", label: "Cash on Delivery", icon: Banknote, disabled: codDisabled,
-      desc: codDisabled ? "Not available for this order" : "Pay cash when your order arrives",
     },
   ];
 
@@ -869,26 +852,9 @@ const StepPayment = ({
                 </div>
               )}
 
-              {paymentMethod === "cod" && m.id === "cod" && !codDisabled && (
-                <div className="mt-2 ml-4 p-3 bg-card rounded-lg border border-border">
-                  <p className="text-sm text-muted-foreground">Payment collected by our delivery driver.</p>
-                </div>
-              )}
             </div>
           ))}
         </div>
-
-        {/* Place Order button for COD only */}
-        {paymentMethod === "cod" && (
-          <button
-            onClick={onPlaceOrder}
-            disabled={placing || allUnpriced}
-            className="w-full bg-accent text-accent-foreground py-3.5 rounded-lg font-bold text-base hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {placing ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-            {placing ? "Placing Order..." : `Place Order · ${fmt(total)}`}
-          </button>
-        )}
       </div>
 
       {/* Order Summary */}
