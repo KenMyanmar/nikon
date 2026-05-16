@@ -691,18 +691,6 @@ const StepDelivery = ({
       )}
       <p className="text-xs text-muted-foreground mt-1">Estimated: {estimatedDays}</p>
 
-      {!codEligible && (
-        <div className="mt-3 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded p-2">
-          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-700">COD is not available for this delivery zone.</p>
-        </div>
-      )}
-      {codEligible && maxCod && total > maxCod && (
-        <div className="mt-3 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded p-2">
-          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-700">COD is limited to orders under {fmt(maxCod)} for this zone. Online payment recommended.</p>
-        </div>
-      )}
     </div>
 
     <button onClick={onContinue} className="w-full sm:w-auto bg-accent text-accent-foreground py-3 px-8 rounded-lg font-semibold hover:bg-accent/90 transition">
