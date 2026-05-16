@@ -852,26 +852,9 @@ const StepPayment = ({
                 </div>
               )}
 
-              {paymentMethod === "cod" && m.id === "cod" && !codDisabled && (
-                <div className="mt-2 ml-4 p-3 bg-card rounded-lg border border-border">
-                  <p className="text-sm text-muted-foreground">Payment collected by our delivery driver.</p>
-                </div>
-              )}
             </div>
           ))}
         </div>
-
-        {/* Place Order button for COD only */}
-        {paymentMethod === "cod" && (
-          <button
-            onClick={onPlaceOrder}
-            disabled={placing || allUnpriced}
-            className="w-full bg-accent text-accent-foreground py-3.5 rounded-lg font-bold text-base hover:bg-accent/90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {placing ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-            {placing ? "Placing Order..." : `Place Order · ${fmt(total)}`}
-          </button>
-        )}
       </div>
 
       {/* Order Summary */}
