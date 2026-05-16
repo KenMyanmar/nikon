@@ -738,16 +738,11 @@ const StepPayment = ({
   hasUnpricedItems, allUnpriced, unpricedCount,
 }: PaymentProps) => {
   const [summaryOpen, setSummaryOpen] = useState(false);
-  const codDisabled = !codEligible || (maxCod !== null && total > maxCod);
 
   const methods = [
     {
       id: "dinger_prebuilt", label: "Pay with Dinger", icon: CreditCard, disabled: false,
       desc: "KBZ Pay, AYA Pay, Wave, Visa, Mastercard & more",
-    },
-    {
-      id: "cod", label: "Cash on Delivery", icon: Banknote, disabled: codDisabled,
-      desc: codDisabled ? "Not available for this order" : "Pay cash when your order arrives",
     },
   ];
 
