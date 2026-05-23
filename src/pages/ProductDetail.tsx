@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { getStockState, STOCK_STATE_CONFIG, trackEvent } from "@/lib/analytics";
 import { formatMMK, cleanAccessoryText } from "@/lib/format";
-import EquipmentBadgesRow from "@/components/product/EquipmentBadgesRow";
+import { Lock } from "lucide-react";
 import SparePartsRail from "@/components/product/SparePartsRail";
 import ProjectWizardGrid from "@/components/product/ProjectWizardGrid";
 
