@@ -374,9 +374,20 @@ const ProductDetail = () => {
 
   // Build info rows for specifications tab
   const infoRows: { label: string; value: string }[] = [];
-  if (product.brand_name) infoRows.push({ label: "Brand", value: product.brand_name });
-  if (product.category_name) infoRows.push({ label: "Category", value: product.category_name });
-  
+  // Equipment detection — single source of truth
+  const isEquipment = product.product_type === "equipment" || product.requires_quote === true;
+  const isRefrigeration = product.category_name === "Refrigeration System";
+
+  // Specs values cleaned for display (PNC duplicates etc.)
+  const cleanedSpecs = specs.map(([k, v]) => [k, cleanAccessoryText(String(v))] as [string, string]);
+
+  // Build full category path for the specifications "Category" row
+  const categoryPath = [product.parent_category_name, product.category_name]
+    .filter(Boolean)
+    .join(" › ");
+
+  if (categoryPath) infoRows.push({ label: "Category", value: categoryPath });
+
   if (product.stock_code) infoRows.push({ label: "SKU / Stock Code", value: product.stock_code });
   if (product.other_code) infoRows.push({ label: "Alt Code", value: product.other_code });
   if (product.unit_of_measure) infoRows.push({ label: "Unit of Measure", value: product.unit_of_measure });
@@ -387,16 +398,16 @@ const ProductDetail = () => {
   // Build key specs for middle column
   const keySpecs: { label: string; value: string }[] = [];
   if (product.brand_name) keySpecs.push({ label: "Brand", value: product.brand_name });
-  if (product.category_name) keySpecs.push({ label: "Category", value: product.category_name });
+  if (categoryPath) keySpecs.push({ label: "Category", value: categoryPath });
   if (product.stock_code) keySpecs.push({ label: "SKU", value: product.stock_code });
   if (product.unit_of_measure) keySpecs.push({ label: "Unit", value: product.unit_of_measure });
   if (product.packing) keySpecs.push({ label: "Packing", value: product.packing });
   if (product.item_type) keySpecs.push({ label: "Type", value: product.item_type });
   if (product.other_code) keySpecs.push({ label: "Alt Code", value: product.other_code });
-  
-  // Add specs from JSONB
-  specs.slice(0, 6).forEach(([key, val]) => {
-    keySpecs.push({ label: key, value: String(val) });
+
+  // Add specs from JSONB (cleaned)
+  cleanedSpecs.slice(0, 6).forEach(([key, val]) => {
+    keySpecs.push({ label: key, value: val });
   });
 
   return (
