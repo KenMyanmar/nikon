@@ -1182,7 +1182,6 @@ const ProductDetail = () => {
           )}
         </div>
 
-        {/* ── Spare Parts (equipment only, hidden when none) ── */}
         {/* ── Cold-Chain Verified — full-width block, equipment-only ── */}
         {isEquipment && (
           <section className="mt-10 rounded-xl bg-sky-50 border border-sky-200 p-6 md:p-8 flex items-center gap-6">
