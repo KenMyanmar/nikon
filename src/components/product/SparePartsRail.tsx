@@ -38,32 +38,28 @@ const SparePartsRail = ({ productId }: Props) => {
           Compatible accessories for this equipment
         </span>
       </div>
-      <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {spares.map((p) => (
-          <div
+          <ProductCard
             key={p.id}
-            className="min-w-[220px] md:min-w-[260px] max-w-[260px] flex-shrink-0"
-          >
-            <ProductCard
-              id={p.id || ""}
-              image={p.thumbnail_url || "/placeholder.svg"}
-              title={p.description || ""}
-              brand={p.brand_name || ""}
-              specs={p.short_description || undefined}
-              price={p.selling_price ? Number(p.selling_price) : null}
-              currency={p.currency || "MMK"}
-              moq={p.moq || undefined}
-              stockStatus={
-                (p.stock_status as "in_stock" | "low_stock" | "out_of_stock") ||
-                "in_stock"
-              }
-              sku={p.stock_code || ""}
-              slug={p.slug || ""}
-              isFeatured={p.is_featured || false}
-              onhandQty={p.onhand_qty || undefined}
-              unitOfMeasure={p.unit_of_measure || undefined}
-            />
-          </div>
+            id={p.id || ""}
+            image={p.thumbnail_url || "/placeholder.svg"}
+            title={p.description || ""}
+            brand={p.brand_name || ""}
+            specs={p.short_description || undefined}
+            price={p.selling_price ? Number(p.selling_price) : null}
+            currency={p.currency || "MMK"}
+            moq={p.moq || undefined}
+            stockStatus={
+              (p.stock_status as "in_stock" | "low_stock" | "out_of_stock") ||
+              "in_stock"
+            }
+            sku={p.stock_code || ""}
+            slug={p.slug || ""}
+            isFeatured={p.is_featured || false}
+            onhandQty={p.onhand_qty || undefined}
+            unitOfMeasure={p.unit_of_measure || undefined}
+          />
         ))}
       </div>
     </section>

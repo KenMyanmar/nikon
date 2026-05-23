@@ -8,7 +8,7 @@ import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone, Bell, MessageCircle, Heart, Snowflake, ClipboardList } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone, Bell, MessageCircle, Heart, Snowflake, ClipboardList, DownloadCloud, Download } from "lucide-react";
 import { useSavedProductIds, useToggleSave } from "@/hooks/useSavedItems";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
@@ -496,17 +496,11 @@ const ProductDetail = () => {
             {/* Brand + Title */}
             {product.brand_name && (
               <div className="mb-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                  {product.brand_logo && (
-                    <img src={product.brand_logo} alt={product.brand_name} className="h-6 w-auto object-contain" />
-                  )}
+                {product.brand_logo ? (
+                  <img src={product.brand_logo} alt={product.brand_name} className="h-6 w-auto object-contain" />
+                ) : (
                   <span className="text-xs font-semibold text-primary uppercase tracking-widest">{product.brand_name}</span>
-                  {isEquipment && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-full">
-                      <Snowflake className="w-3 h-3" /> Cold-Chain Verified
-                    </span>
-                  )}
-                </div>
+                )}
               </div>
             )}
             <div className="flex items-start gap-2 mb-3">
@@ -574,17 +568,6 @@ const ProductDetail = () => {
               )}
             </div>
 
-            {/* Datasheet */}
-            {product.datasheet_url && (
-              <a
-                href={product.datasheet_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-primary hover:underline font-medium mt-4"
-              >
-                <FileText className="w-4 h-4" /> Download Datasheet (PDF)
-              </a>
-            )}
           </div>
 
           {/* COL 3: Price Card */}
@@ -904,6 +887,28 @@ const ProductDetail = () => {
                 </div>
               )}
             </div>
+
+            {/* CAD & Spec Downloads — right sidebar, below CTA card */}
+            {product.datasheet_url && (
+              <div className="border border-border rounded-lg bg-card p-4 mt-4">
+                <h3 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2 mb-3">
+                  <DownloadCloud className="w-4 h-4 text-primary" /> CAD & Spec Downloads
+                </h3>
+                <a
+                  href={product.datasheet_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 border border-border rounded-lg p-3 hover:border-primary hover:bg-muted/30 transition group"
+                >
+                  <FileText className="w-5 h-5 text-red-600 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">Technical Specification</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">PDF</p>
+                  </div>
+                  <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0" />
+                </a>
+              </div>
+            )}
           </div>
         </div>
 
@@ -1176,6 +1181,22 @@ const ProductDetail = () => {
             </div>
           )}
         </div>
+
+        {/* ── Cold-Chain Verified — full-width block, equipment-only ── */}
+        {isEquipment && (
+          <section className="mt-10 rounded-xl bg-sky-50 border border-sky-200 p-6 md:p-8 flex items-center gap-6">
+            <ShieldCheck className="w-10 h-10 text-sky-700 shrink-0" />
+            <div className="flex-1">
+              <h3 className="text-lg md:text-xl font-bold text-sky-900">Cold-Chain Verified</h3>
+              <p className="text-sm text-sky-800 mt-1">
+                Equipment tested &amp; verified for consistent performance in cold-chain environments.
+              </p>
+            </div>
+            <div className="hidden md:flex w-20 h-20 rounded-full bg-white border-2 border-sky-300 items-center justify-center shrink-0">
+              <Snowflake className="w-10 h-10 text-sky-700" />
+            </div>
+          </section>
+        )}
 
         {/* ── Spare Parts (equipment only, hidden when none) ── */}
         {isEquipment && product.id && <SparePartsRail productId={product.id} />}

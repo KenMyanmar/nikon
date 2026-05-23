@@ -1,92 +1,82 @@
-## Investigation report (Step 0)
+# Equipment PDP — Final Layout Push
 
-All seven items located in `src/pages/ProductDetail.tsx`:
+## Investigation findings
 
-a) **"Quote on request" price** — line 641–647. Keyed on `isEquipment`. Will be replaced by the 3-state matrix.
-b) **EquipmentBadgesRow** — imported line 20, mounted line 869–872 (inside `isEquipment` branch of trust strip). Will be removed.
-c) **Tab branching** — driven by `isEquipment` at lines 917–930 (Features hidden, Reviews hidden) and 996–1052 (Installation / Service / Warranty tabs added).
-d) **Cold-Chain gate** — line 505 `{isEquipment && isRefrigeration && (...)}` with `isRefrigeration = product.category_name === "Refrigeration System"` defined line 379.
-e) **Brand pillar "Made in {country} · Sold and serviced by IKON Mart Myanmar"** — lines 511–515.
-f) **WhatsApp specialist link** — lines 793–800 (CTAs); also appears inside the equipment tabs at 1005, 1023, 1041 (those tabs are being removed anyway).
-g) **Cart handler** — `addToCart(product.id, qty, product.description)` from `useAddToCart` (line 820). Reusable as-is for priced+in-stock equipment with no branching.
+**a) Datasheet link** — `src/pages/ProductDetail.tsx` lines 577–587 (middle column, after Key Specifications card). Plain text link with FileText icon.
 
-Also: `categoryPath` (line 385) currently joins parent + child with ` › ` and is pushed into both `infoRows` (line 389) and `keySpecs` (line 401). The mockup shows the parent category only (e.g. "Kitchen") — will simplify.
+**b) Brand double-render** — `src/pages/ProductDetail.tsx` lines 497–511. Renders `<img src={brand_logo}>` (line 501) AND `<span>{brand_name}</span>` (line 503) side-by-side. When the logo image itself contains the wordmark "HOSHIZAKI", the adjacent span produces visual duplication.
 
----
+**c) Project Wizard tiles** — `src/components/product/ProjectWizardGrid.tsx`. All 4 tiles are `<a href="#">`. No navigation wiring.
 
-## Plan
+**d) Inline Cold-Chain chip** — `src/pages/ProductDetail.tsx` lines 504–508 (next to brand name, ungated on `isEquipment`). No full-width Cold-Chain block exists yet. Target mount point: between tabs section (ends line 1148) and `SparePartsRail` (line 1181).
 
-Single-file edit (`src/pages/ProductDetail.tsx`) plus optional cleanup of unused imports.
+**e) SparePartsRail** — Mounted at `ProductDetail.tsx` line 1181. Component at `src/components/product/SparePartsRail.tsx`. Currently uses horizontal scroll (`flex gap-4 ... overflow-x-auto`, `min-w-[220px]`). Needs to be a responsive grid per mockup.
 
-### 1. Pricing block (lines 640–697) — STATE matrix
-Replace the `isEquipment ? "Quote on request" : …` branch with:
+## Edits
 
-```text
-hasPrice = Number(product.selling_price) > 0
-inStock  = stockState === 'in_stock'
+### Edit 1 — Brand area cleanup (Delta 2 + 4)
+`ProductDetail.tsx` lines 497–511. New logic:
+- If `brand_logo` exists → render logo image only (no `<span>` with brand name).
+- Else → render brand name span as fallback.
+- Remove the inline Cold-Chain chip (lines 504–508) entirely.
 
-if isEquipment && !hasPrice            → STATE 3: "Quote on request" (emerald)
-else                                   → render MMK price (existing flashDeal/promotion/tier logic kept)
+### Edit 2 — Remove datasheet link from middle column (Delta 1a)
+`ProductDetail.tsx` lines 577–587. Delete the entire `{product.datasheet_url && (...)}` block.
+
+### Edit 3 — Add "CAD & Spec Downloads" card in right sidebar (Delta 1b)
+`ProductDetail.tsx` — inside the right column (col-span-3 block), append a new card AFTER the existing sticky price/CTA card (around line ~890, end of col 3). Only renders when `product.datasheet_url` is set.
+
+Markup:
+```
+<div class="border border-border rounded-lg bg-card p-4 mt-4">
+  <h3 with DownloadCloud icon + "CAD & Spec Downloads">
+  <div role="row">
+    <FileText icon (PDF) | "Technical Specification" + "PDF" subtext | Download arrow icon
+    href={datasheet_url} target=_blank
+  </div>
+</div>
+```
+File-size not computed (would need HEAD request) — label only, per data reality.
+
+### Edit 4 — Full-width Cold-Chain block (Delta 4)
+`ProductDetail.tsx` — insert new section right before `SparePartsRail` mount (line 1181), gated on `isEquipment` (ungated by category per strict-mockup decision):
+
+```
+{isEquipment && (
+  <section className="mt-10 rounded-xl bg-sky-50 border border-sky-200 p-6 md:p-8 flex items-center gap-6">
+    <ShieldCheck className="w-10 h-10 text-sky-700 shrink-0" />
+    <div className="flex-1">
+      <h3 className="text-lg md:text-xl font-bold text-sky-900">Cold-Chain Verified</h3>
+      <p className="text-sm text-sky-800 mt-1">Equipment tested & verified for consistent performance in cold-chain environments.</p>
+    </div>
+    <div className="hidden md:flex w-20 h-20 rounded-full bg-white border-2 border-sky-300 items-center justify-center shrink-0">
+      <Snowflake className="w-10 h-10 text-sky-700" />
+    </div>
+  </section>
+)}
 ```
 
-Non-equipment continues to use existing pricing logic untouched.
+(Using Snowflake-in-circle as the "seal" since no dedicated seal asset exists. ShieldCheck already imported.)
 
-### 2. CTA block (lines 773–845) — STATE matrix
-Replace the `isEquipment ? <Quote+Project+WhatsApp> : <Cart+BulkQuote>` branches with:
+### Edit 5 — ProjectWizardGrid navigation (Delta 3)
+`src/components/product/ProjectWizardGrid.tsx`:
+- Import `useNavigate` from `react-router-dom`.
+- Change `<a href={href}>` tiles to `<button onClick={() => navigate("/request-quote")}>`.
+- Drop the `href: "#"` from the WIZARDS array (or ignore it).
 
-```text
-isEquipment + STATE 1 (priced + in_stock):
-  - Yellow "Add to Cart" (bg-accent / accent token) — calls existing addToCart
-  - Blue "Request a Quote" with Phone icon (bg-primary) — calls handleRequestQuote
+### Edit 6 — SparePartsRail grid styling (Delta 5)
+`src/components/product/SparePartsRail.tsx`:
+- Replace `flex gap-4 ... overflow-x-auto scrollbar-hide` container with `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6`.
+- Remove `min-w-[220px] max-w-[260px] flex-shrink-0` wrapper divs (let grid handle sizing).
+- Section title styling already left-aligned and bold — keep.
+- Card styling (thumbnail / caps name / MMK price color / yellow Add-to-Cart) is delegated to the existing `<ProductCard>` component which is governed by the design system — out of scope to retheme here.
 
-isEquipment + STATE 2 (priced + !in_stock):
-  - Blue "Request a Quote" primary only
-  - Caption: "Out of stock — request a quote for lead time"
+## Acceptance
+1. HOSHIZAKI freezer: CAD & Spec block in right sidebar with one PDF row; brand area shows logo only; full-width Cold-Chain block after tabs; no inline Cold-Chain chip at top.
+2. Gas Boiling Top: same fixes; CAD block hidden (no `datasheet_url`).
+3. Any wizard tile click → `/request-quote`.
+4. Camcover plate (non-equipment): unchanged (Cold-Chain block, SparePartsRail, ProjectWizardGrid all already gated on `isEquipment` or empty).
+5. Typecheck passes.
 
-isEquipment + STATE 3 (no price):
-  - Blue "Request a Quote" primary only
-
-Non-equipment: existing CTA logic unchanged.
-```
-
-Remove "Add to Project List" button and "Talk to a Specialist on WhatsApp" link from CTA stack.
-
-### 3. Trust strip (lines 868–889)
-For equipment, replace `<EquipmentBadgesRow>` with the four mockup rows:
-- "Estimated Delivery: 3–5 Business Days" (no icon, bold label)
-- ✓ "Free Shipping on orders over MMK 1,000,000" (emerald check)
-- ✓ "30-Day Return Policy" (emerald check)
-- 🔒 "Secure Payment" (lock icon)
-
-Hide the Low Stock / "Only N left" suffix on the stock badge (line 603) when `isEquipment` — keep label only.
-
-Remove the `EquipmentBadgesRow` import (line 20). Component file stays on disk (out of scope to delete).
-
-### 4. Brand pillar (lines 511–515)
-Delete the `<p>` with "Made in … Sold and serviced by IKON Mart Myanmar". Brand logo + name stays.
-
-### 5. Cold-Chain badge (line 505)
-Remove the `isRefrigeration` gate so the badge renders for all `isEquipment` products. Remove the now-unused `isRefrigeration` constant (line 379).
-
-### 6. Tabs (lines 912–1052)
-Remove all `isEquipment` branching in tabs. Render the four standard tabs for everyone: **Description / Specifications / Features / Reviews**. Delete the Installation / Service / Warranty `TabsContent` blocks (1051 lines collapse). The Reviews tab content (1054→) becomes unconditional — drop the `{!isEquipment && (` wrapper.
-
-### 7. Star strip (lines 530–536)
-Already renders unconditionally — no change. The "No reviews yet" text already shows. Confirmed visible for equipment after tab unification.
-
-### 8. Category label (lines 385–401)
-Change `categoryPath` from joined string to use `product.parent_category_name` only (simple "Kitchen"). Both the `infoRows` Category entry and `keySpecs` Category entry become the single parent label, matching the mockup. Breadcrumbs at top of page are out of scope and stay as-is (real navigation crumbs).
-
-### 9. Add to Project List
-Confirmed retired by removal from CTA block in step 2. `handleAddToProjectList` function (lines 102–133) becomes dead code — leave in place (out of scope to chase down).
-
----
-
-## Verification
-
-- Typecheck.
-- Manual screenshots for the four acceptance SKUs (STATE 1 priced+in-stock gas boiling top, STATE 2 priced+OOS, STATE 3 quote-only tumble dryer, non-equipment camcover) + 320px mobile of STATE 1.
-- Confirm `/request-quote?product_id=…&sku=…` deep link still fires from the blue button.
-
-## Out of scope (untouched)
-SparePartsRail, ProjectWizardGrid, Detailed Specifications table, Kitchen Equipment Care callout, footer trust strip, /request-quote page, DB columns, MMK 1,000,000 free-shipping threshold (placeholder per prompt).
+## Out of scope
+3-state CTA matrix, trust strip, tab set, /request-quote page, schema, CAD/DWG column, parent_equipment_id backfill, file-size HEAD computation.
