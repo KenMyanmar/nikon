@@ -773,34 +773,36 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* CTAs — equipment swaps Add-to-Cart for Request-a-Quote */}
+              {/* CTAs — equipment uses STATE matrix per mockup */}
               {isEquipment ? (
                 <>
+                  {hasPrice && isInStock && (
+                    <button
+                      onClick={() => {
+                        trackEvent({ event: 'add_to_cart_clicked', product_id: product.id, stock_state: stockState, properties: { quantity: qty, price: product.selling_price } });
+                        if (product.id) addToCart(product.id, qty, product.description || "");
+                      }}
+                      disabled={isAdding}
+                      className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 disabled:opacity-60 text-base shadow-md hover:shadow-lg active:scale-[0.98]"
+                    >
+                      {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
+                      Add to Cart
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       trackEvent({ event: 'request_quote_clicked', product_id: product.id, stock_state: stockState, properties: { source: 'equipment_pdp' } });
                       handleRequestQuote();
                     }}
-                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 text-base shadow-md hover:shadow-lg active:scale-[0.98]"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 text-base shadow-md hover:shadow-lg active:scale-[0.98]"
                   >
-                    <FileText className="w-5 h-5" />
-                    Request a Quote
-                    <ArrowRight className="w-4 h-4" />
+                    <Phone className="w-5 h-5" /> Request a Quote
                   </button>
-                  <button
-                    onClick={handleAddToProjectList}
-                    className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 rounded-button transition-all flex items-center justify-center gap-2 text-sm"
-                  >
-                    <ClipboardList className="w-4 h-4" /> Add to Project List
-                  </button>
-                  <a
-                    href={`https://wa.me/959890090301?text=${encodeURIComponent(`Hi, I'd like to discuss equipment SKU ${product.stock_code || product.description || ""}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-center text-sm text-emerald-700 underline hover:text-emerald-800 mt-1"
-                  >
-                    Talk to a Specialist on WhatsApp
-                  </a>
+                  {hasPrice && !isInStock && (
+                    <p className="text-xs text-muted-foreground text-center">
+                      Out of stock — request a quote for lead time
+                    </p>
+                  )}
                 </>
               ) : (
                 <>
@@ -868,10 +870,21 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Trust / Shipping — equipment gets B2B badges, others get consumer strip */}
+              {/* Trust strip — equipment mirrors approved mockup */}
               {isEquipment ? (
-                <div className="pt-2 border-t border-border">
-                  <EquipmentBadgesRow specifications={product.specifications as Record<string, any> | null} />
+                <div className="space-y-2 text-xs text-muted-foreground pt-2 border-t border-border">
+                  <p className="text-xs text-foreground">
+                    <span className="font-semibold">Estimated Delivery:</span> 3–5 Business Days
+                  </p>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle className="w-4 h-4 text-emerald-500" /> Free Shipping on orders over MMK 1,000,000
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle className="w-4 h-4 text-emerald-500" /> 30-Day Return Policy
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Lock className="w-4 h-4 text-primary" /> Secure Payment
+                  </span>
                 </div>
               ) : (
                 <div className="space-y-2 text-xs text-muted-foreground pt-2 border-t border-border">
