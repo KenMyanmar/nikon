@@ -632,11 +632,20 @@ const ProductDetail = () => {
 
               {/* Price */}
               <div className="border-t border-border pt-4">
-                {isEquipment ? (
+                {isEquipment && !hasPrice ? (
                   <div>
                     <span className="text-2xl font-bold text-emerald-700">Quote on request</span>
                     <span className="text-xs text-muted-foreground block mt-1">
                       Pricing tailored to your project scope.
+                    </span>
+                  </div>
+                ) : isEquipment && hasPrice ? (
+                  <div>
+                    <span className="text-2xl font-bold text-accent">
+                      {formatMMK(product.selling_price)}
+                    </span>
+                    <span className="text-xs text-muted-foreground block mt-0.5">
+                      / {product.unit_of_measure || "unit"}
                     </span>
                   </div>
                 ) : flashDeal ? (
