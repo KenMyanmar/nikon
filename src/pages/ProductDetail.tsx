@@ -93,7 +93,43 @@ const ProductDetail = () => {
 
   const handleRequestQuote = () => {
     if (!user) { openAuthModal(); return; }
-    if (product?.id) navigate(`/request-quote?product=${product.id}`);
+    if (product?.id) {
+      const sku = product.stock_code ? `&sku=${encodeURIComponent(product.stock_code)}` : "";
+      navigate(`/request-quote?product_id=${product.id}${sku}`);
+    }
+  };
+
+  const handleAddToProjectList = async () => {
+    if (!user) { openAuthModal(); return; }
+    if (!product?.id) return;
+    try {
+      const { data: customerId } = await supabase.rpc("get_customer_id_for_user", { _user_id: user.id });
+      if (!customerId) throw new Error("Customer not found");
+      let { data: list } = await supabase
+        .from("saved_lists")
+        .select("id")
+        .eq("customer_id", customerId)
+        .eq("name", "My Project")
+        .maybeSingle();
+      if (!list) {
+        const { data: created, error } = await supabase
+          .from("saved_lists")
+          .insert({ customer_id: customerId, name: "My Project", is_default: false })
+          .select("id")
+          .single();
+        if (error) throw error;
+        list = created;
+      }
+      const { error: insertErr } = await supabase
+        .from("saved_list_items")
+        .insert({ list_id: list!.id, product_id: product.id });
+      if (insertErr && !insertErr.message.includes("duplicate")) throw insertErr;
+      toast({ title: "Added to Project List", description: "View it in your account." });
+      queryClient.invalidateQueries({ queryKey: ["saved-lists"] });
+      queryClient.invalidateQueries({ queryKey: ["saved-items"] });
+    } catch (e: any) {
+      toast({ title: "Could not add", description: e.message || "Please try again.", variant: "destructive" });
+    }
   };
 
   const LENS_SIZE = 30; // percentage of image container
