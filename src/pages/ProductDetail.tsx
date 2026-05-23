@@ -8,7 +8,7 @@ import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone, Bell, MessageCircle, Heart } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone, Bell, MessageCircle, Heart, Snowflake, ClipboardList } from "lucide-react";
 import { useSavedProductIds, useToggleSave } from "@/hooks/useSavedItems";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
@@ -16,6 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { getStockState, STOCK_STATE_CONFIG, trackEvent } from "@/lib/analytics";
+import { formatMMK, cleanAccessoryText } from "@/lib/format";
+import EquipmentBadgesRow from "@/components/product/EquipmentBadgesRow";
+import SparePartsRail from "@/components/product/SparePartsRail";
+import ProjectWizardGrid from "@/components/product/ProjectWizardGrid";
 
 const renderStars = (rating: number, size = 4) => {
   const rounded = Math.round(rating);
@@ -89,7 +93,43 @@ const ProductDetail = () => {
 
   const handleRequestQuote = () => {
     if (!user) { openAuthModal(); return; }
-    if (product?.id) navigate(`/request-quote?product=${product.id}`);
+    if (product?.id) {
+      const sku = product.stock_code ? `&sku=${encodeURIComponent(product.stock_code)}` : "";
+      navigate(`/request-quote?product_id=${product.id}${sku}`);
+    }
+  };
+
+  const handleAddToProjectList = async () => {
+    if (!user) { openAuthModal(); return; }
+    if (!product?.id) return;
+    try {
+      const { data: customerId } = await supabase.rpc("get_customer_id_for_user", { _user_id: user.id });
+      if (!customerId) throw new Error("Customer not found");
+      let { data: list } = await supabase
+        .from("saved_lists")
+        .select("id")
+        .eq("customer_id", customerId)
+        .eq("name", "My Project")
+        .maybeSingle();
+      if (!list) {
+        const { data: created, error } = await supabase
+          .from("saved_lists")
+          .insert({ customer_id: customerId, name: "My Project", is_default: false })
+          .select("id")
+          .single();
+        if (error) throw error;
+        list = created;
+      }
+      const { error: insertErr } = await supabase
+        .from("saved_list_items")
+        .insert({ list_id: list!.id, product_id: product.id });
+      if (insertErr && !insertErr.message.includes("duplicate")) throw insertErr;
+      toast({ title: "Added to Project List", description: "View it in your account." });
+      queryClient.invalidateQueries({ queryKey: ["saved-lists"] });
+      queryClient.invalidateQueries({ queryKey: ["saved-items"] });
+    } catch (e: any) {
+      toast({ title: "Could not add", description: e.message || "Please try again.", variant: "destructive" });
+    }
   };
 
   const LENS_SIZE = 30; // percentage of image container
@@ -334,9 +374,20 @@ const ProductDetail = () => {
 
   // Build info rows for specifications tab
   const infoRows: { label: string; value: string }[] = [];
-  if (product.brand_name) infoRows.push({ label: "Brand", value: product.brand_name });
-  if (product.category_name) infoRows.push({ label: "Category", value: product.category_name });
-  
+  // Equipment detection — single source of truth
+  const isEquipment = product.product_type === "equipment" || product.requires_quote === true;
+  const isRefrigeration = product.category_name === "Refrigeration System";
+
+  // Specs values cleaned for display (PNC duplicates etc.)
+  const cleanedSpecs = specs.map(([k, v]) => [k, cleanAccessoryText(String(v))] as [string, string]);
+
+  // Build full category path for the specifications "Category" row
+  const categoryPath = [product.parent_category_name, product.category_name]
+    .filter(Boolean)
+    .join(" › ");
+
+  if (categoryPath) infoRows.push({ label: "Category", value: categoryPath });
+
   if (product.stock_code) infoRows.push({ label: "SKU / Stock Code", value: product.stock_code });
   if (product.other_code) infoRows.push({ label: "Alt Code", value: product.other_code });
   if (product.unit_of_measure) infoRows.push({ label: "Unit of Measure", value: product.unit_of_measure });
@@ -347,16 +398,16 @@ const ProductDetail = () => {
   // Build key specs for middle column
   const keySpecs: { label: string; value: string }[] = [];
   if (product.brand_name) keySpecs.push({ label: "Brand", value: product.brand_name });
-  if (product.category_name) keySpecs.push({ label: "Category", value: product.category_name });
+  if (categoryPath) keySpecs.push({ label: "Category", value: categoryPath });
   if (product.stock_code) keySpecs.push({ label: "SKU", value: product.stock_code });
   if (product.unit_of_measure) keySpecs.push({ label: "Unit", value: product.unit_of_measure });
   if (product.packing) keySpecs.push({ label: "Packing", value: product.packing });
   if (product.item_type) keySpecs.push({ label: "Type", value: product.item_type });
   if (product.other_code) keySpecs.push({ label: "Alt Code", value: product.other_code });
-  
-  // Add specs from JSONB
-  specs.slice(0, 6).forEach(([key, val]) => {
-    keySpecs.push({ label: key, value: String(val) });
+
+  // Add specs from JSONB (cleaned)
+  cleanedSpecs.slice(0, 6).forEach(([key, val]) => {
+    keySpecs.push({ label: key, value: val });
   });
 
   return (
@@ -445,11 +496,23 @@ const ProductDetail = () => {
           <div className="lg:col-span-4">
             {/* Brand + Title */}
             {product.brand_name && (
-              <div className="flex items-center gap-2 mb-2">
-                {product.brand_logo && (
-                  <img src={product.brand_logo} alt={product.brand_name} className="h-6 w-auto object-contain" />
-                )}
-                <span className="text-xs font-semibold text-primary uppercase tracking-widest">{product.brand_name}</span>
+              <div className="mb-2">
+                <div className="flex items-center gap-2">
+                  {product.brand_logo && (
+                    <img src={product.brand_logo} alt={product.brand_name} className="h-6 w-auto object-contain" />
+                  )}
+                  <span className="text-xs font-semibold text-primary uppercase tracking-widest">{product.brand_name}</span>
+                  {isEquipment && isRefrigeration && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-full">
+                      <Snowflake className="w-3 h-3" /> Cold-Chain Verified
+                    </span>
+                  )}
+                </div>
+                {/* Brand pillar — country + service one-liner */}
+                <p className="text-xs text-muted-foreground mt-1">
+                  {product.brand_country ? `Made in ${product.brand_country} · ` : ""}
+                  Sold and serviced by IKON Mart Myanmar
+                </p>
               </div>
             )}
             <div className="flex items-start gap-2 mb-3">
@@ -575,14 +638,21 @@ const ProductDetail = () => {
 
               {/* Price */}
               <div className="border-t border-border pt-4">
-                {flashDeal ? (
+                {isEquipment ? (
+                  <div>
+                    <span className="text-2xl font-bold text-emerald-700">Quote on request</span>
+                    <span className="text-xs text-muted-foreground block mt-1">
+                      Pricing tailored to your project scope.
+                    </span>
+                  </div>
+                ) : flashDeal ? (
                   <div className="space-y-1">
                     <span className="text-2xl font-bold text-accent">
-                      {product.currency || "MMK"} {Number(flashDeal.flash_price).toLocaleString()}
+                      {formatMMK(flashDeal.flash_price)}
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-muted-foreground line-through">
-                        {product.currency || "MMK"} {Number(flashDeal.original_price).toLocaleString()}
+                        {formatMMK(flashDeal.original_price)}
                       </span>
                       <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                         -{flashDeal.discount_percentage || Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100)}%
@@ -604,12 +674,12 @@ const ProductDetail = () => {
                   return (
                     <div>
                       <span className="text-2xl font-bold text-accent">
-                        {product.currency || "MMK"} {(promoPrice ?? basePrice).toLocaleString()}
+                        {formatMMK(promoPrice ?? basePrice)}
                       </span>
                       {promoPrice !== null && (
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-sm text-muted-foreground line-through">
-                            {product.currency || "MMK"} {basePrice.toLocaleString()}
+                            {formatMMK(basePrice)}
                           </span>
                           <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
                             {promotion!.type === "percentage" ? `-${promotion!.discount_value}%` : `-${promotion!.discount_value?.toLocaleString()}`}
@@ -626,8 +696,8 @@ const ProductDetail = () => {
                 )}
               </div>
 
-              {/* Bulk Pricing Tiers */}
-              {pricingTiers && pricingTiers.length > 0 && (
+              {/* Bulk Pricing Tiers — hidden for equipment */}
+              {!isEquipment && pricingTiers && pricingTiers.length > 0 && (
                 <div className="space-y-2">
                   <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
                     <Package className="w-3.5 h-3.5 text-primary" />
@@ -655,7 +725,7 @@ const ProductDetail = () => {
                             </span>
                           </div>
                           <span className={`text-sm font-bold ${isActive ? "text-primary" : "text-foreground"}`}>
-                            {product.currency || "MMK"} {Number(tier.unit_price).toLocaleString()}
+                            {formatMMK(tier.unit_price)}
                           </span>
                         </button>
                       );
@@ -664,16 +734,16 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Fallback when no pricing tiers */}
-              {(!pricingTiers || pricingTiers.length === 0) && product.selling_price && (
+              {/* Fallback when no pricing tiers (non-equipment only) */}
+              {!isEquipment && (!pricingTiers || pricingTiers.length === 0) && product.selling_price && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Package className="w-4 h-4 text-primary shrink-0" />
-                  <span>📦 Bulk pricing available — request a quote below</span>
+                  <span>Bulk pricing available — request a quote below</span>
                 </div>
               )}
 
-              {/* Quantity — hidden for out_of_stock */}
-              {stockState !== 'out_of_stock' && (
+              {/* Quantity — hidden for equipment and out_of_stock */}
+              {!isEquipment && stockState !== 'out_of_stock' && (
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Quantity</label>
                   <div className="flex items-center border border-border rounded-lg overflow-hidden w-full">
@@ -700,82 +770,123 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Primary CTA — dynamic per stock state */}
-              {stockState === 'out_of_stock' ? (
-                <button
-                  onClick={() => {
-                    trackEvent({ event: 'notify_me_clicked', product_id: product.id, stock_state: stockState });
-                    toast({ title: "We'll notify you!", description: "You'll be notified when this product is back in stock." });
-                  }}
-                  className={`w-full ${stock.primaryCtaClass} font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 text-base shadow-md hover:shadow-lg active:scale-[0.98]`}
-                >
-                  <Bell className="w-5 h-5" />
-                  {stock.primaryCta}
-                </button>
+              {/* CTAs — equipment swaps Add-to-Cart for Request-a-Quote */}
+              {isEquipment ? (
+                <>
+                  <button
+                    onClick={() => {
+                      trackEvent({ event: 'request_quote_clicked', product_id: product.id, stock_state: stockState, properties: { source: 'equipment_pdp' } });
+                      handleRequestQuote();
+                    }}
+                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 text-base shadow-md hover:shadow-lg active:scale-[0.98]"
+                  >
+                    <FileText className="w-5 h-5" />
+                    Request a Quote
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleAddToProjectList}
+                    className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 rounded-button transition-all flex items-center justify-center gap-2 text-sm"
+                  >
+                    <ClipboardList className="w-4 h-4" /> Add to Project List
+                  </button>
+                  <a
+                    href={`https://wa.me/959890090301?text=${encodeURIComponent(`Hi, I'd like to discuss equipment SKU ${product.stock_code || product.description || ""}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-center text-sm text-emerald-700 underline hover:text-emerald-800 mt-1"
+                  >
+                    Talk to a Specialist on WhatsApp
+                  </a>
+                </>
               ) : (
-                <button
-                  onClick={() => {
-                    trackEvent({ event: stockState === 'backorder' ? 'backorder_clicked' : stockState === 'preorder' ? 'preorder_clicked' : 'add_to_cart_clicked', product_id: product.id, stock_state: stockState, properties: { quantity: qty, price: product.selling_price } });
-                    if (product.id) addToCart(product.id, qty, product.description || "");
-                    if (stockState === 'low_stock') {
-                      toast({ title: "Added to cart!", description: `Only ${product.onhand_qty} left in stock.` });
-                    }
-                  }}
-                  disabled={isAdding}
-                  className={`w-full ${stock.primaryCtaClass} font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 disabled:opacity-60 text-base shadow-md hover:shadow-lg active:scale-[0.98]`}
-                >
-                  {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
-                  {stock.primaryCta}
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                <>
+                  {/* Primary CTA — dynamic per stock state */}
+                  {stockState === 'out_of_stock' ? (
+                    <button
+                      onClick={() => {
+                        trackEvent({ event: 'notify_me_clicked', product_id: product.id, stock_state: stockState });
+                        toast({ title: "We'll notify you!", description: "You'll be notified when this product is back in stock." });
+                      }}
+                      className={`w-full ${stock.primaryCtaClass} font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 text-base shadow-md hover:shadow-lg active:scale-[0.98]`}
+                    >
+                      <Bell className="w-5 h-5" />
+                      {stock.primaryCta}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        trackEvent({ event: stockState === 'backorder' ? 'backorder_clicked' : stockState === 'preorder' ? 'preorder_clicked' : 'add_to_cart_clicked', product_id: product.id, stock_state: stockState, properties: { quantity: qty, price: product.selling_price } });
+                        if (product.id) addToCart(product.id, qty, product.description || "");
+                        if (stockState === 'low_stock') {
+                          toast({ title: "Added to cart!", description: `Only ${product.onhand_qty} left in stock.` });
+                        }
+                      }}
+                      disabled={isAdding}
+                      className={`w-full ${stock.primaryCtaClass} font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 disabled:opacity-60 text-base shadow-md hover:shadow-lg active:scale-[0.98]`}
+                    >
+                      {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
+                      {stock.primaryCta}
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  )}
+
+                  {/* Secondary CTA — single Bulk Quote button */}
+                  <button
+                    onClick={() => {
+                      trackEvent({ event: 'bulk_quote_clicked', product_id: product.id, stock_state: stockState, properties: { source: 'product_detail' } });
+                      handleRequestQuote();
+                    }}
+                    className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 rounded-button transition-all flex items-center justify-center gap-2 text-sm"
+                  >
+                    <FileText className="w-4 h-4" /> Request Bulk Quote
+                  </button>
+                </>
               )}
 
-              {/* Secondary CTA — single Bulk Quote button */}
-              <button
-                onClick={() => {
-                  trackEvent({ event: 'bulk_quote_clicked', product_id: product.id, stock_state: stockState, properties: { source: 'product_detail' } });
-                  handleRequestQuote();
-                }}
-                className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 rounded-button transition-all flex items-center justify-center gap-2 text-sm"
-              >
-                <FileText className="w-4 h-4" /> Request Bulk Quote
-              </button>
-
-              {/* Reassurance for backorder/preorder */}
-              {(stockState === 'backorder' || stockState === 'preorder') && (
+              {/* Reassurance for backorder/preorder (non-equipment) */}
+              {!isEquipment && (stockState === 'backorder' || stockState === 'preorder') && (
                 <p className="text-xs text-muted-foreground text-center">You won't be charged until item ships</p>
               )}
 
-              {/* Payment Methods */}
-              <div className="pt-2 border-t border-border">
-                <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1 mb-2">
-                  <CreditCard className="w-3.5 h-3.5" /> We Accept
-                </span>
-                <div className="flex gap-1.5 flex-wrap">
-                  {paymentMethods.map((pm) => (
-                    <span key={pm} className="text-[10px] font-semibold text-foreground bg-muted border border-border rounded px-2 py-0.5">
-                      {pm}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Trust / Shipping — dynamic per state */}
-              <div className="space-y-2 text-xs text-muted-foreground pt-2 border-t border-border">
-                {stock.shippingMessage && (
-                  <span className="flex items-center gap-1.5">
-                    <Truck className="w-4 h-4 text-primary" /> {stock.shippingMessage}
+              {/* Payment Methods — hidden on equipment (quote flow) */}
+              {!isEquipment && (
+                <div className="pt-2 border-t border-border">
+                  <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1 mb-2">
+                    <CreditCard className="w-3.5 h-3.5" /> We Accept
                   </span>
-                )}
-                {stockState === 'out_of_stock' && (
-                  <a href="/contact" className="flex items-center gap-1.5 text-primary hover:underline">
-                    <MessageCircle className="w-4 h-4" /> Contact us for availability
-                  </a>
-                )}
-                <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-primary" /> Trusted by 1,000+ buyers
-                </span>
-              </div>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {paymentMethods.map((pm) => (
+                      <span key={pm} className="text-[10px] font-semibold text-foreground bg-muted border border-border rounded px-2 py-0.5">
+                        {pm}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Trust / Shipping — equipment gets B2B badges, others get consumer strip */}
+              {isEquipment ? (
+                <div className="pt-2 border-t border-border">
+                  <EquipmentBadgesRow specifications={product.specifications as Record<string, any> | null} />
+                </div>
+              ) : (
+                <div className="space-y-2 text-xs text-muted-foreground pt-2 border-t border-border">
+                  {stock.shippingMessage && (
+                    <span className="flex items-center gap-1.5">
+                      <Truck className="w-4 h-4 text-primary" /> {stock.shippingMessage}
+                    </span>
+                  )}
+                  {stockState === 'out_of_stock' && (
+                    <a href="/contact" className="flex items-center gap-1.5 text-primary hover:underline">
+                      <MessageCircle className="w-4 h-4" /> Contact us for availability
+                    </a>
+                  )}
+                  <span className="flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-primary" /> Trusted by 1,000+ buyers
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -801,11 +912,22 @@ const ProductDetail = () => {
         {/* ── Tabs: Description / Specifications / Reviews ── */}
         <div className="mb-16" ref={tabsRef}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1">
+            <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1 flex-wrap h-auto">
               <TabsTrigger value="description" className="text-sm font-semibold">Description</TabsTrigger>
-              <TabsTrigger value="features" className="text-sm font-semibold">Features</TabsTrigger>
+              {!isEquipment && (
+                <TabsTrigger value="features" className="text-sm font-semibold">Features</TabsTrigger>
+              )}
               <TabsTrigger value="specifications" className="text-sm font-semibold">Specifications</TabsTrigger>
-              <TabsTrigger value="reviews" className="text-sm font-semibold">Customer Reviews</TabsTrigger>
+              {isEquipment && (
+                <>
+                  <TabsTrigger value="installation" className="text-sm font-semibold">Installation Requirements</TabsTrigger>
+                  <TabsTrigger value="service" className="text-sm font-semibold">Service &amp; Support</TabsTrigger>
+                  <TabsTrigger value="warranty" className="text-sm font-semibold">Warranty</TabsTrigger>
+                </>
+              )}
+              {!isEquipment && (
+                <TabsTrigger value="reviews" className="text-sm font-semibold">Customer Reviews</TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="description" className="mt-4">
@@ -855,13 +977,13 @@ const ProductDetail = () => {
                         <td className="px-5 py-3 text-foreground font-semibold">{value}</td>
                       </tr>
                     ))}
-                    {specs.map(([key, val], i) => (
+                    {cleanedSpecs.map(([key, val], i) => (
                       <tr key={key} className={(infoRows.length + i) % 2 === 0 ? "bg-muted/30" : ""}>
                         <td className="px-5 py-3 font-medium text-muted-foreground w-1/3 border-r border-border">{key}</td>
-                        <td className="px-5 py-3 text-foreground font-semibold">{String(val)}</td>
+                        <td className="px-5 py-3 text-foreground font-semibold">{val}</td>
                       </tr>
                     ))}
-                    {infoRows.length === 0 && specs.length === 0 && (
+                    {infoRows.length === 0 && cleanedSpecs.length === 0 && (
                       <tr>
                         <td colSpan={2} className="px-5 py-8 text-center text-muted-foreground">No specifications available.</td>
                       </tr>
@@ -870,6 +992,66 @@ const ProductDetail = () => {
                 </table>
               </div>
             </TabsContent>
+
+            {isEquipment && (
+              <>
+                <TabsContent value="installation" className="mt-4">
+                  <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-3">
+                    <h3 className="text-base font-semibold text-foreground">Installation Requirements</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {(product.specifications as any)?.installation_requirements ||
+                        "Contact our team for full installation and site-prep details (utilities, clearances, ventilation, and electrical or gas connections)."}
+                    </p>
+                    <a
+                      href={`https://wa.me/959890090301?text=${encodeURIComponent(`Installation question — SKU ${product.stock_code || ""}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block text-sm text-emerald-700 underline hover:text-emerald-800"
+                    >
+                      Talk to a Specialist
+                    </a>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="service" className="mt-4">
+                  <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-3">
+                    <h3 className="text-base font-semibold text-foreground">Service &amp; Support</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {(product.specifications as any)?.service_support ||
+                        "IKON Mart provides commissioning, operator training, and on-site service through our Myanmar engineering team."}
+                    </p>
+                    <a
+                      href={`https://wa.me/959890090301?text=${encodeURIComponent(`Service question — SKU ${product.stock_code || ""}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block text-sm text-emerald-700 underline hover:text-emerald-800"
+                    >
+                      Talk to a Specialist
+                    </a>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="warranty" className="mt-4">
+                  <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-3">
+                    <h3 className="text-base font-semibold text-foreground">Warranty</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {(product.specifications as any)?.warranty ||
+                        "Standard manufacturer warranty applies. Contact our team for full warranty terms and extended-coverage options."}
+                    </p>
+                    <a
+                      href={`https://wa.me/959890090301?text=${encodeURIComponent(`Warranty question — SKU ${product.stock_code || ""}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block text-sm text-emerald-700 underline hover:text-emerald-800"
+                    >
+                      Talk to a Specialist
+                    </a>
+                  </div>
+                </TabsContent>
+              </>
+            )}
+
+            {!isEquipment && (
 
             <TabsContent value="reviews" className="mt-4">
               <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-8">
@@ -995,6 +1177,7 @@ const ProductDetail = () => {
                 </div>
               </div>
             </TabsContent>
+            )}
           </Tabs>
         </div>
 
@@ -1049,6 +1232,12 @@ const ProductDetail = () => {
             </div>
           )}
         </div>
+
+        {/* ── Spare Parts (equipment only, hidden when none) ── */}
+        {isEquipment && product.id && <SparePartsRail productId={product.id} />}
+
+        {/* ── Project Wizards — IKON consultancy signal ── */}
+        <ProjectWizardGrid />
       </div>
     </MainLayout>
   );
