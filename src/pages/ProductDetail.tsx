@@ -8,7 +8,7 @@ import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone, Bell, MessageCircle, Heart, Snowflake, ClipboardList } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone, Bell, MessageCircle, Heart, Snowflake, ClipboardList, DownloadCloud, Download } from "lucide-react";
 import { useSavedProductIds, useToggleSave } from "@/hooks/useSavedItems";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
@@ -496,17 +496,11 @@ const ProductDetail = () => {
             {/* Brand + Title */}
             {product.brand_name && (
               <div className="mb-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                  {product.brand_logo && (
-                    <img src={product.brand_logo} alt={product.brand_name} className="h-6 w-auto object-contain" />
-                  )}
+                {product.brand_logo ? (
+                  <img src={product.brand_logo} alt={product.brand_name} className="h-6 w-auto object-contain" />
+                ) : (
                   <span className="text-xs font-semibold text-primary uppercase tracking-widest">{product.brand_name}</span>
-                  {isEquipment && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-full">
-                      <Snowflake className="w-3 h-3" /> Cold-Chain Verified
-                    </span>
-                  )}
-                </div>
+                )}
               </div>
             )}
             <div className="flex items-start gap-2 mb-3">
@@ -574,17 +568,6 @@ const ProductDetail = () => {
               )}
             </div>
 
-            {/* Datasheet */}
-            {product.datasheet_url && (
-              <a
-                href={product.datasheet_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-primary hover:underline font-medium mt-4"
-              >
-                <FileText className="w-4 h-4" /> Download Datasheet (PDF)
-              </a>
-            )}
           </div>
 
           {/* COL 3: Price Card */}
