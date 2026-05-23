@@ -1232,6 +1232,12 @@ const ProductDetail = () => {
             </div>
           )}
         </div>
+
+        {/* ── Spare Parts (equipment only, hidden when none) ── */}
+        {isEquipment && product.id && <SparePartsRail productId={product.id} />}
+
+        {/* ── Project Wizards — IKON consultancy signal ── */}
+        <ProjectWizardGrid />
       </div>
     </MainLayout>
   );
