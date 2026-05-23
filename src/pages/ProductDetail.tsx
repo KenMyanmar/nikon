@@ -887,6 +887,28 @@ const ProductDetail = () => {
                 </div>
               )}
             </div>
+
+            {/* CAD & Spec Downloads — right sidebar, below CTA card */}
+            {product.datasheet_url && (
+              <div className="border border-border rounded-lg bg-card p-4 mt-4">
+                <h3 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2 mb-3">
+                  <DownloadCloud className="w-4 h-4 text-primary" /> CAD & Spec Downloads
+                </h3>
+                <a
+                  href={product.datasheet_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 border border-border rounded-lg p-3 hover:border-primary hover:bg-muted/30 transition group"
+                >
+                  <FileText className="w-5 h-5 text-red-600 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">Technical Specification</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">PDF</p>
+                  </div>
+                  <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0" />
+                </a>
+              </div>
+            )}
           </div>
         </div>
 
@@ -1159,6 +1181,23 @@ const ProductDetail = () => {
             </div>
           )}
         </div>
+
+        {/* ── Spare Parts (equipment only, hidden when none) ── */}
+        {/* ── Cold-Chain Verified — full-width block, equipment-only ── */}
+        {isEquipment && (
+          <section className="mt-10 rounded-xl bg-sky-50 border border-sky-200 p-6 md:p-8 flex items-center gap-6">
+            <ShieldCheck className="w-10 h-10 text-sky-700 shrink-0" />
+            <div className="flex-1">
+              <h3 className="text-lg md:text-xl font-bold text-sky-900">Cold-Chain Verified</h3>
+              <p className="text-sm text-sky-800 mt-1">
+                Equipment tested &amp; verified for consistent performance in cold-chain environments.
+              </p>
+            </div>
+            <div className="hidden md:flex w-20 h-20 rounded-full bg-white border-2 border-sky-300 items-center justify-center shrink-0">
+              <Snowflake className="w-10 h-10 text-sky-700" />
+            </div>
+          </section>
+        )}
 
         {/* ── Spare Parts (equipment only, hidden when none) ── */}
         {isEquipment && product.id && <SparePartsRail productId={product.id} />}
