@@ -376,15 +376,14 @@ const ProductDetail = () => {
   const infoRows: { label: string; value: string }[] = [];
   // Equipment detection — single source of truth
   const isEquipment = product.product_type === "equipment" || product.requires_quote === true;
-  const isRefrigeration = product.category_name === "Refrigeration System";
+  const hasPrice = Number(product.selling_price) > 0;
+  const isInStock = stockState === "in_stock";
 
   // Specs values cleaned for display (PNC duplicates etc.)
   const cleanedSpecs = specs.map(([k, v]) => [k, cleanAccessoryText(String(v))] as [string, string]);
 
-  // Build full category path for the specifications "Category" row
-  const categoryPath = [product.parent_category_name, product.category_name]
-    .filter(Boolean)
-    .join(" › ");
+  // Mockup-faithful category label: parent only (e.g. "Kitchen")
+  const categoryPath = product.parent_category_name || product.category_name || "";
 
   if (categoryPath) infoRows.push({ label: "Category", value: categoryPath });
 
