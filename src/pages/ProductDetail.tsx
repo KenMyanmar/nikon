@@ -638,14 +638,21 @@ const ProductDetail = () => {
 
               {/* Price */}
               <div className="border-t border-border pt-4">
-                {flashDeal ? (
+                {isEquipment ? (
+                  <div>
+                    <span className="text-2xl font-bold text-emerald-700">Quote on request</span>
+                    <span className="text-xs text-muted-foreground block mt-1">
+                      Pricing tailored to your project scope.
+                    </span>
+                  </div>
+                ) : flashDeal ? (
                   <div className="space-y-1">
                     <span className="text-2xl font-bold text-accent">
-                      {product.currency || "MMK"} {Number(flashDeal.flash_price).toLocaleString()}
+                      {formatMMK(flashDeal.flash_price)}
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-muted-foreground line-through">
-                        {product.currency || "MMK"} {Number(flashDeal.original_price).toLocaleString()}
+                        {formatMMK(flashDeal.original_price)}
                       </span>
                       <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                         -{flashDeal.discount_percentage || Math.round((1 - flashDeal.flash_price / flashDeal.original_price) * 100)}%
@@ -667,12 +674,12 @@ const ProductDetail = () => {
                   return (
                     <div>
                       <span className="text-2xl font-bold text-accent">
-                        {product.currency || "MMK"} {(promoPrice ?? basePrice).toLocaleString()}
+                        {formatMMK(promoPrice ?? basePrice)}
                       </span>
                       {promoPrice !== null && (
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-sm text-muted-foreground line-through">
-                            {product.currency || "MMK"} {basePrice.toLocaleString()}
+                            {formatMMK(basePrice)}
                           </span>
                           <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
                             {promotion!.type === "percentage" ? `-${promotion!.discount_value}%` : `-${promotion!.discount_value?.toLocaleString()}`}
@@ -689,8 +696,8 @@ const ProductDetail = () => {
                 )}
               </div>
 
-              {/* Bulk Pricing Tiers */}
-              {pricingTiers && pricingTiers.length > 0 && (
+              {/* Bulk Pricing Tiers — hidden for equipment */}
+              {!isEquipment && pricingTiers && pricingTiers.length > 0 && (
                 <div className="space-y-2">
                   <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
                     <Package className="w-3.5 h-3.5 text-primary" />
@@ -718,7 +725,7 @@ const ProductDetail = () => {
                             </span>
                           </div>
                           <span className={`text-sm font-bold ${isActive ? "text-primary" : "text-foreground"}`}>
-                            {product.currency || "MMK"} {Number(tier.unit_price).toLocaleString()}
+                            {formatMMK(tier.unit_price)}
                           </span>
                         </button>
                       );
@@ -727,11 +734,11 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Fallback when no pricing tiers */}
-              {(!pricingTiers || pricingTiers.length === 0) && product.selling_price && (
+              {/* Fallback when no pricing tiers (non-equipment only) */}
+              {!isEquipment && (!pricingTiers || pricingTiers.length === 0) && product.selling_price && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Package className="w-4 h-4 text-primary shrink-0" />
-                  <span>📦 Bulk pricing available — request a quote below</span>
+                  <span>Bulk pricing available — request a quote below</span>
                 </div>
               )}
 
