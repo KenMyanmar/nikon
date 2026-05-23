@@ -930,20 +930,9 @@ const ProductDetail = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1 flex-wrap h-auto">
               <TabsTrigger value="description" className="text-sm font-semibold">Description</TabsTrigger>
-              {!isEquipment && (
-                <TabsTrigger value="features" className="text-sm font-semibold">Features</TabsTrigger>
-              )}
+              <TabsTrigger value="features" className="text-sm font-semibold">Features</TabsTrigger>
               <TabsTrigger value="specifications" className="text-sm font-semibold">Specifications</TabsTrigger>
-              {isEquipment && (
-                <>
-                  <TabsTrigger value="installation" className="text-sm font-semibold">Installation Requirements</TabsTrigger>
-                  <TabsTrigger value="service" className="text-sm font-semibold">Service &amp; Support</TabsTrigger>
-                  <TabsTrigger value="warranty" className="text-sm font-semibold">Warranty</TabsTrigger>
-                </>
-              )}
-              {!isEquipment && (
-                <TabsTrigger value="reviews" className="text-sm font-semibold">Customer Reviews</TabsTrigger>
-              )}
+              <TabsTrigger value="reviews" className="text-sm font-semibold">Customer Reviews</TabsTrigger>
             </TabsList>
 
             <TabsContent value="description" className="mt-4">
