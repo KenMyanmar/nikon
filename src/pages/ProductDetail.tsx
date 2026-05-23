@@ -977,13 +977,13 @@ const ProductDetail = () => {
                         <td className="px-5 py-3 text-foreground font-semibold">{value}</td>
                       </tr>
                     ))}
-                    {specs.map(([key, val], i) => (
+                    {cleanedSpecs.map(([key, val], i) => (
                       <tr key={key} className={(infoRows.length + i) % 2 === 0 ? "bg-muted/30" : ""}>
                         <td className="px-5 py-3 font-medium text-muted-foreground w-1/3 border-r border-border">{key}</td>
-                        <td className="px-5 py-3 text-foreground font-semibold">{String(val)}</td>
+                        <td className="px-5 py-3 text-foreground font-semibold">{val}</td>
                       </tr>
                     ))}
-                    {infoRows.length === 0 && specs.length === 0 && (
+                    {infoRows.length === 0 && cleanedSpecs.length === 0 && (
                       <tr>
                         <td colSpan={2} className="px-5 py-8 text-center text-muted-foreground">No specifications available.</td>
                       </tr>
@@ -992,6 +992,66 @@ const ProductDetail = () => {
                 </table>
               </div>
             </TabsContent>
+
+            {isEquipment && (
+              <>
+                <TabsContent value="installation" className="mt-4">
+                  <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-3">
+                    <h3 className="text-base font-semibold text-foreground">Installation Requirements</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {(product.specifications as any)?.installation_requirements ||
+                        "Contact our team for full installation and site-prep details (utilities, clearances, ventilation, and electrical or gas connections)."}
+                    </p>
+                    <a
+                      href={`https://wa.me/959890090301?text=${encodeURIComponent(`Installation question — SKU ${product.stock_code || ""}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block text-sm text-emerald-700 underline hover:text-emerald-800"
+                    >
+                      Talk to a Specialist
+                    </a>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="service" className="mt-4">
+                  <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-3">
+                    <h3 className="text-base font-semibold text-foreground">Service &amp; Support</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {(product.specifications as any)?.service_support ||
+                        "IKON Mart provides commissioning, operator training, and on-site service through our Myanmar engineering team."}
+                    </p>
+                    <a
+                      href={`https://wa.me/959890090301?text=${encodeURIComponent(`Service question — SKU ${product.stock_code || ""}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block text-sm text-emerald-700 underline hover:text-emerald-800"
+                    >
+                      Talk to a Specialist
+                    </a>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="warranty" className="mt-4">
+                  <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-3">
+                    <h3 className="text-base font-semibold text-foreground">Warranty</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {(product.specifications as any)?.warranty ||
+                        "Standard manufacturer warranty applies. Contact our team for full warranty terms and extended-coverage options."}
+                    </p>
+                    <a
+                      href={`https://wa.me/959890090301?text=${encodeURIComponent(`Warranty question — SKU ${product.stock_code || ""}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block text-sm text-emerald-700 underline hover:text-emerald-800"
+                    >
+                      Talk to a Specialist
+                    </a>
+                  </div>
+                </TabsContent>
+              </>
+            )}
+
+            {!isEquipment && (
 
             <TabsContent value="reviews" className="mt-4">
               <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-8">
