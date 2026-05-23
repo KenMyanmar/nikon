@@ -742,8 +742,8 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Quantity — hidden for out_of_stock */}
-              {stockState !== 'out_of_stock' && (
+              {/* Quantity — hidden for equipment and out_of_stock */}
+              {!isEquipment && stockState !== 'out_of_stock' && (
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Quantity</label>
                   <div className="flex items-center border border-border rounded-lg overflow-hidden w-full">
@@ -770,82 +770,123 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Primary CTA — dynamic per stock state */}
-              {stockState === 'out_of_stock' ? (
-                <button
-                  onClick={() => {
-                    trackEvent({ event: 'notify_me_clicked', product_id: product.id, stock_state: stockState });
-                    toast({ title: "We'll notify you!", description: "You'll be notified when this product is back in stock." });
-                  }}
-                  className={`w-full ${stock.primaryCtaClass} font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 text-base shadow-md hover:shadow-lg active:scale-[0.98]`}
-                >
-                  <Bell className="w-5 h-5" />
-                  {stock.primaryCta}
-                </button>
+              {/* CTAs — equipment swaps Add-to-Cart for Request-a-Quote */}
+              {isEquipment ? (
+                <>
+                  <button
+                    onClick={() => {
+                      trackEvent({ event: 'request_quote_clicked', product_id: product.id, stock_state: stockState, properties: { source: 'equipment_pdp' } });
+                      handleRequestQuote();
+                    }}
+                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 text-base shadow-md hover:shadow-lg active:scale-[0.98]"
+                  >
+                    <FileText className="w-5 h-5" />
+                    Request a Quote
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleAddToProjectList}
+                    className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 rounded-button transition-all flex items-center justify-center gap-2 text-sm"
+                  >
+                    <ClipboardList className="w-4 h-4" /> Add to Project List
+                  </button>
+                  <a
+                    href={`https://wa.me/959890090301?text=${encodeURIComponent(`Hi, I'd like to discuss equipment SKU ${product.stock_code || product.description || ""}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-center text-sm text-emerald-700 underline hover:text-emerald-800 mt-1"
+                  >
+                    Talk to a Specialist on WhatsApp
+                  </a>
+                </>
               ) : (
-                <button
-                  onClick={() => {
-                    trackEvent({ event: stockState === 'backorder' ? 'backorder_clicked' : stockState === 'preorder' ? 'preorder_clicked' : 'add_to_cart_clicked', product_id: product.id, stock_state: stockState, properties: { quantity: qty, price: product.selling_price } });
-                    if (product.id) addToCart(product.id, qty, product.description || "");
-                    if (stockState === 'low_stock') {
-                      toast({ title: "Added to cart!", description: `Only ${product.onhand_qty} left in stock.` });
-                    }
-                  }}
-                  disabled={isAdding}
-                  className={`w-full ${stock.primaryCtaClass} font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 disabled:opacity-60 text-base shadow-md hover:shadow-lg active:scale-[0.98]`}
-                >
-                  {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
-                  {stock.primaryCta}
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                <>
+                  {/* Primary CTA — dynamic per stock state */}
+                  {stockState === 'out_of_stock' ? (
+                    <button
+                      onClick={() => {
+                        trackEvent({ event: 'notify_me_clicked', product_id: product.id, stock_state: stockState });
+                        toast({ title: "We'll notify you!", description: "You'll be notified when this product is back in stock." });
+                      }}
+                      className={`w-full ${stock.primaryCtaClass} font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 text-base shadow-md hover:shadow-lg active:scale-[0.98]`}
+                    >
+                      <Bell className="w-5 h-5" />
+                      {stock.primaryCta}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        trackEvent({ event: stockState === 'backorder' ? 'backorder_clicked' : stockState === 'preorder' ? 'preorder_clicked' : 'add_to_cart_clicked', product_id: product.id, stock_state: stockState, properties: { quantity: qty, price: product.selling_price } });
+                        if (product.id) addToCart(product.id, qty, product.description || "");
+                        if (stockState === 'low_stock') {
+                          toast({ title: "Added to cart!", description: `Only ${product.onhand_qty} left in stock.` });
+                        }
+                      }}
+                      disabled={isAdding}
+                      className={`w-full ${stock.primaryCtaClass} font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 disabled:opacity-60 text-base shadow-md hover:shadow-lg active:scale-[0.98]`}
+                    >
+                      {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
+                      {stock.primaryCta}
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  )}
+
+                  {/* Secondary CTA — single Bulk Quote button */}
+                  <button
+                    onClick={() => {
+                      trackEvent({ event: 'bulk_quote_clicked', product_id: product.id, stock_state: stockState, properties: { source: 'product_detail' } });
+                      handleRequestQuote();
+                    }}
+                    className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 rounded-button transition-all flex items-center justify-center gap-2 text-sm"
+                  >
+                    <FileText className="w-4 h-4" /> Request Bulk Quote
+                  </button>
+                </>
               )}
 
-              {/* Secondary CTA — single Bulk Quote button */}
-              <button
-                onClick={() => {
-                  trackEvent({ event: 'bulk_quote_clicked', product_id: product.id, stock_state: stockState, properties: { source: 'product_detail' } });
-                  handleRequestQuote();
-                }}
-                className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 rounded-button transition-all flex items-center justify-center gap-2 text-sm"
-              >
-                <FileText className="w-4 h-4" /> Request Bulk Quote
-              </button>
-
-              {/* Reassurance for backorder/preorder */}
-              {(stockState === 'backorder' || stockState === 'preorder') && (
+              {/* Reassurance for backorder/preorder (non-equipment) */}
+              {!isEquipment && (stockState === 'backorder' || stockState === 'preorder') && (
                 <p className="text-xs text-muted-foreground text-center">You won't be charged until item ships</p>
               )}
 
-              {/* Payment Methods */}
-              <div className="pt-2 border-t border-border">
-                <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1 mb-2">
-                  <CreditCard className="w-3.5 h-3.5" /> We Accept
-                </span>
-                <div className="flex gap-1.5 flex-wrap">
-                  {paymentMethods.map((pm) => (
-                    <span key={pm} className="text-[10px] font-semibold text-foreground bg-muted border border-border rounded px-2 py-0.5">
-                      {pm}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Trust / Shipping — dynamic per state */}
-              <div className="space-y-2 text-xs text-muted-foreground pt-2 border-t border-border">
-                {stock.shippingMessage && (
-                  <span className="flex items-center gap-1.5">
-                    <Truck className="w-4 h-4 text-primary" /> {stock.shippingMessage}
+              {/* Payment Methods — hidden on equipment (quote flow) */}
+              {!isEquipment && (
+                <div className="pt-2 border-t border-border">
+                  <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1 mb-2">
+                    <CreditCard className="w-3.5 h-3.5" /> We Accept
                   </span>
-                )}
-                {stockState === 'out_of_stock' && (
-                  <a href="/contact" className="flex items-center gap-1.5 text-primary hover:underline">
-                    <MessageCircle className="w-4 h-4" /> Contact us for availability
-                  </a>
-                )}
-                <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-primary" /> Trusted by 1,000+ buyers
-                </span>
-              </div>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {paymentMethods.map((pm) => (
+                      <span key={pm} className="text-[10px] font-semibold text-foreground bg-muted border border-border rounded px-2 py-0.5">
+                        {pm}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Trust / Shipping — equipment gets B2B badges, others get consumer strip */}
+              {isEquipment ? (
+                <div className="pt-2 border-t border-border">
+                  <EquipmentBadgesRow specifications={product.specifications as Record<string, any> | null} />
+                </div>
+              ) : (
+                <div className="space-y-2 text-xs text-muted-foreground pt-2 border-t border-border">
+                  {stock.shippingMessage && (
+                    <span className="flex items-center gap-1.5">
+                      <Truck className="w-4 h-4 text-primary" /> {stock.shippingMessage}
+                    </span>
+                  )}
+                  {stockState === 'out_of_stock' && (
+                    <a href="/contact" className="flex items-center gap-1.5 text-primary hover:underline">
+                      <MessageCircle className="w-4 h-4" /> Contact us for availability
+                    </a>
+                  )}
+                  <span className="flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-primary" /> Trusted by 1,000+ buyers
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
