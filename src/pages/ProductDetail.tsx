@@ -594,8 +594,8 @@ const ProductDetail = () => {
               <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${stock.textClass} ${stock.bgClass} px-3 py-1 rounded-full`}>
                 <span className={`w-2 h-2 ${stock.dotClass} rounded-full`}></span>
                 {stock.label}
-                {stockState === 'low_stock' && product.onhand_qty ? ` — Only ${product.onhand_qty} left` : ''}
-                {stockState === 'in_stock' && product.onhand_qty ? ` — ${product.onhand_qty} available` : ''}
+                {!isEquipment && stockState === 'low_stock' && product.onhand_qty ? ` — Only ${product.onhand_qty} left` : ''}
+                {!isEquipment && stockState === 'in_stock' && product.onhand_qty ? ` — ${product.onhand_qty} available` : ''}
               </span>
 
               {/* Promotion banner */}
