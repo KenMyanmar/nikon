@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { getStockState, STOCK_STATE_CONFIG, trackEvent } from "@/lib/analytics";
 import { formatMMK, cleanAccessoryText } from "@/lib/format";
-import EquipmentBadgesRow from "@/components/product/EquipmentBadgesRow";
+import { Lock } from "lucide-react";
 import SparePartsRail from "@/components/product/SparePartsRail";
 import ProjectWizardGrid from "@/components/product/ProjectWizardGrid";
 
@@ -376,15 +376,14 @@ const ProductDetail = () => {
   const infoRows: { label: string; value: string }[] = [];
   // Equipment detection — single source of truth
   const isEquipment = product.product_type === "equipment" || product.requires_quote === true;
-  const isRefrigeration = product.category_name === "Refrigeration System";
+  const hasPrice = Number(product.selling_price) > 0;
+  const isInStock = stockState === "in_stock";
 
   // Specs values cleaned for display (PNC duplicates etc.)
   const cleanedSpecs = specs.map(([k, v]) => [k, cleanAccessoryText(String(v))] as [string, string]);
 
-  // Build full category path for the specifications "Category" row
-  const categoryPath = [product.parent_category_name, product.category_name]
-    .filter(Boolean)
-    .join(" › ");
+  // Mockup-faithful category label: parent only (e.g. "Kitchen")
+  const categoryPath = product.parent_category_name || product.category_name || "";
 
   if (categoryPath) infoRows.push({ label: "Category", value: categoryPath });
 
@@ -497,22 +496,17 @@ const ProductDetail = () => {
             {/* Brand + Title */}
             {product.brand_name && (
               <div className="mb-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   {product.brand_logo && (
                     <img src={product.brand_logo} alt={product.brand_name} className="h-6 w-auto object-contain" />
                   )}
                   <span className="text-xs font-semibold text-primary uppercase tracking-widest">{product.brand_name}</span>
-                  {isEquipment && isRefrigeration && (
+                  {isEquipment && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-full">
                       <Snowflake className="w-3 h-3" /> Cold-Chain Verified
                     </span>
                   )}
                 </div>
-                {/* Brand pillar — country + service one-liner */}
-                <p className="text-xs text-muted-foreground mt-1">
-                  {product.brand_country ? `Made in ${product.brand_country} · ` : ""}
-                  Sold and serviced by IKON Mart Myanmar
-                </p>
               </div>
             )}
             <div className="flex items-start gap-2 mb-3">
@@ -600,8 +594,8 @@ const ProductDetail = () => {
               <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${stock.textClass} ${stock.bgClass} px-3 py-1 rounded-full`}>
                 <span className={`w-2 h-2 ${stock.dotClass} rounded-full`}></span>
                 {stock.label}
-                {stockState === 'low_stock' && product.onhand_qty ? ` — Only ${product.onhand_qty} left` : ''}
-                {stockState === 'in_stock' && product.onhand_qty ? ` — ${product.onhand_qty} available` : ''}
+                {!isEquipment && stockState === 'low_stock' && product.onhand_qty ? ` — Only ${product.onhand_qty} left` : ''}
+                {!isEquipment && stockState === 'in_stock' && product.onhand_qty ? ` — ${product.onhand_qty} available` : ''}
               </span>
 
               {/* Promotion banner */}
@@ -638,11 +632,20 @@ const ProductDetail = () => {
 
               {/* Price */}
               <div className="border-t border-border pt-4">
-                {isEquipment ? (
+                {isEquipment && !hasPrice ? (
                   <div>
                     <span className="text-2xl font-bold text-emerald-700">Quote on request</span>
                     <span className="text-xs text-muted-foreground block mt-1">
                       Pricing tailored to your project scope.
+                    </span>
+                  </div>
+                ) : isEquipment && hasPrice ? (
+                  <div>
+                    <span className="text-2xl font-bold text-accent">
+                      {formatMMK(product.selling_price)}
+                    </span>
+                    <span className="text-xs text-muted-foreground block mt-0.5">
+                      / {product.unit_of_measure || "unit"}
                     </span>
                   </div>
                 ) : flashDeal ? (
@@ -770,34 +773,36 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* CTAs — equipment swaps Add-to-Cart for Request-a-Quote */}
+              {/* CTAs — equipment uses STATE matrix per mockup */}
               {isEquipment ? (
                 <>
+                  {hasPrice && isInStock && (
+                    <button
+                      onClick={() => {
+                        trackEvent({ event: 'add_to_cart_clicked', product_id: product.id, stock_state: stockState, properties: { quantity: qty, price: product.selling_price } });
+                        if (product.id) addToCart(product.id, qty, product.description || "");
+                      }}
+                      disabled={isAdding}
+                      className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 disabled:opacity-60 text-base shadow-md hover:shadow-lg active:scale-[0.98]"
+                    >
+                      {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
+                      Add to Cart
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       trackEvent({ event: 'request_quote_clicked', product_id: product.id, stock_state: stockState, properties: { source: 'equipment_pdp' } });
                       handleRequestQuote();
                     }}
-                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 text-base shadow-md hover:shadow-lg active:scale-[0.98]"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3.5 rounded-button transition-all flex items-center justify-center gap-2.5 text-base shadow-md hover:shadow-lg active:scale-[0.98]"
                   >
-                    <FileText className="w-5 h-5" />
-                    Request a Quote
-                    <ArrowRight className="w-4 h-4" />
+                    <Phone className="w-5 h-5" /> Request a Quote
                   </button>
-                  <button
-                    onClick={handleAddToProjectList}
-                    className="w-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 rounded-button transition-all flex items-center justify-center gap-2 text-sm"
-                  >
-                    <ClipboardList className="w-4 h-4" /> Add to Project List
-                  </button>
-                  <a
-                    href={`https://wa.me/959890090301?text=${encodeURIComponent(`Hi, I'd like to discuss equipment SKU ${product.stock_code || product.description || ""}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-center text-sm text-emerald-700 underline hover:text-emerald-800 mt-1"
-                  >
-                    Talk to a Specialist on WhatsApp
-                  </a>
+                  {hasPrice && !isInStock && (
+                    <p className="text-xs text-muted-foreground text-center">
+                      Out of stock — request a quote for lead time
+                    </p>
+                  )}
                 </>
               ) : (
                 <>
@@ -865,10 +870,21 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Trust / Shipping — equipment gets B2B badges, others get consumer strip */}
+              {/* Trust strip — equipment mirrors approved mockup */}
               {isEquipment ? (
-                <div className="pt-2 border-t border-border">
-                  <EquipmentBadgesRow specifications={product.specifications as Record<string, any> | null} />
+                <div className="space-y-2 text-xs text-muted-foreground pt-2 border-t border-border">
+                  <p className="text-xs text-foreground">
+                    <span className="font-semibold">Estimated Delivery:</span> 3–5 Business Days
+                  </p>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle className="w-4 h-4 text-emerald-500" /> Free Shipping on orders over MMK 1,000,000
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle className="w-4 h-4 text-emerald-500" /> 30-Day Return Policy
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Lock className="w-4 h-4 text-primary" /> Secure Payment
+                  </span>
                 </div>
               ) : (
                 <div className="space-y-2 text-xs text-muted-foreground pt-2 border-t border-border">
@@ -914,20 +930,9 @@ const ProductDetail = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1 flex-wrap h-auto">
               <TabsTrigger value="description" className="text-sm font-semibold">Description</TabsTrigger>
-              {!isEquipment && (
-                <TabsTrigger value="features" className="text-sm font-semibold">Features</TabsTrigger>
-              )}
+              <TabsTrigger value="features" className="text-sm font-semibold">Features</TabsTrigger>
               <TabsTrigger value="specifications" className="text-sm font-semibold">Specifications</TabsTrigger>
-              {isEquipment && (
-                <>
-                  <TabsTrigger value="installation" className="text-sm font-semibold">Installation Requirements</TabsTrigger>
-                  <TabsTrigger value="service" className="text-sm font-semibold">Service &amp; Support</TabsTrigger>
-                  <TabsTrigger value="warranty" className="text-sm font-semibold">Warranty</TabsTrigger>
-                </>
-              )}
-              {!isEquipment && (
-                <TabsTrigger value="reviews" className="text-sm font-semibold">Customer Reviews</TabsTrigger>
-              )}
+              <TabsTrigger value="reviews" className="text-sm font-semibold">Customer Reviews</TabsTrigger>
             </TabsList>
 
             <TabsContent value="description" className="mt-4">
@@ -992,66 +997,6 @@ const ProductDetail = () => {
                 </table>
               </div>
             </TabsContent>
-
-            {isEquipment && (
-              <>
-                <TabsContent value="installation" className="mt-4">
-                  <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-3">
-                    <h3 className="text-base font-semibold text-foreground">Installation Requirements</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {(product.specifications as any)?.installation_requirements ||
-                        "Contact our team for full installation and site-prep details (utilities, clearances, ventilation, and electrical or gas connections)."}
-                    </p>
-                    <a
-                      href={`https://wa.me/959890090301?text=${encodeURIComponent(`Installation question — SKU ${product.stock_code || ""}`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block text-sm text-emerald-700 underline hover:text-emerald-800"
-                    >
-                      Talk to a Specialist
-                    </a>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="service" className="mt-4">
-                  <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-3">
-                    <h3 className="text-base font-semibold text-foreground">Service &amp; Support</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {(product.specifications as any)?.service_support ||
-                        "IKON Mart provides commissioning, operator training, and on-site service through our Myanmar engineering team."}
-                    </p>
-                    <a
-                      href={`https://wa.me/959890090301?text=${encodeURIComponent(`Service question — SKU ${product.stock_code || ""}`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block text-sm text-emerald-700 underline hover:text-emerald-800"
-                    >
-                      Talk to a Specialist
-                    </a>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="warranty" className="mt-4">
-                  <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-3">
-                    <h3 className="text-base font-semibold text-foreground">Warranty</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {(product.specifications as any)?.warranty ||
-                        "Standard manufacturer warranty applies. Contact our team for full warranty terms and extended-coverage options."}
-                    </p>
-                    <a
-                      href={`https://wa.me/959890090301?text=${encodeURIComponent(`Warranty question — SKU ${product.stock_code || ""}`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block text-sm text-emerald-700 underline hover:text-emerald-800"
-                    >
-                      Talk to a Specialist
-                    </a>
-                  </div>
-                </TabsContent>
-              </>
-            )}
-
-            {!isEquipment && (
 
             <TabsContent value="reviews" className="mt-4">
               <div className="bg-card rounded-card shadow-card border border-border p-6 space-y-8">
@@ -1177,7 +1122,6 @@ const ProductDetail = () => {
                 </div>
               </div>
             </TabsContent>
-            )}
           </Tabs>
         </div>
 
