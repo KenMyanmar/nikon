@@ -1177,6 +1177,7 @@ const ProductDetail = () => {
                 </div>
               </div>
             </TabsContent>
+            )}
           </Tabs>
         </div>
 
