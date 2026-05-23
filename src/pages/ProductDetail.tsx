@@ -8,7 +8,7 @@ import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone, Bell, MessageCircle, Heart } from "lucide-react";
+import { Minus, Plus, ShoppingCart, FileText, Loader2, Zap, Truck, Star, Package, ShieldCheck, ArrowRight, CreditCard, CheckCircle, Phone, Bell, MessageCircle, Heart, Snowflake, ClipboardList } from "lucide-react";
 import { useSavedProductIds, useToggleSave } from "@/hooks/useSavedItems";
 import { useAddToCart } from "@/hooks/useCart";
 import { useMarketingData } from "@/hooks/useMarketingData";
@@ -16,6 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { getStockState, STOCK_STATE_CONFIG, trackEvent } from "@/lib/analytics";
+import { formatMMK, cleanAccessoryText } from "@/lib/format";
+import EquipmentBadgesRow from "@/components/product/EquipmentBadgesRow";
+import SparePartsRail from "@/components/product/SparePartsRail";
+import ProjectWizardGrid from "@/components/product/ProjectWizardGrid";
 
 const renderStars = (rating: number, size = 4) => {
   const rounded = Math.round(rating);
