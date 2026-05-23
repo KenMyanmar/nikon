@@ -195,7 +195,9 @@ const RequestQuotePage = () => {
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const fromCart = searchParams.get("from") === "cart";
-  const productId = searchParams.get("product");
+  // Accept legacy `?product=<uuid>` and new `?product_id=<uuid>&sku=<code>`
+  const productId = searchParams.get("product_id") || searchParams.get("product");
+  const skuParam = searchParams.get("sku");
   const serviceSlug = searchParams.get("service");
 
   // Lookup service by slug for prefill banner
