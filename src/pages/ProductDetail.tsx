@@ -496,22 +496,17 @@ const ProductDetail = () => {
             {/* Brand + Title */}
             {product.brand_name && (
               <div className="mb-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   {product.brand_logo && (
                     <img src={product.brand_logo} alt={product.brand_name} className="h-6 w-auto object-contain" />
                   )}
                   <span className="text-xs font-semibold text-primary uppercase tracking-widest">{product.brand_name}</span>
-                  {isEquipment && isRefrigeration && (
+                  {isEquipment && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-full">
                       <Snowflake className="w-3 h-3" /> Cold-Chain Verified
                     </span>
                   )}
                 </div>
-                {/* Brand pillar — country + service one-liner */}
-                <p className="text-xs text-muted-foreground mt-1">
-                  {product.brand_country ? `Made in ${product.brand_country} · ` : ""}
-                  Sold and serviced by IKON Mart Myanmar
-                </p>
               </div>
             )}
             <div className="flex items-start gap-2 mb-3">
