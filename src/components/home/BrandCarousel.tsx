@@ -24,7 +24,7 @@ const BrandCarousel = () => {
     <section className="py-12 md:py-16 bg-card">
       <div className="container mx-auto px-4 text-center mb-8">
         <h2 className="text-h2 text-foreground">Trusted by the World's Best Brands</h2>
-        <p className="text-sm text-ikon-text-secondary mt-2">Authorized distributor of 160+ premium international brands</p>
+        <p className="text-sm text-ikon-text-secondary mt-2">Premium international brands, curated for Myanmar HoReCa</p>
       </div>
       <div className="overflow-hidden">
         <div className="flex animate-scroll-x">

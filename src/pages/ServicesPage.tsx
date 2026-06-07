@@ -8,8 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useServices } from "@/hooks/useServices";
 import ServiceCard from "@/components/services/ServiceCard";
 import ClientLogos from "@/components/home/ClientLogos";
+import { BRAND } from "@/config/brand";
 
-const TITLE = "Our Services — IKON Mart";
+const TITLE = `Our Services — ${BRAND.name}`;
 const DESC =
   "Turnkey hospitality solutions: commercial laundry design, kitchen installation, distribution, maintenance, and training across Myanmar.";
 

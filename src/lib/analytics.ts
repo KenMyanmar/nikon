@@ -16,7 +16,7 @@ export function trackEvent({ event, product_id, stock_state, properties = {} }: 
     ...properties,
   };
 
-  console.log('[IKON Analytics]', JSON.stringify(payload));
+  console.log('[Analytics]', JSON.stringify(payload));
 }
 
 export function getStockState(product: {

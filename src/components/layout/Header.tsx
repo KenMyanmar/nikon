@@ -5,7 +5,8 @@ import { DesktopMegaNav, MobileMegaNav } from "./MegaMenu";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useCartCount } from "@/hooks/useCart";
-import ikonMartLogo from "@/assets/ikon-mart-logo.png";
+import brandLogo from "@/assets/brand-logo-placeholder.svg";
+import { BRAND } from "@/config/brand";
 
 /**
  * Version A.4 header (old-style marketplace concept).
@@ -89,7 +90,7 @@ const Header = () => {
             <div className="relative z-50 flex items-end justify-center self-end overflow-visible" style={{ height: BUMP_H }}>
               <Link
                 to="/"
-                aria-label="IKON Mart — Home"
+                aria-label={`${BRAND.name} — Home`}
                 className="relative block"
                 style={{ width: SVG_W, height: BUMP_H, filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.18))" }}
               >
@@ -105,8 +106,8 @@ const Header = () => {
                   />
                 </svg>
                 <img
-                  src={ikonMartLogo}
-                  alt="IKON Mart"
+                  src={brandLogo}
+                  alt={BRAND.name}
                   className="absolute left-1/2 -translate-x-1/2 max-h-[28px] w-auto object-contain"
                   style={{ top: 6 }}
                 />
@@ -200,7 +201,7 @@ const Header = () => {
           </button>
 
           <Link to="/" className="flex items-center gap-2">
-            <img src="/favicon.png" alt="IKON Mart" className="h-9 w-auto object-contain" />
+            <img src="/favicon.svg" alt={BRAND.name} className="h-9 w-auto object-contain" />
           </Link>
 
           <div className="ml-auto flex items-center gap-3">

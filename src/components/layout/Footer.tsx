@@ -4,17 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   MapPin, Phone, Mail, Clock, Facebook, Instagram,
-  MessageCircle, MessageSquare, ChevronDown,
-  Calendar, Award, BadgeCheck,
+  MessageCircle, MessageSquare, ChevronDown, Star,
 } from "lucide-react";
+import { BRAND } from "@/config/brand";
 
 const ABOUT_LINKS = [
   { label: "Our Story", href: "/about" },
   { label: "Our Services", href: "/services" },
-  { label: "Why IKON", href: "/about#why-ikon" },
   { label: "Our Brands", href: "/brands" },
-  { label: "Our Projects", href: "/about#projects" },
-  { label: "Showrooms", href: "/about#showrooms" },
   { label: "Careers", href: "/careers" },
 ];
 
@@ -35,23 +32,11 @@ const RESOURCE_LINKS = [
 ];
 
 const SOCIALS = [
-  { icon: Facebook, href: "https://facebook.com/ikonmart", label: "Facebook" },
-  { icon: Instagram, href: "https://instagram.com/ikonmart", label: "Instagram" },
-  { icon: MessageCircle, href: "https://m.me/ikonmart", label: "Messenger" },
-  { icon: MessageSquare, href: "https://wa.me/95XXXXXXXXX", label: "WhatsApp" },
-  { icon: Mail, href: "mailto:ikonmartecommerce@gmail.com", label: "Email" },
-];
-
-/**
- * Prompt 6: Pillars replaced concrete-claim copy. Vague "Luxury / Quality /
- * Reliability" exec-suite copy retained on /about Vision section, not Footer.
- * Icons rendered at 20px in muted-foreground (no amber, no decorative motion)
- * to keep visual emphasis on copy.
- */
-const PILLARS = [
-  { icon: Calendar, title: "Since 1995", tagline: "30 years supplying Myanmar HoReCa" },
-  { icon: Award, title: "160+ Brands", tagline: "Authorized distributor network" },
-  { icon: BadgeCheck, title: "CCI France Myanmar", tagline: "Member" },
+  { icon: Facebook, href: BRAND.socials.facebook, label: "Facebook" },
+  { icon: Instagram, href: BRAND.socials.instagram, label: "Instagram" },
+  { icon: MessageCircle, href: BRAND.socials.messenger, label: "Messenger" },
+  { icon: MessageSquare, href: BRAND.socials.whatsapp, label: "WhatsApp" },
+  { icon: Mail, href: `mailto:${BRAND.email}`, label: "Email" },
 ];
 
 const PAYMENTS = ["KBZ Pay", "Wave", "CB Pay", "Bank Transfer", "COD"];
@@ -143,7 +128,7 @@ const Footer = () => {
 
   const handleSubscribe = () => {
     if (email) {
-      window.location.href = `mailto:ikonmartecommerce@gmail.com?subject=Newsletter%20Signup&body=Please add ${encodeURIComponent(email)} to the newsletter.`;
+      window.location.href = `mailto:${BRAND.email}?subject=Newsletter%20Signup&body=Please add ${encodeURIComponent(email)} to the newsletter.`;
     }
   };
 
@@ -181,21 +166,21 @@ const Footer = () => {
             {/* Col 1 — About */}
             <div>
               <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary-foreground">
-                About IKON
+                About {BRAND.name}
               </h4>
               <FooterLinks links={ABOUT_LINKS} />
               <div className="mt-5 space-y-1.5 text-xs text-primary-foreground/70">
                 <div className="flex items-start gap-1.5">
                   <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
-                  <span>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</span>
+                  <span>{BRAND.address}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Phone className="h-3 w-3 shrink-0" />
-                  <span>09 89009 0301</span>
+                  <span>{BRAND.phone}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Mail className="h-3 w-3 shrink-0" />
-                  <span>ikonmartecommerce@gmail.com</span>
+                  <span>{BRAND.email}</span>
                 </div>
               </div>
             </div>
@@ -251,35 +236,34 @@ const Footer = () => {
               </div>
               <div className="space-y-1.5 text-xs text-primary-foreground/70">
                 <div className="flex items-center gap-1.5">
-                  <MapPin className="h-3 w-3 shrink-0" /> Mingalardon, Yangon
+                  <MapPin className="h-3 w-3 shrink-0" /> {BRAND.address}
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Phone className="h-3 w-3 shrink-0" /> 09 89009 0301
+                  <Phone className="h-3 w-3 shrink-0" /> {BRAND.phone}
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Clock className="h-3 w-3 shrink-0" /> Mon–Sat: 9:00 AM – 5:00 PM
                 </div>
-                <p className="mt-2 text-primary-foreground/60">CCI France Myanmar Member</p>
               </div>
             </div>
           </div>
 
           {/* Mobile accordion */}
           <div className="md:hidden">
-            <AccordionSection title="About IKON" open={openSection === "about"} onToggle={() => toggle("about")}>
+            <AccordionSection title={`About ${BRAND.name}`} open={openSection === "about"} onToggle={() => toggle("about")}>
               <FooterLinks links={ABOUT_LINKS} />
               <div className="mt-3 space-y-1.5 text-xs text-primary-foreground/70">
                 <div className="flex items-start gap-1.5">
                   <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
-                  <span>No. 11, Swal Taw Street, Kyan Khin Su Ward, Mingalardon Township, Yangon</span>
+                  <span>{BRAND.address}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Phone className="h-3 w-3 shrink-0" />
-                  <span>09 89009 0301</span>
+                  <span>{BRAND.phone}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Mail className="h-3 w-3 shrink-0" />
-                  <span>ikonmartecommerce@gmail.com</span>
+                  <span>{BRAND.email}</span>
                 </div>
               </div>
             </AccordionSection>
@@ -313,10 +297,10 @@ const Footer = () => {
               </div>
               <div className="space-y-1.5 text-xs text-primary-foreground/70">
                 <div className="flex items-center gap-1.5">
-                  <MapPin className="h-3 w-3 shrink-0" /> Mingalardon, Yangon
+                  <MapPin className="h-3 w-3 shrink-0" /> {BRAND.address}
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Phone className="h-3 w-3 shrink-0" /> 09 89009 0301
+                  <Phone className="h-3 w-3 shrink-0" /> {BRAND.phone}
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Clock className="h-3 w-3 shrink-0" /> Mon–Sat: 9:00 AM – 5:00 PM
@@ -327,12 +311,12 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* ──── ZONE 3A: Concrete-claim Pillars (Prompt 6) ──── */}
+      {/* ──── ZONE 3A: Trust Pillars (token-driven, neutral icons) ──── */}
       <div className="bg-primary/95 border-t border-primary-foreground/10">
         <div className="container mx-auto flex flex-col gap-4 px-4 py-5 md:flex-row md:justify-around">
-          {PILLARS.map((p) => (
+          {BRAND.trustPillars.map((p) => (
             <div key={p.title} className="flex items-center gap-3">
-              <p.icon className="h-5 w-5 shrink-0 text-primary-foreground/60" />
+              <Star className="h-5 w-5 shrink-0 text-primary-foreground/60" />
               <div>
                 <p className="text-sm font-semibold text-primary-foreground">{p.title}</p>
                 <p className="text-xs text-primary-foreground/70">{p.tagline}</p>
@@ -360,7 +344,7 @@ const Footer = () => {
       <div className="bg-primary/95 border-t border-primary-foreground/10">
         <div className="container mx-auto px-4 py-4 text-center">
           <p className="text-xs text-primary-foreground/60">
-            © {new Date().getFullYear()} IKON Trading Co., Ltd. All rights reserved.
+            © {new Date().getFullYear()} {BRAND.legalEntity}. All rights reserved.
           </p>
           <div className="mt-1.5 flex flex-wrap justify-center gap-x-3 gap-y-1">
             {LEGAL_LINKS.map((l) => (
@@ -370,7 +354,7 @@ const Footer = () => {
             ))}
           </div>
           <p className="mt-1.5 text-xs italic text-primary-foreground/70">
-            Myanmar's Trusted HoReCa Supplier Since 1995
+            {BRAND.tagline}
           </p>
         </div>
       </div>

@@ -1056,7 +1056,7 @@ const ProductDetail = () => {
                         )}
                         {review.admin_response && (
                           <div className="ml-6 bg-muted/50 border border-border rounded-lg p-3 mt-1">
-                            <p className="text-xs font-semibold text-foreground mb-1">IKON Mart replied:</p>
+                            <p className="text-xs font-semibold text-foreground mb-1">Store replied:</p>
                             <p className="text-xs text-muted-foreground">{review.admin_response}</p>
                           </div>
                         )}

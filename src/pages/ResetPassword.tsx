@@ -5,7 +5,8 @@ import { toast } from "@/hooks/use-toast";
 import { Lock, Eye, EyeOff, CheckCircle, Circle, AlertCircle, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import ikonLogo from "@/assets/ikon-logo.png";
+import brandLogo from "@/assets/brand-logo-placeholder.svg";
+import { BRAND } from "@/config/brand";
 
 type Status = "loading" | "ready" | "success" | "error";
 
@@ -81,7 +82,7 @@ export default function ResetPassword() {
         <div className="bg-card rounded-xl shadow-lg p-8 space-y-6">
           {/* Logo */}
           <div className="flex justify-center">
-            <img src={ikonLogo} alt="IKON Mart" className="h-10 object-contain" />
+            <img src={brandLogo} alt={BRAND.name} className="h-10 object-contain" />
           </div>
 
           {/* Loading State */}
@@ -131,7 +132,7 @@ export default function ResetPassword() {
                 <ShieldCheck className="w-10 h-10 text-amber-500 mx-auto" />
                 <h1 className="text-xl font-bold text-foreground">Set Your New Password</h1>
                 <p className="text-sm text-muted-foreground">
-                  Choose a strong password for your IKON Mart account
+                  Choose a strong password for your {BRAND.name} account
                 </p>
               </div>
 
