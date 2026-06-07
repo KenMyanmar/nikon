@@ -3,7 +3,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Loader2, Mail, Lock, UserIcon, Phone, Building2, ChevronLeft } from "lucide-react";
-import ikonLogo from "@/assets/ikon-logo.png";
+import brandLogo from "@/assets/brand-logo-placeholder.svg";
+import { BRAND } from "@/config/brand";
 
 interface AuthModalProps {
   open: boolean;
@@ -136,7 +137,7 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
       }
       // Auto-confirmed (session exists) → close immediately
       if (data.session) {
-        toast({ title: "Account created! Welcome to IKON Mart 🎉" });
+        toast({ title: `Account created! Welcome to ${BRAND.name} 🎉` });
         resetForm();
         onOpenChange(false);
       } else {
@@ -183,7 +184,7 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
         <div className="overflow-y-auto flex-1 p-6 sm:p-8">
           {/* Logo */}
           <div className="flex justify-center mb-5">
-            <img src={ikonLogo} alt="IKON Mart" className="h-14 w-auto object-contain" />
+            <img src={brandLogo} alt={BRAND.name} className="h-14 w-auto object-contain" />
           </div>
 
           {/* Title */}
@@ -193,7 +194,7 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
             {mode === "forgot" && "Reset Password"}
           </h2>
           {mode === "login" && (
-            <p className="text-center text-sm text-muted-foreground mb-5">Welcome back to IKON Mart</p>
+            <p className="text-center text-sm text-muted-foreground mb-5">Welcome back to {BRAND.name}</p>
           )}
           {mode === "signup" && (
             <p className="text-center text-sm text-muted-foreground mb-5">Join Myanmar's trusted commercial supplier</p>

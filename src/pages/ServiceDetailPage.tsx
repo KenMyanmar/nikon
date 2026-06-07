@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useService } from "@/hooks/useService";
+import { BRAND } from "@/config/brand";
 
 function setMeta(name: string, content: string, attr: "name" | "property" = "name") {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${name}"]`);
@@ -25,16 +26,16 @@ export default function ServiceDetailPage() {
 
   useEffect(() => {
     if (!service) return;
-    document.title = `${service.title} — IKON Mart Services`;
+    document.title = `${service.title} — ${BRAND.name} Services`;
     setMeta(
       "description",
       service.short_description ??
-        `${service.title} — turnkey hospitality solutions from IKON Mart.`
+        `${service.title} — turnkey hospitality solutions from ${BRAND.name}.`
     );
-    setMeta("og:title", `${service.title} — IKON Mart`, "property");
+    setMeta("og:title", `${service.title} — ${BRAND.name}`, "property");
     setMeta(
       "og:description",
-      service.short_description ?? "Turnkey hospitality solutions from IKON Mart.",
+      service.short_description ?? `Turnkey hospitality solutions from ${BRAND.name}.`,
       "property"
     );
     if (service.image_url) {
