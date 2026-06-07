@@ -4,7 +4,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Banner } from "@/hooks/useBanners";
 
-const STOREFRONT_HOSTS = ["ucogold.com", "www.ucogold.com"];
+// Defensive wildcard: treat any host that matches the current window.location.hostname
+// as internal. The explicit list is kept empty in the template so the same-host check
+// in parseLink() does all the work — no domain is hard-coded.
+const STOREFRONT_HOSTS: string[] = [];
 const ROTATE_INTERVAL_MS = 7000;
 
 type LinkParse =

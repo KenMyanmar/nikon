@@ -3,7 +3,7 @@ import { Truck, BadgeDollarSign, ShieldCheck, Handshake } from "lucide-react";
 const badges = [
   { icon: Truck, label: "Fast Delivery", sub: "Yangon Metro" },
   { icon: BadgeDollarSign, label: "Wholesale Pricing", sub: "Best B2B Rates" },
-  { icon: ShieldCheck, label: "160+ Brands", sub: "Trusted Names" },
+  { icon: ShieldCheck, label: "Trusted Brands", sub: "International Catalog" },
   { icon: Handshake, label: "B2B Accounts", sub: "Credit Terms" },
 ];
 

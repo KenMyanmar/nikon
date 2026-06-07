@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { BRAND } from "@/config/brand";
 
 /**
  * Quote CTA — homepage banner.
@@ -25,7 +26,7 @@ const QuoteCTA = () => {
           Request a Quote <ArrowRight className="w-5 h-5" />
         </Link>
         <p className="mt-3 text-sm text-primary-foreground/60">
-          Or call us at 09 89009 0301
+          Or call us at {BRAND.phone}
         </p>
       </div>
     </section>

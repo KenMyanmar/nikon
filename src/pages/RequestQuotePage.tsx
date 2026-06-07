@@ -763,7 +763,7 @@ const RequestQuotePage = () => {
                   className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary/30"
                 />
                 <span className="text-sm text-muted-foreground">
-                  I agree to IKON Mart's{" "}
+                  I agree to our{" "}
                   <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>{" "}
                   and{" "}
                   <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>
