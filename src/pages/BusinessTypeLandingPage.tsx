@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useBusinessTypeLanding } from "@/hooks/useBusinessTypeLanding";
 import NotFound from "./NotFound";
+import { BRAND } from "@/config/brand";
 
 const CHIP_CLASSES =
   "inline-flex items-center rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition hover:ring-2 hover:ring-primary/20 hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
@@ -53,9 +54,9 @@ const BusinessTypeLandingPage = () => {
 
   const { businessType, groups } = data;
   const label = businessType.label;
-  const canonical = `https://ucogold.com/business/${slug}`;
+  const canonical = `/business/${slug}`;
   const description = `Wholesale ${label.toLowerCase()} supplies in Myanmar: tableware, kitchen equipment, linen, and more. Free quotes, nationwide delivery.`;
-  const title = `${label} Supplies & Equipment — IKON Mart Myanmar`;
+  const title = `${label} Supplies & Equipment — ${BRAND.name}`;
 
   return (
     <MainLayout>
